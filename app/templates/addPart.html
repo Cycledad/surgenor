@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form action="#" method="post" class="form-group">
+    <div class="form-group">
+        <div class="form-group">
+            <label for="partNbr">Part Number:</label>
+            <input type="text" class='form-control' id="partNbr" name="partNbr" required>
+        </div>
+        <div class="form-group">
+            <label for="partDesc">Part Description:</label>
+            <input type="text" class='form-control' id="partDesc" name="partDesc" required>
+        </div>
+        <div class="form-group">
+            <label for="partQuantity">Supplier:</label>
+        </div>
+
+        <div class="form-group">
+            <select name="selectSupplier" id="selectSupplier" class=form-control required>
+                <option value="">--Please select a supplier--</option>
+                {% for supplier in listSupplierNames: %}
+                    <option value={{supplier}}>{{supplier}}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+
+        <div class="form-group">
+            <label for="partQuantity">Quantity:</label>
+            <input type="text" class='form-control' id="partQuantity" name="partQuantity"required>
+        </div>
+        <div class="form-group">
+            <label for="partQuantity">Unit:</label>
+            <select name="selectUnit" id="selectUnit" class=form-control required>
+                <option value="">--Please select a unit--</option>
+                {% for unit in listUnits: %}
+                    <option value={{unit}}>{{unit}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="partUnitPrice">Unit Price:</label>
+            <input type="text" class='form-control' id="partUnitPrice" name="partQuantity"required>
+        </div>
+        <div class="form-group">
+            <label for="partInStock1">Part in stock:</label>
+            <input type="radio" class='form-control' id='partInStock1' name="partInStock" value="YES" required> YES
+            <input type="radio" class='form-control' id='partInStock2' name="partInStock" value="NO" required> NO
+        </div>
+
+
+
+
+
+    <div class="form-group">
+        <button class="btn btn-default" type="submit">lets post back</button>
+    </div>
+
+</form>
+
+{% endblock content %}

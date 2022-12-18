@@ -82,9 +82,9 @@ def getUnitId(desc:str) -> int:
 
 
     except Exception as e:
-        print(f'problem in getUnitDesc: {e}')
+        print(f'problem in getUnitId: {e}')
 
-def getaALLUnitDesc() -> list:
+def getALLUnitDesc() -> list:
 
     try:
         row: list = None
@@ -103,7 +103,7 @@ def getaALLUnitDesc() -> list:
 
 
     except Exception as e:
-        print(f'problem in getUnitDesc: {e}')
+        print(f'problem in getALLUnitDesc: {e}')
 
 
 def getPartId(Desc: str) -> int:
@@ -125,7 +125,7 @@ def getPartId(Desc: str) -> int:
             return (row[0])
 
         except Exception as e:
-            print(f'problem in getUnitDesc: {e}')
+            print(f'problem in getPartId: {e}')
 
 def getSupplierName(id:int) -> str:
 
@@ -148,12 +148,35 @@ def getSupplierName(id:int) -> str:
 
 
     except Exception as e:
-        print(f'problem in getUnitDesc: {e}')
+        print(f'problem in getSupplierName: {e}')
+
+def getPurchaserId(name: str) -> int:
+    try:
+        row: list = []
+
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        parm=(name,)
+        stmt = 'select Id from purchaser where purchaserName = ?'
+        #cur.execute('select unitDesc from unit where id = ?', parm)
+        cur.execute(stmt, parm)
+        row = cur.fetchone()
+        cur.close()
+        conn.close()
+        return(row[0])
+
+
+    except Exception as e:
+        print(f'problem in getPurchaserId: {e}')
+
+
+
 
 def getSupplierId(Name: str) -> int:
 
     try:
-        result: int = None
+        row: list = []
 
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
@@ -169,7 +192,7 @@ def getSupplierId(Name: str) -> int:
 
 
     except Exception as e:
-        print(f'problem in getUnitDesc: {e}')
+        print(f'problem in getSupplierId: {e}')
 
 
 
@@ -215,7 +238,7 @@ def getTableItemById(id:int, tableName: str, colName: str) -> str:
 
 
     except Exception as e:
-        print(f'problem in getUnitDesc: {e}')
+        print(f'problem in getTableItemById: {e}')
 
 
 def insertPart(parms):
@@ -236,7 +259,7 @@ def insertPart(parms):
 
 
     except Exception as e:
-        print(f'problem in getUnitDesc: {e}')
+        print(f'problem in insertPart: {e}')
 
 
 def getALLPartDesc() -> list:
@@ -329,7 +352,7 @@ def getMaxOrderNbr() -> int:
 
 
     except Exception as e:
-        print(f'problem in getUnitDesc: {e}')
+        print(f'problem in getMaxOrderNbr: {e}')
 
 def updateMaxOrderNbr(orderNbr: int):
 
@@ -348,7 +371,7 @@ def updateMaxOrderNbr(orderNbr: int):
 
 
     except Exception as e:
-        print(f'problem in getUnitDesc: {e}')
+        print(f'problem in updateMaxOrderNbr: {e}')
 
 def insertOrder(parms):
     try:
@@ -365,10 +388,10 @@ def insertOrder(parms):
 
 
     except Exception as e:
-        print(f'problem in getUnitDesc: {e}')
+        print(f'problem in insertOrder: {e}')
 
 
-def insertPurchaseOrder(purchaseOrderNbr: int):
+def insertPurchaseOrder(purchaseOrderNbr: int, purchaserId: int):
     try:
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
@@ -376,8 +399,8 @@ def insertPurchaseOrder(purchaseOrderNbr: int):
         orderDt = datetime.datetime.now()
         receivedDt = None
         deleteFlg = False
-        parms =(orderDt, receivedDt, deleteFlg, purchaseOrderNbr)
-        stmt = 'INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr) values (?, ?, ?, ?)'
+        parms =(orderDt, receivedDt, deleteFlg, purchaseOrderNbr, purchaserId)
+        stmt = 'INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderpurchaserId) values (?, ?, ?, ?, ?)'
         cur.execute(stmt, parms)
         cur.close()
         conn.commit()
@@ -387,5 +410,29 @@ def insertPurchaseOrder(purchaseOrderNbr: int):
 
 
     except Exception as e:
-        print(f'problem in getUnitDesc: {e}')
+        print(f'problem in insertPurchaseOrder: {e}')
+
+
+def getALLPurchaseOrders() -> list:
+
+    try:
+        row: list = None
+
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        #conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        stmt = 'select purchaser.purchaserName,orderNbr,s.supplierName,part.partNbr,part.partDesc,o.OrderQuantity,o.OrderPartPrice,o.OrderTotalCost from purchaseOrder p, OrderTbl o, supplier s, Part, Purchaser where p.purchaseOrderNbr = o.orderNbr AND o.OrderSupplierId = s.id and o.OrderPartId = part.id and Purchaser.id = p.purchaseOrderPurchaserId'
+        cur.execute(stmt)
+        row = cur.fetchall()
+        mylist: list = []
+        for r in row:
+            mylist.append(r)
+
+        cur.close()
+        conn.close()
+        return(mylist)
+    except Exception as e:
+        print(f'problem in getALLPurchaseOrders: {e}')
+
 

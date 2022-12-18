@@ -18,12 +18,37 @@ CREATE TABLE OrderTbl (
 	FOREIGN KEY(OrderNbr) REFERENCES purchaseOrder (purchaseOrderNbr),
 	FOREIGN KEY(OrderPartId) REFERENCES Part (id)
 );
-
+/*
 INSERT INTO OrderTbl(OrderNbr, OrderSupplierId, OrderPartId, OrderQuantity, OrderUnitId, OrderPartPrice, OrderTotalCost)
 values(1, 1, 1, 1, 1, 20.50, 20.50);
-INSERT INTO OrderTbl(OrderNbr, OrderSupplierId, OrderPartId, OrderQuantity, OrderUnitId, OrderPartPrice, OrderTotalCost)
-values(1, 1, 1, 1, 1, 20.50, 20.50);
 
+INSERT INTO OrderTbl(OrderNbr, OrderSupplierId, OrderPartId, OrderQuantity, OrderUnitId, OrderPartPrice, OrderTotalCost)
+values(2, 1, 1, 1, 1, 20.50, 20.50);
+
+INSERT INTO OrderTbl(OrderNbr, OrderSupplierId, OrderPartId, OrderQuantity, OrderUnitId, OrderPartPrice, OrderTotalCost)
+values(3, 1, 1, 1, 1, 20.50, 20.50);
+
+INSERT INTO OrderTbl(OrderNbr, OrderSupplierId, OrderPartId, OrderQuantity, OrderUnitId, OrderPartPrice, OrderTotalCost)
+values(4, 1, 1, 1, 1, 20.50, 20.50);
+
+INSERT INTO OrderTbl(OrderNbr, OrderSupplierId, OrderPartId, OrderQuantity, OrderUnitId, OrderPartPrice, OrderTotalCost)
+values(5, 1, 1, 1, 1, 20.50, 20.50);
+
+INSERT INTO OrderTbl(OrderNbr, OrderSupplierId, OrderPartId, OrderQuantity, OrderUnitId, OrderPartPrice, OrderTotalCost)
+values(6, 1, 1, 1, 1, 20.50, 20.50);
+
+INSERT INTO OrderTbl(OrderNbr, OrderSupplierId, OrderPartId, OrderQuantity, OrderUnitId, OrderPartPrice, OrderTotalCost)
+values(7, 1, 1, 1, 1, 20.50, 20.50);
+
+INSERT INTO OrderTbl(OrderNbr, OrderSupplierId, OrderPartId, OrderQuantity, OrderUnitId, OrderPartPrice, OrderTotalCost)
+values(8, 1, 1, 1, 1, 20.50, 20.50);
+
+INSERT INTO OrderTbl(OrderNbr, OrderSupplierId, OrderPartId, OrderQuantity, OrderUnitId, OrderPartPrice, OrderTotalCost)
+values(9, 1, 1, 1, 1, 20.50, 20.50);
+
+INSERT INTO OrderTbl(OrderNbr, OrderSupplierId, OrderPartId, OrderQuantity, OrderUnitId, OrderPartPrice, OrderTotalCost)
+values(10, 1, 1, 1, 1, 20.50, 20.50);
+*/
 
 DROP TABLE IF EXISTS Part;
 CREATE TABLE Part (
@@ -50,17 +75,44 @@ purchaseOrderDate TEXT NOT NULL,
 purchaseOrderReceivedDate TEXT,
 purchaseOrderDeleteFlg BOOLEAN NOT NULL,
 purchaseOrderNbr INTEGER,
+purchaseOrderPurchaserId integer not null,
 PRIMARY KEY (id)
 
 );
 
-INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr)
-values('02112022', '15122023', false, 1);
+/*
+INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderPurchaserId)
+values('02112022', '15122023', false, 1,1);
 
-INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr)
-values('01121999', '15121999', false, 2);
+INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderPurchaserId)
+values('01121999', '15121999', false, 2,2);
 
 
+INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderPurchaserId)
+values('01121999', '15121999', false, 3,2);
+
+INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderPurchaserId)
+values('01121999', '15121999', false, 4,2);
+
+INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderPurchaserId)
+values('01121999', '15121999', false, 5,2);
+
+INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderPurchaserId)
+values('01121999', '15121999', false, 6,2);
+
+INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderPurchaserId)
+values('01121999', '15121999', false, 7,2);
+
+INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderPurchaserId)
+values('01121999', '15121999', false, 8,2);
+
+INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderPurchaserId)
+values('01121999', '15121999', false, 9,2);
+
+INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderPurchaserId)
+values('01121999', '15121999', false, 10,2);
+
+*/
 
 DROP TABLE IF EXISTS Purchaser;
 CREATE TABLE Purchaser (
@@ -79,6 +131,8 @@ VALUES('Kevin', 'Finance', 1, true, '25122022');
 INSERT INTO Purchaser(purchaserName, PurchaseDept, purchaserSecurityLevel, 	purchaserActive, purchaseDateCreated)
 VALUES('Jessie', 'Finance', 5, false, '25122022');
 
+
+/*
 DROP TABLE IF EXISTS teacher;
 CREATE TABLE teacher (
 	Id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -100,6 +154,7 @@ INSERT INTO Student(Major, Pass) VALUES('Mathematics', true);
 INSERT INTO Student(Major, Pass) VALUES('Biology', true);
 INSERT INTO Student(Major, Pass) VALUES('French', true);
 
+*/
 
 DROP TABLE IF EXISTS Supplier;
 CREATE TABLE Supplier (
@@ -143,7 +198,7 @@ CREATE TABLE OrderNbrTbl (
 
 );
 
-insert into OrderNbrTbl values(0);
+--insert into OrderNbrTbl values(0);
 
 
 PRAGMA foreign_keys = ON;

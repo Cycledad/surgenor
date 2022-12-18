@@ -8,8 +8,23 @@ from app import utilities
 
 print(f'inside routes')
 
+@app.route('/listPurchaseOrder')
+def listPurchaseOrder():
+    resultList: list
+    resultList = utilities.getALLPurchaseOrders() #returns a list of a list, so indice 1 = row, indice 2 = col within row, i.e. mylist[0][1]
+    print(f'len of mylist indicates number of row: {len(resultList)}')
+    print(f'each row contains cols {list(resultList[0])}')
+    return render_template('listPurchaseOrder.html', rowColData=resultList)
+
+
+
+
+
+
+
 @app.route('/addRow', methods=['GET', 'POST'])
 def addRow():
+
     try:
         if request.method == "POST":
             req = request.form
@@ -18,7 +33,8 @@ def addRow():
 
             #1st update the purchaseOrder table then update the order table
             purchaseOrderNbr = resultList[0]
-            utilities.insertPurchaseOrder(purchaseOrderNbr)
+            purchaserId = utilities.getPurchaserId(resultList[1])
+            utilities.insertPurchaseOrder(purchaseOrderNbr, purchaserId)
 
 
             #resultList minus 3 gives total nbr of order items, less PONbr and purchaser
@@ -52,6 +68,7 @@ def addRow():
                     k += 1
                     parms = (orderNbr, partNbrId, supplierId, quantity, unitId, cost, totalCost)
                     utilities.insertOrder(parms)
+
             utilities.updateMaxOrderNbr(orderNbr)
 
 

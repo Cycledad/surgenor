@@ -10,10 +10,13 @@
 
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='/css/main.css') }}">
 
+    <!-- dataTables jquery -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.css">
+
     {% if title %}
-        <title>Surgenor Purchase Order - {{ title }}</title>
+        <title>List Purchase Orders - {{ title }}</title>
     {% else %}
-        <title>Surgenor Purchase Order</title>
+        <title>List Purchase Order</title>
     {% endif %}
 </head>
 <body>
@@ -30,7 +33,7 @@
 
 
               <div class="dropdown show">
-                  <a class="nav-item nav-link dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <a class="nav-item nav-link dropdown-toggle" href="#" role="button" id="dropdownMenuLink1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Purchase Order
                   </a>
 
@@ -44,12 +47,9 @@
 
 
 
-			  <a class="nav-item nav-link" href="/about">Reports</a>
-
-
 
             <div class="dropdown show">
-              <a class="nav-item nav-link dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <a class="nav-item nav-link dropdown-toggle" href="#" role="button" id="dropdownMenuLink2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                Admin
               </a>
               <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
@@ -100,5 +100,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <script src="{{url_for('static', filename='/js/addrow.js')}}"></script>
+    <script src="{{url_for('static', filename='/js/DataTables.js')}}"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.js"></script>
+
 </body>
 </html>

@@ -2,3 +2,4 @@
 venv/Include/site/python3.10/greenlet
 venv/Lib/site-packages
 venv/Scripts
+app/__pycache__

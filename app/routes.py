@@ -72,11 +72,6 @@ def addRow():
             utilities.updateMaxOrderNbr(orderNbr)
 
 
-
-
-
-
-
     except Exception as e:
         print(e)
 

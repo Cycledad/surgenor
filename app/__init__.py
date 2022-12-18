@@ -13,7 +13,8 @@ try:
     from app import utilities, routes
 
     dbName = utilities.getDatabase(constants.DATABASE_NAME)
-    utilities.getConnection(dbName)  #create db if it doesn't already exist
+    conn = utilities.getConnection(dbName)  #create db if it doesn't already exist
+    conn.close()
 
     if constants.RELOAD_DATABASE:
         utilities.reloadDatabase()

@@ -360,8 +360,13 @@ def updateMaxOrderNbr(orderNbr: int):
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        stmt = f'update OrderNbrTbl set orderNbr = ?'
+
         parm = (orderNbr,)
+        if int(orderNbr) > 1:
+            stmt = f'update OrderNbrTbl set orderNbr = ?'
+        else:
+            stmt = f'insert into OrderNbrTbl values(?)'
+
         cur.execute(stmt, parm)
         cur.close()
         conn.commit()

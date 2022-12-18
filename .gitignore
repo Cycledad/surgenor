@@ -1,0 +1,4 @@
+#ignore virtual environment files
+venv/Include/site/python3.10/greenlet
+venv/Lib/site-packages
+venv/Scripts

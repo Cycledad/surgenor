@@ -54,11 +54,11 @@ CREATE TABLE Part (
 	UNIQUE ("partNbr"),
 	FOREIGN KEY(partSupplierId) REFERENCES Supplier (id)
 );
-/*
+
 INSERT into Part(partNbr,PartDesc,partSupplierId,partQuantity,partInStock,partDateCreated) VALUES('A1000', 'BOLT', 1, 20, TRUE, "AUG");
 INSERT into Part(partNbr,PartDesc,partSupplierId,partQuantity,partInStock,partDateCreated) VALUES('A2000', 'CHAIN', 2, 20, FALSE, "25122022");
 
-*/
+
 DROP TABLE IF EXISTS PurchaseOrder;
 CREATE TABLE PurchaseOrder(
 id INTEGER NOT NULL,
@@ -74,32 +74,22 @@ PRIMARY KEY (id)
 /*
 INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderPurchaserId)
 values('02112022', '15122023', false, 1,1);
-
 INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderPurchaserId)
 values('01121999', '15121999', false, 2,2);
-
-
 INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderPurchaserId)
 values('01121999', '15121999', false, 3,2);
-
 INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderPurchaserId)
 values('01121999', '15121999', false, 4,2);
-
 INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderPurchaserId)
 values('01121999', '15121999', false, 5,2);
-
 INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderPurchaserId)
 values('01121999', '15121999', false, 6,2);
-
 INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderPurchaserId)
 values('01121999', '15121999', false, 7,2);
-
 INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderPurchaserId)
 values('01121999', '15121999', false, 8,2);
-
 INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderPurchaserId)
 values('01121999', '15121999', false, 9,2);
-
 INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderPurchaserId)
 values('01121999', '15121999', false, 10,2);
 
@@ -116,12 +106,12 @@ CREATE TABLE Purchaser (
 	PRIMARY KEY (id),
 	UNIQUE (purchaserName)
 );
-/*
+
 INSERT INTO Purchaser(purchaserName, PurchaseDept, purchaserSecurityLevel, 	purchaserActive, purchaseDateCreated)
 VALUES('Kevin', 'Finance', 1, true, '25122022');
 INSERT INTO Purchaser(purchaserName, PurchaseDept, purchaserSecurityLevel, 	purchaserActive, purchaseDateCreated)
 VALUES('Jessie', 'Finance', 5, false, '25122022');
-*/
+
 
 /*
 DROP TABLE IF EXISTS teacher;
@@ -163,25 +153,24 @@ CREATE TABLE Supplier (
 	UNIQUE (supplierEmail),
 	UNIQUE (supplierContact)
 );
-/*
+
 INSERT INTO Supplier(supplierName, supplierAddr, supplierTel, supplierEmail, supplierContact, supplierActive, supplierDateCreated)
 values('Surgenor Trucks', '100 St. Laurent', '613-123-4567', 'supplier@email.com', 'Mr. Right', true, '25021979');
-
 INSERT INTO Supplier(supplierName, supplierAddr, supplierTel, supplierEmail, supplierContact, supplierActive, supplierDateCreated)
 values('Canadian Tire', '2 Dump Road', '613-123-4568', 'supplierx@email.com', 'Mr. Wrong', true, '28012022');
 
-*/
+
 DROP TABLE IF EXISTS Unit;
 CREATE TABLE Unit (
 	id INTEGER NOT NULL,
 	unitDesc TEXT NOT NULL,
 	PRIMARY KEY (id)
 );
-/*
+
 INSERT INTO Unit(unitDesc) values('KG');
 INSERT INTO Unit(unitDesc) values('POUNDS');
 INSERT INTO Unit(unitDesc) values('PIECES');
-*/
+
 
 DROP TABLE IF EXISTS OrderNbrTbl;
 CREATE TABLE OrderNbrTbl (

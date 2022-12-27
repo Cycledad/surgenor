@@ -72,13 +72,13 @@
 
           {% block content %}
 
-          inside the block
+
           {% endblock %}
 
 
     </main>
 
-    {% block scripts %}
+
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
@@ -88,7 +88,7 @@
     <script src="{{url_for('static', filename='/js/addrow.js')}}"></script>
     <!-- <script src="{{url_for('static', filename='/js/DataTables.js')}}"></script> -->
     <script type="text/javascript" src="https://unpkg.com/tabulator-tables@5.4.3/dist/js/tabulator.min.js"></script>
-    <script src="{{url_for('static', filename='/js/tabulator.js')}}"></script>
-    {% endblock %}
+    <!-- <script src="{{url_for('static', filename='/js/tabulator.js')}}"></script> -->
+   {% block scripts %}{% endblock %}
 </body>
 </html>

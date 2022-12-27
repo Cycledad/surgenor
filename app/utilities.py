@@ -427,7 +427,7 @@ def getALLPurchaseOrders() -> list:
         conn = getConnection(db)
         #conn.row_factory = sqlite3.Row
         cur = conn.cursor()
-        stmt = 'select p.id, purchaser.purchaserName,orderNbr,s.supplierName,part.partNbr,part.partDesc,o.OrderQuantity,o.OrderPartPrice,o.OrderTotalCost from purchaseOrder p, OrderTbl o, supplier s, Part, Purchaser where p.purchaseOrderNbr = o.orderNbr AND o.OrderSupplierId = s.id and o.OrderPartId = part.id and Purchaser.id = p.purchaseOrderPurchaserId'
+        stmt = 'select p.id, o.id, purchaser.purchaserName,orderNbr,s.supplierName,part.partNbr,part.partDesc,o.OrderQuantity,o.OrderPartPrice,o.OrderTotalCost from purchaseOrder p, OrderTbl o, supplier s, Part, Purchaser where p.purchaseOrderNbr = o.orderNbr AND o.OrderSupplierId = s.id and o.OrderPartId = part.id and Purchaser.id = p.purchaseOrderPurchaserId'
         cur.execute(stmt)
         row = cur.fetchall()
         mylist: list = []
@@ -442,31 +442,37 @@ def getALLPurchaseOrders() -> list:
 
 def deletePurchaseOrder(id:int) -> list:
 
+    #There is ONE purchaseOrder id used to track orders.
+    #there can be MANY orders per purchaseOrder
     try:
 
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
         parm1 = (id,)
-        stmt1 = 'select p.purchaseOrderNbr from purchaseOrder p where p.id = ?'
+        stmt1 = 'select o.OrderNbr from orderTbl o where o.id = ?'
         cur.execute(stmt1, parm1)
-        purchaseOrderNbr = cur.fetchone()
-        purchaseOrderNbr = purchaseOrderNbr[0]
-        parm2 = (purchaseOrderNbr,)
+        orderNbr = cur.fetchone()
+        orderNbr = orderNbr[0]
+
+
+
+        parm2 = (orderNbr,)
         stmt2 = 'select count(*) from orderTbl o where o.orderNbr = ?'
         cur.execute(stmt2, parm2)
         nbrOfOrders = cur.fetchone()
         nbrOfOrders = nbrOfOrders[0]
+
         #if NbrOfOrders = 1 then delete from order table and purchaseOrder table
         #if NbrOfOrders > 1 then delete only specific purchase form purchaseorder, other purchases remain in order
 
-        stmt3 = 'delete from purchaseOrder where purchaseOrder.id = ?'
+        stmt3 = 'delete from orderTbl where orderTbl.id = ?'
         cur.execute(stmt3, parm1)
         cur.fetchone()
 
         if nbrOfOrders == 1:
 
-            stmt4 = 'delete from orderTbl where orderTbl.orderNbr = ?'
+            stmt4 = 'delete from purchaseOrder where purchaseOrder.purchaserOrderNbr = ?'
             cur.execute(stmt3, parm2)
             cur.fetchone()
 

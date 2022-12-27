@@ -4,6 +4,7 @@ from app import app
 from flask import render_template, request, redirect
 import datetime as dt
 from app import utilities
+import json
 #from app import models
 
 print(f'inside routes')
@@ -12,8 +13,8 @@ print(f'inside routes')
 def listPurchaseOrder():
     resultList: list
     resultList = utilities.getALLPurchaseOrders() #returns a list of a list, so indice 1 = row, indice 2 = col within row, i.e. mylist[0][1]
-    print(f'len of mylist indicates number of row: {len(resultList)}')
-    print(f'each row contains cols {list(resultList[0])}')
+    #print(f'len of mylist indicates number of row: {len(resultList)}')
+    #print(f'each row contains cols {list(resultList[0])}')
     return render_template('listPurchaseOrder.html', rowColData=resultList)
 
 
@@ -85,7 +86,7 @@ def addRow():
     return render_template('addRow.html', listPartDesc=listPartDesc, listPartNbr=listPartNbr, listPurchaserName=listPurchaserName, listSupplierNames=listSupplierNames, listUnits=listUnits, orderNbr=orderNbr)
 
 
-@app.route('/part', methods=['GET', 'POST'])
+@app.route('/addPart', methods=['GET', 'POST'])
 def part():
 
     try:
@@ -108,7 +109,7 @@ def part():
             dtCreated = dt.datetime.now()
             inStock: bool = True if req['partInStock'] == 'YES' else False  #1=true, 0=false
 
-            params = (req['partNbr'], req['partDesc'], req['partSupplier'], req['partQuantity'], inStock, dtCreated)
+            params = (req['partNbr'], req['partDesc'], req['selectSupplier'], req['partQuantity'], inStock, dtCreated)
             utilities.insertPart(params)
 
 
@@ -126,3 +127,32 @@ def part():
 
 
 
+@app.route('/testme', methods=['GET', 'POST'])
+def testme2():
+    return render_template('testme2.html')
+
+
+
+@app.route('/api/data/<orderId>', methods=['GET', 'POST'])
+@app.route('/api/data', methods=['GET', 'POST'])
+def data(orderId=None):
+    if orderId != None:
+        print(f'api/data orderId: {orderId}')
+        utilities.deletePurchaseOrder(orderId)
+    resultList: list
+    resultList = utilities.getALLPurchaseOrders()  # returns a list of a list, so indice 1 = row, indice 2 = col within row, i.e. mylist[0][1]
+    mylist: list = []
+    alist:list = []
+    print("inside api/data")
+    for row in resultList:
+        alist = (row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8])
+        d1 = dict(enumerate(alist))
+        mylist.append(d1)
+
+
+    #return {'data': mylist} => use this format for datatables.js, dict of lists
+    return (mylist) #arry list
+
+@app.route('/tabulator', methods=['GET', 'POST'])
+def tabulator():
+    return render_template('tabulator.html')

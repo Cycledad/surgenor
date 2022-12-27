@@ -427,7 +427,7 @@ def getALLPurchaseOrders() -> list:
         conn = getConnection(db)
         #conn.row_factory = sqlite3.Row
         cur = conn.cursor()
-        stmt = 'select purchaser.purchaserName,orderNbr,s.supplierName,part.partNbr,part.partDesc,o.OrderQuantity,o.OrderPartPrice,o.OrderTotalCost from purchaseOrder p, OrderTbl o, supplier s, Part, Purchaser where p.purchaseOrderNbr = o.orderNbr AND o.OrderSupplierId = s.id and o.OrderPartId = part.id and Purchaser.id = p.purchaseOrderPurchaserId'
+        stmt = 'select p.id, purchaser.purchaserName,orderNbr,s.supplierName,part.partNbr,part.partDesc,o.OrderQuantity,o.OrderPartPrice,o.OrderTotalCost from purchaseOrder p, OrderTbl o, supplier s, Part, Purchaser where p.purchaseOrderNbr = o.orderNbr AND o.OrderSupplierId = s.id and o.OrderPartId = part.id and Purchaser.id = p.purchaseOrderPurchaserId'
         cur.execute(stmt)
         row = cur.fetchall()
         mylist: list = []
@@ -440,4 +440,42 @@ def getALLPurchaseOrders() -> list:
     except Exception as e:
         print(f'problem in getALLPurchaseOrders: {e}')
 
+def deletePurchaseOrder(id:int) -> list:
+
+    try:
+
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        parm1 = (id,)
+        stmt1 = 'select p.purchaseOrderNbr from purchaseOrder p where p.id = ?'
+        cur.execute(stmt1, parm1)
+        purchaseOrderNbr = cur.fetchone()
+        purchaseOrderNbr = purchaseOrderNbr[0]
+        parm2 = (purchaseOrderNbr,)
+        stmt2 = 'select count(*) from orderTbl o where o.orderNbr = ?'
+        cur.execute(stmt2, parm2)
+        nbrOfOrders = cur.fetchone()
+        nbrOfOrders = nbrOfOrders[0]
+        #if NbrOfOrders = 1 then delete from order table and purchaseOrder table
+        #if NbrOfOrders > 1 then delete only specific purchase form purchaseorder, other purchases remain in order
+
+        stmt3 = 'delete from purchaseOrder where purchaseOrder.id = ?'
+        cur.execute(stmt3, parm1)
+        cur.fetchone()
+
+        if nbrOfOrders == 1:
+
+            stmt4 = 'delete from orderTbl where orderTbl.orderNbr = ?'
+            cur.execute(stmt3, parm2)
+            cur.fetchone()
+
+        cur.close()
+        conn.commit()
+        conn.close()
+
+        return()
+
+    except Exception as e:
+        print(f'problem in deletePurchaseOrder: {e}')
 

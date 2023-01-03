@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<br><br>
+<h1>Add Supplier</h1>
+<br><br>
+<form action="#" method="post" class="form-group">
+    <div class="form-group">
+
+        <div class="form-group">
+            <label for="supplierName">Supplier Name:</label>
+            <input type="text" class='form-control' id="supplierName" name="supplierName" required>
+        </div>
+
+        <div class="form-group">
+            <label for="supplierAddr">Supplier Address:</label>
+            <input type="text" class='form-control' id="supplierAddr" name="supplierAddr" required>
+        </div>
+
+        <div class="form-group">
+            <label for="supplierContactName">Contact Name:</label>
+            <input type="text" class='form-control' id="supplierContactName" name="supplierContactName"required>
+        </div>
+
+        <div class="form-group">
+            <label for="supplierTel">Telephone Number:</label>
+            <input type="tel" class='form-control' id="supplierTel" name="supplierTel"required>
+        </div>
+
+        <div class="form-group">
+            <label for="supplierEmail">Email address:</label>
+            <input type="email" class='form-control' id='supplierEmail' name="supplierEmail" required>
+        </div>
+
+        <div class="form-group">
+            <button class="btn btn-default" type="submit">lets post back</button>
+        </div>
+    </div>
+</form>
+
+{% endblock content %}

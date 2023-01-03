@@ -150,7 +150,7 @@ def getSupplierName(id:int) -> str:
     except Exception as e:
         print(f'problem in getSupplierName: {e}')
 
-def getPurchaserId(name: str) -> int:
+def getPurchaserId(name: str) -> list:
     try:
         row: list = []
 
@@ -158,13 +158,13 @@ def getPurchaserId(name: str) -> int:
         conn = getConnection(db)
         cur = conn.cursor()
         parm=(name,)
-        stmt = 'select Id from purchaser where purchaserName = ?'
+        stmt = 'select Id, purchaserDept from purchaser where purchaserName = ?'
         #cur.execute('select unitDesc from unit where id = ?', parm)
         cur.execute(stmt, parm)
         row = cur.fetchone()
         cur.close()
         conn.close()
-        return(row[0])
+        return(row)
 
 
     except Exception as e:
@@ -218,6 +218,63 @@ def getALLSupplierName() -> list:
 
     except Exception as e:
         print(f'problem in getALLSupplierName: {e}')
+
+def insertSupplier(parms):
+    try:
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        stmt = 'INSERT INTO supplier (supplierName, supplierAddr, supplierContact, supplierEmail, supplierTel, supplierActive, supplierDateCreated) values (?, ?, ?, ?, ?, ?, ?)'
+        cur.execute(stmt, parms)
+        cur.close()
+        conn.commit()
+        conn.close()
+
+        return()
+
+
+    except Exception as e:
+        print(f'problem in insertSupplier: {e}')
+
+def insertDepartment(parms):
+    try:
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        stmt = 'INSERT INTO Department (deptName, active, dateCreated) values (?, ?, ?)'
+        cur.execute(stmt, parms)
+        cur.close()
+        conn.commit()
+        conn.close()
+
+        return()
+
+
+    except Exception as e:
+        print(f'problem in insertDepartment: {e}')
+
+
+def getALLDepartmentNames()-> list:
+    try:
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        stmt = 'select deptName from Department where active is True'
+        cur.execute(stmt)
+        row = cur.fetchall()
+        mylist: list = []
+        for r in range(0, len(row)):
+            mylist.append(row[r][0])
+        cur.close()
+        conn.close()
+
+        return (mylist)
+
+
+    except Exception as e:
+        print(f'problem in getALLDepartmentNames: {e}')
+
+
 
 
 def getTableItemById(id:int, tableName: str, colName: str) -> str:
@@ -396,7 +453,7 @@ def insertOrder(parms):
         print(f'problem in insertOrder: {e}')
 
 
-def insertPurchaseOrder(purchaseOrderNbr: int, purchaserId: int):
+def insertPurchaseOrder(purchaseOrderNbr: int, purchaserId: int, purchaserDept: int) -> None:
     try:
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
@@ -404,8 +461,8 @@ def insertPurchaseOrder(purchaseOrderNbr: int, purchaserId: int):
         orderDt = datetime.datetime.now()
         receivedDt = None
         deleteFlg = False
-        parms =(orderDt, receivedDt, deleteFlg, purchaseOrderNbr, purchaserId)
-        stmt = 'INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderpurchaserId) values (?, ?, ?, ?, ?)'
+        parms =(orderDt, receivedDt, deleteFlg, purchaseOrderNbr, purchaserId, purchaserDept)
+        stmt = 'INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderpurchaserId, purchaseOrderPurchaserDept) values (?, ?, ?, ?, ?, ?)'
         cur.execute(stmt, parms)
         cur.close()
         conn.commit()
@@ -427,7 +484,7 @@ def getALLPurchaseOrders() -> list:
         conn = getConnection(db)
         #conn.row_factory = sqlite3.Row
         cur = conn.cursor()
-        stmt = 'select p.id, o.id, purchaser.purchaserName,orderNbr,s.supplierName,part.partNbr,part.partDesc,o.OrderQuantity,o.OrderPartPrice,o.OrderTotalCost from purchaseOrder p, OrderTbl o, supplier s, Part, Purchaser where p.purchaseOrderNbr = o.orderNbr AND o.OrderSupplierId = s.id and o.OrderPartId = part.id and Purchaser.id = p.purchaseOrderPurchaserId'
+        stmt = 'select p.id, o.id, purchaser.purchaserName, deptName, orderNbr,s.supplierName,part.partNbr,part.partDesc,o.OrderQuantity,o.OrderPartPrice,o.OrderTotalCost, o.orderReceivedDate from purchaseOrder p, OrderTbl o, supplier s, Part, Purchaser, Department where p.purchaseOrderNbr = o.orderNbr AND o.OrderSupplierId = s.id and o.OrderPartId = part.id and Purchaser.id = p.purchaseOrderPurchaserId and purchaserDept = department.id'
         cur.execute(stmt)
         row = cur.fetchall()
         mylist: list = []
@@ -484,4 +541,45 @@ def deletePurchaseOrder(id:int) -> list:
 
     except Exception as e:
         print(f'problem in deletePurchaseOrder: {e}')
+
+def updateOrderReceivedDate(id:int, dt:str) -> None:
+
+    #There is ONE purchaseOrder id used to track orders.
+    #there can be MANY orders per purchaseOrder
+    try:
+
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        parm1 = (id,)
+        stmt1 = 'select o.OrderNbr from orderTbl o where o.id = ?'
+        cur.execute(stmt1, parm1)
+        orderNbr = cur.fetchone()
+        orderNbr = orderNbr[0]
+
+        parm2 = (orderNbr,)
+        stmt2 = 'select count(*) from orderTbl o where o.orderNbr = ?'
+        cur.execute(stmt2, parm2)
+        nbrOfOrders = cur.fetchone()
+        nbrOfOrders = nbrOfOrders[0]
+
+        #if NbrOfOrders = 1 then delete from order table and purchaseOrder table
+        #if NbrOfOrders > 1 then delete only specific purchase form purchaseorder, other purchases remain in order
+
+        #currentDate = datetime.date.today()
+        stmt1 = f"update orderTbl set orderreceivedDate = '{dt}' where id = ?"
+        cur.execute(stmt1, parm1)
+
+        if nbrOfOrders == 1:
+            stmt3 = f"update purchaseOrder set purchaseOrderReceivedDate = '{dt}' where purchaseOrderNbr = ?"
+            cur.execute(stmt3, parm2)
+
+        cur.close()
+        conn.commit()
+        conn.close()
+
+        return()
+
+    except Exception as e:
+        print(f'problem in updateOrderReceivedDate: {e}')
 

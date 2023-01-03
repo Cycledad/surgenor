@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><!DOCTYPE html>
+<html>
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='/css/main.css') }}">
+
+    <!-- dataTables jquery -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.css">
+
+    <link href="https://unpkg.com/tabulator-tables@5.4.3/dist/css/tabulator.min.css" rel="stylesheet">
+
+    <!-- flatpickr -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+    {% if title %}
+        <title>List Purchase Orders - {{ title }}</title>
+    {% else %}
+        <title>List Purchase Order</title>
+    {% endif %}
+</head>
+<body>
+    <header class="site-header">
+
+
+
+
+        <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
+        <div class="container">
+            <!-- Just an image -->
+
+                <a class="navbar-brand" href="/home">
+                    <img src="{{ url_for('static', filename='/img/surgenorGatineau.gif') }}" height="50" alt=''>
+                </a>
+
+            <div class="collapse navbar-collapse" id="navbarToggle">
+                <div class="navbar-nav mr-auto">
+                    <a class="nav-item nav-link" href="/home">Home</a>
+                    <div class="dropdown show">
+                        <a class="nav-item nav-link dropdown-toggle" href="#" role="button" id="dropdownMenuLink1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Purchase Order
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                            <a class="dropdown-item" href="/addOrder">Create</a>
+                            <a class="dropdown-item" href="/managePurchaseOrder">Manage</a>
+
+                        </div>
+                    </div>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Web <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="https://www.jquery-az.com/jquery-tips/">jQuery</a></li>
+                                <li><a href="https://www.jquery-az.com/html-tutorials/">HTML</a></li>
+                                <li><a href="https://www.jquery-az.com/css-tutorials/">CSS</a></li>
+                                <li class="divider"></li>
+                                <li>
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Bootstrap <b class="caret caret-right"></b></a>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="https://www.jquery-az.com/bootstrap-carousel-5-single-multiple-horizontal-and-vertical-sliding-demos/">Carousel</a></li>
+                                        <li><a href="https://www.jquery-az.com/bootstrap-tabs-with-default-and-customized-css-4-online-demos/">Bootstrap Tabs</a></li>
+                                        <li><a href="https://www.jquery-az.com/bootstrap-alert-with-5-online-demos/">Alerts</a></li>
+                                        <li>
+                                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Free Themes <b class="caret caret-right"></b></a>
+                                            <ul class="dropdown-menu">
+                                                        <li><a href="https://www.jquery-az.com/choco-bar-free-bootstrap-landing-page-theme/">Choco bar</a></li>
+                                                        <li><a href="https://www.jquery-az.com/a-free-one-page-bootstrap-website-halwa/">HALWA</a></li>
+                                                    </ul>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                </div>
+
+            </div>
+        </div>
+
+        <div>
+            <!-- Navbar Right Side -->
+            <div class="navbar-nav">
+              <a class="nav-item nav-link" href="/login">Login</a>
+              <a class="nav-item nav-link" href="/register">Register</a>
+            </div>
+        </div>
+        </div>
+      </nav>
+
+    </header>
+    <main role="main" class="container">
+
+          {% block content %}
+
+
+          {% endblock %}
+
+
+    </main>
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.js"></script>
+    <script src="{{url_for('static', filename='/js/addrow.js')}}"></script>
+    <!-- <script src="{{url_for('static', filename='/js/DataTables.js')}}"></script> -->
+    <script type="text/javascript" src="https://unpkg.com/tabulator-tables@5.4.3/dist/js/tabulator.min.js"></script>
+    <!-- <script src="{{url_for('static', filename='/js/tabulator.js')}}"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+   {% block scripts %}{% endblock %}
+</body>
+</html></title>
+</head>
+<body>
+
+</body>
+</html>

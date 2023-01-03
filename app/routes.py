@@ -7,7 +7,80 @@ from app import utilities
 import json
 #from app import models
 
-print(f'inside routes')
+#print(f'inside routes')
+
+
+@app.route('/home')
+def home():
+    return render_template('home.html')
+
+@app.route('/addPurchaser', methods=['GET', 'POST'])
+def addPurchaser():
+
+    try:
+        if request.method == "POST":
+            req = request.form
+            deptName = req['deptName']
+            active = req['deptActive']
+            dateCreated = dt.date.today()
+            parms =(deptName, active, dateCreated)
+            utilities.insertDepartment(parms)
+
+
+
+
+    except Exception as e:
+        print(f'problem in addPurchaser: {e}')
+
+    listDeptNames = utilities.getALLDepartmentNames()
+    return render_template('addPurchaser.html', listDeptNames = listDeptNames)
+
+
+@app.route('/addDepartment', methods=['GET', 'POST'])
+def addDepartment():
+
+    try:
+        if request.method == "POST":
+            req = request.form
+            deptName = req['deptName']
+            active = req['deptActive']
+            dateCreated = dt.date.today()
+            parms =(deptName, active, dateCreated)
+            utilities.insertDepartment(parms)
+
+
+
+
+    except Exception as e:
+        print(f'problem in addDepartment: {e}')
+
+    return render_template('addDepartment.html')
+
+
+@app.route('/addSupplier', methods=['GET', 'POST'])
+def addSupplier():
+
+    try:
+        if request.method == "POST":
+            req = request.form
+            supplierName = req['supplierName']
+            supplierAddr = req['supplierAddr']
+            supplierContactName = req['supplierContactName']
+            supplierTel = req['supplierTel']
+            supplierEmail = req['supplierEmail']
+            supplierActive = True
+            supplierDateCreated = dt.date.today()
+            parms =(supplierName, supplierAddr, supplierContactName, supplierEmail, supplierTel, supplierActive, supplierDateCreated)
+            utilities.insertSupplier(parms)
+
+
+
+    except Exception as e:
+        print(f'problem in addSupplier: {e}')
+
+    return render_template('addSupplier.html')
+
+
 
 @app.route('/listPurchaseOrder')
 def listPurchaseOrder():
@@ -23,8 +96,8 @@ def listPurchaseOrder():
 
 
 
-@app.route('/addRow', methods=['GET', 'POST'])
-def addRow():
+@app.route('/addOrder', methods=['GET', 'POST'])
+def addOrder():
 
     try:
         if request.method == "POST":
@@ -34,8 +107,10 @@ def addRow():
 
             #1st update the purchaseOrder table then update the order table
             purchaseOrderNbr = resultList[0]
-            purchaserId = utilities.getPurchaserId(resultList[1])
-            utilities.insertPurchaseOrder(purchaseOrderNbr, purchaserId)
+            aList = utilities.getPurchaserId(resultList[1])
+            purchaserId = aList[0]
+            purchaserDeptNbr = aList[1]
+            utilities.insertPurchaseOrder(purchaseOrderNbr, purchaserId, purchaserDeptNbr)
 
 
             #resultList minus 3 gives total nbr of order items, less PONbr and purchaser
@@ -74,7 +149,7 @@ def addRow():
 
 
     except Exception as e:
-        print(e)
+        print(f'problem in addOrder: {e}')
 
     orderNbr = utilities.getMaxOrderNbr() + 1
 
@@ -83,7 +158,7 @@ def addRow():
     listPartNbr = utilities.getALLITEMS('part', 'partNbr')
     listSupplierNames = utilities.getALLITEMS('supplier', 'SupplierName')
     listUnits = utilities.getALLITEMS('UNIT', 'UnitDesc')
-    return render_template('addRow.html', listPartDesc=listPartDesc, listPartNbr=listPartNbr, listPurchaserName=listPurchaserName, listSupplierNames=listSupplierNames, listUnits=listUnits, orderNbr=orderNbr)
+    return render_template('addOrder.html', listPartDesc=listPartDesc, listPartNbr=listPartNbr, listPurchaserName=listPurchaserName, listSupplierNames=listSupplierNames, listUnits=listUnits, orderNbr=orderNbr)
 
 
 @app.route('/addPart', methods=['GET', 'POST'])
@@ -106,7 +181,7 @@ def part():
             #stmt = "insert into Part(id, partNbr, partDesc, partQuantity, partInStock, 'partDateCreated') values ( :partNbr, :partDesc, :partQuantity, :partInStock)"
             #stmt = "insert into Part(partNbr, partDesc, partSupplier, partQuantity, partInStock, partDateCreated) values (:partNbr, :partDesc, :partSupplier, :partQuantity, :partInStock, :partDateCreated)"
 
-            dtCreated = dt.datetime.now()
+            dtCreated = dt.date.today()
             inStock: bool = True if req['partInStock'] == 'YES' else False  #1=true, 0=false
 
             params = (req['partNbr'], req['partDesc'], req['selectSupplier'], req['partQuantity'], inStock, dtCreated)
@@ -116,7 +191,7 @@ def part():
 
 
     except Exception as e:
-        print(e)
+        print(f'problem in addPart: {e}')
 
     listSupplierNames = utilities.getALLITEMS('supplier', 'SupplierName')
     listUnits = utilities.getALLITEMS('UNIT', 'UnitDesc')
@@ -133,19 +208,21 @@ def testme2():
 
 
 
-@app.route('/api/data/<orderId>', methods=['GET', 'POST'])
-@app.route('/api/data', methods=['GET', 'POST'])
-def data(orderId=None):
+@app.route('/api/data/<orderId>/<dt>', methods=['GET']) #/api/data?orderid=1&dt=28-12-2022
+@app.route('/api/data', methods=['GET'])
+def data(orderId=None, dt=None):
+    orderId = request.args.get('orderId')
+    dt = request.args.get('dt')
     if orderId != None:
         print(f'api/data orderId: {orderId}')
-        utilities.deletePurchaseOrder(orderId)
+        utilities.updateOrderReceivedDate(orderId, dt)
     resultList: list
     resultList = utilities.getALLPurchaseOrders()  # returns a list of a list, so indice 1 = row, indice 2 = col within row, i.e. mylist[0][1]
     mylist: list = []
     alist:list = []
     print("inside api/data")
     for row in resultList:
-        alist = (row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9])
+        alist = (row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11])
         d1 = dict(enumerate(alist))
         mylist.append(d1)
 
@@ -153,6 +230,6 @@ def data(orderId=None):
     #return {'data': mylist} => use this format for datatables.js, dict of lists
     return (mylist) #arry list
 
-@app.route('/tabulator', methods=['GET', 'POST'])
+@app.route('/managePurchaseOrder', methods=['GET', 'POST'])
 def tabulator():
-    return render_template('tabulator.html')
+    return render_template('managePurchaseOrder.html')

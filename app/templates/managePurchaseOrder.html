@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<br><br><br><br><br>
+<div id="example-table"></div>
+
+{% endblock %}
+
+{% block scripts %}
+
+
+<script>
+
+
+var dateEditor = (cell, onClick, success, cancel, editorParams) => {
+   var editor = document.createElement("input");
+   editor.value = cell.getValue();
+
+   var datepicker = flatpickr(editor, {
+     enableTime: true,
+     dateFormat: "d-m-Y",
+     onClose: (selectedDates, dateStr, instance) => {
+       success(dateStr);
+       doit(cell);
+       instance.destroy();
+     },
+     onChange: (selectedDates, dateStr, instance) => {
+       success(dateStr);
+       doit(cell)
+       instance.destroy();
+     },
+   });
+
+   onClick(() => {
+     editor.focus();
+   });
+
+   return editor;
+ };
+
+//custom formatter definition
+var printIcon = function(cell, formatterParams, onrendered){
+    return "<img src=./static/img/printer-16.png>";
+};
+
+
+//Build Tabulator
+var table = new Tabulator("#example-table",
+{
+
+    ajaxURL: "/api/data",
+    height:"311px",
+    layout:"fitData",
+    selectable:true,
+    placeholder:"No Data Set",
+    pagination:"local",
+    paginationSize:6,
+    paginationSizeSelector:[3, 6, 8, 10],
+    movableColumns:false,
+    paginationCounter:"rows",
+    columns:[
+        {title:"purchaserOrderId", field:"0", hozAlign:"center", sorter:"string", visible:false},
+        {title:"orderid", field:"1", hozAlign:"center", sorter:"string", visible:false},
+        {title:"Purchaser", field:"2", hozAlign:"center", sorter:"string", headerFilter:"input", headerFilterPlaceholder:"Find a Purchaser ..."},
+        {title:"Purchaser Department", field:"3", hozAlign:"center", sorter:"string", headerFilter:"input", headerFilterPlaceholder:"Find an Department ..."},
+        {title:"Purchase Order Number", field:"4", hozAlign:"center", sorter:"number", headerFilter:"input", headerFilterPlaceholder:"Find an Purchaser ..."},
+        {title:"Supplier", field:"5", hozAlign:"center", sorter:"string", headerFilter:"input", headerFilterPlaceholder:"Find a Supplier ..."},
+        {title:"Part Number", field:"6", hozAlign:"center", sorter:"string", headerFilter:"input", headerFilterPlaceholder:"Find a Part Number ..."},
+        {title:"Part Description", field:"7", hozAlign:"center", headerFilter:"input", headerFilterPlaceholder:"Find a Part ..."},
+        {title:"Quantity", field:"8", hozAlign:"center", sorter:"number"},
+        {title:"Part Price", field:"9", hozAlign:"center", sorter:"number"},
+        {title:"Total Cost", field:"10", hozAlign:"center", sorter:"number"},
+        //column definition in the columns array
+        //{formatter:"buttonCross", width:40, align:"center", cellClick:function(e, cell){
+        //    cell.getRow().delete()}},
+        //{title:"Delete Row", editor:dateEditor, width:140, align:"center"},
+        //{title:"Order Received Date", field:"10", align:"center", sorter:"date", editor:true},
+        //{title:"Delete Row", editor:dateEditor, width:40, align:"center", cellClick:function(e, cell){doit(e,cell);},},
+        {title:"Order Received Date", field:"11", editor:dateEditor},
+        //{title:"Print", formatter:printIcon, align:"center", cellClick:function(e, cell){printit(e,cell);},},
+        {title:"Print", formatter:"image", formatterParams:{urlPrefix:"./static/img/printer-16", urlSuffix:".png"}, align:"center", cellClick:function(e, cell){printit(e,cell);},},
+        ],
+        });
+
+columns: ['', '', '', '', '', '', '', '', '', '']
+
+
+
+
+
+/*
+
+cellClick:function(e, cell){
+        //e - the click event object
+        //cell - cell component
+    },
+
+
+
+var table = new Tabulator("#example-table", {
+    ajaxURL:"http://www.getmydata.com/now", //ajax URL
+});
+
+//trigger AJAX load on "Load Data via AJAX" button click
+document.getElementById("ajax-trigger").addEventListener("click", function(){
+    table.setData("/api/data");
+});
+
+*/
+
+function doit(cell) {
+    debugger;
+    var row = cell.getRow();
+    var rowData = row.getData();
+    alert("OrderId is: " + rowData["1"]) //id in purchaserOrder table
+    id = rowData["1"]
+    dt = rowData[11] //date col
+    //var row = table.getSelectedData(); //get array of currently selected data.
+    //var cell = row.getCell("1");
+    //var cellValue = cell.getValue();
+    //alert("orderid: " + cellvalue)
+    //cell.getRow().delete();
+    //console.log("delete row done");
+    //alert("datetimepicker");
+    URL = "/api/data?orderId=" + id + "&dt=" + dt;
+    table.setData(URL);
+
+
+}
+
+function printit(cell)
+{
+    alert("print it");
+}
+
+
+</script>
+{% endblock %}

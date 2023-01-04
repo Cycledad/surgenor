@@ -15,18 +15,18 @@
 var dateEditor = (cell, onClick, success, cancel, editorParams) => {
    var editor = document.createElement("input");
    editor.value = cell.getValue();
-
+   debugger;
    var datepicker = flatpickr(editor, {
      enableTime: true,
-     dateFormat: "d-m-Y",
+     dateFormat: "Y-m-d",
      onClose: (selectedDates, dateStr, instance) => {
        success(dateStr);
-       doit(cell);
+       updateDate(cell);
        instance.destroy();
      },
      onChange: (selectedDates, dateStr, instance) => {
        success(dateStr);
-       doit(cell)
+       updateDate(cell)
        instance.destroy();
      },
    });
@@ -37,6 +37,30 @@ var dateEditor = (cell, onClick, success, cancel, editorParams) => {
 
    return editor;
  };
+
+var updateQuantity = (cell) =>
+{
+    alert("say it");
+    debugger;
+    var row = cell.getRow();
+    var rowData = row.getData();
+    alert("OrderId is: " + rowData["1"]) //id in purchaserOrder table
+    id = rowData["1"];
+    returnQuantity = rowData[13];
+    if (isNaN(returnQuantity)){
+        alert("Not a number!!");
+    }
+    else {
+        quantityOrdered = rowData[8];
+        if (returnQuantity > quantityOrdered) {
+            alert("Quantity returned can not exceed quantity ordered!");
+        }
+        else {
+            URL = "/api/data?orderId=" + id + "&quantity=" + returnQuantity;
+            table.setData(URL);
+        };
+    };
+};
 
 //custom formatter definition
 var printIcon = function(cell, formatterParams, onrendered){
@@ -56,8 +80,12 @@ var table = new Tabulator("#example-table",
     pagination:"local",
     paginationSize:6,
     paginationSizeSelector:[3, 6, 8, 10],
-    movableColumns:false,
+    movableColumns:true,
     paginationCounter:"rows",
+     initialSort:[
+        {column: "4", dir:"desc"}, //sort by Purchase Order Number desc, most recent orders first
+
+    ],
     columns:[
         {title:"purchaserOrderId", field:"0", hozAlign:"center", sorter:"string", visible:false},
         {title:"orderid", field:"1", hozAlign:"center", sorter:"string", visible:false},
@@ -77,6 +105,9 @@ var table = new Tabulator("#example-table",
         //{title:"Order Received Date", field:"10", align:"center", sorter:"date", editor:true},
         //{title:"Delete Row", editor:dateEditor, width:40, align:"center", cellClick:function(e, cell){doit(e,cell);},},
         {title:"Order Received Date", field:"11", editor:dateEditor},
+        {title:"Order Return Date", field:"12", editor:dateEditor},
+        //{title:"Order Return Quantity", field:"13", hozAlign:"center", sorter:"number", editor:true},
+        {title:"Order Return Quantity", field:"13", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateQuantity},
         //{title:"Print", formatter:printIcon, align:"center", cellClick:function(e, cell){printit(e,cell);},},
         {title:"Print", formatter:"image", formatterParams:{urlPrefix:"./static/img/printer-16", urlSuffix:".png"}, align:"center", cellClick:function(e, cell){printit(e,cell);},},
         ],
@@ -108,21 +139,15 @@ document.getElementById("ajax-trigger").addEventListener("click", function(){
 
 */
 
-function doit(cell) {
+function updateDate(cell) {
     debugger;
     var row = cell.getRow();
     var rowData = row.getData();
     alert("OrderId is: " + rowData["1"]) //id in purchaserOrder table
     id = rowData["1"]
-    dt = rowData[11] //date col
-    //var row = table.getSelectedData(); //get array of currently selected data.
-    //var cell = row.getCell("1");
-    //var cellValue = cell.getValue();
-    //alert("orderid: " + cellvalue)
-    //cell.getRow().delete();
-    //console.log("delete row done");
-    //alert("datetimepicker");
-    URL = "/api/data?orderId=" + id + "&dt=" + dt;
+    dt_order_received = rowData[11] //date order received col
+    dt_order_returned = rowData[12] //date order returned col
+    URL = "/api/data?orderId=" + id + "&dt_order_received=" + dt_order_received + "&dt_order_returned=" + dt_order_returned
     table.setData(URL);
 
 
@@ -132,6 +157,7 @@ function printit(cell)
 {
     alert("print it");
 }
+
 
 
 </script>

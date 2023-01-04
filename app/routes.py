@@ -20,13 +20,13 @@ def addPurchaser():
     try:
         if request.method == "POST":
             req = request.form
-            deptName = req['deptName']
-            active = req['deptActive']
+            name = req['pName']
+            active = True if req['pActive'] == 'YES' else False  # 1=true, 0=false
+            deptName = req['selectDepartment']
             dateCreated = dt.date.today()
-            parms =(deptName, active, dateCreated)
-            utilities.insertDepartment(parms)
-
-
+            deptId = utilities.getDepartmentId(deptName)
+            parms =(name, deptId, active, dateCreated)
+            utilities.insertPurchaser(parms)
 
 
     except Exception as e:
@@ -43,12 +43,10 @@ def addDepartment():
         if request.method == "POST":
             req = request.form
             deptName = req['deptName']
-            active = req['deptActive']
+            active = True if req['deptActive'] == 'YES' else False  # 1=true, 0=false
             dateCreated = dt.date.today()
             parms =(deptName, active, dateCreated)
             utilities.insertDepartment(parms)
-
-
 
 
     except Exception as e:
@@ -107,10 +105,11 @@ def addOrder():
 
             #1st update the purchaseOrder table then update the order table
             purchaseOrderNbr = resultList[0]
-            aList = utilities.getPurchaserId(resultList[1])
+            purchaserName = resultList[1]
+            aList = utilities.getPurchaserId(purchaserName)
             purchaserId = aList[0]
-            purchaserDeptNbr = aList[1]
-            utilities.insertPurchaseOrder(purchaseOrderNbr, purchaserId, purchaserDeptNbr)
+            purchaserDeptId = utilities.getPurchaserDeptId(purchaserName)
+            utilities.insertPurchaseOrder(purchaseOrderNbr, purchaserId, purchaserDeptId)
 
 
             #resultList minus 3 gives total nbr of order items, less PONbr and purchaser
@@ -208,21 +207,24 @@ def testme2():
 
 
 
-@app.route('/api/data/<orderId>/<dt>', methods=['GET']) #/api/data?orderid=1&dt=28-12-2022
+@app.route('/api/data/<orderId>/<quantity>', methods=['GET'])
+@app.route('/api/data/<orderId>/<dt_order_received>/<dt_order_returned>', methods=['GET']) #/api/data?orderid=1&dt=28-12-2022
 @app.route('/api/data', methods=['GET'])
-def data(orderId=None, dt=None):
+def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=None):
     orderId = request.args.get('orderId')
-    dt = request.args.get('dt')
-    if orderId != None:
-        print(f'api/data orderId: {orderId}')
-        utilities.updateOrderReceivedDate(orderId, dt)
+    dt_order_received = request.args.get('dt_order_received')
+    dt_order_returned = request.args.get('dt_order_returned')
+    quantity = request.args.get('quantity')
+    if orderId != None and (dt_order_received or dt_order_returned):
+        utilities.updateOrderReceivedDate(orderId, dt_order_received, dt_order_returned)
+    if orderId != None and (quantity):
+        utilities.updateOrderReturnQuantity(orderId, quantity)
     resultList: list
     resultList = utilities.getALLPurchaseOrders()  # returns a list of a list, so indice 1 = row, indice 2 = col within row, i.e. mylist[0][1]
     mylist: list = []
     alist:list = []
-    print("inside api/data")
     for row in resultList:
-        alist = (row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11])
+        alist = (row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13])
         d1 = dict(enumerate(alist))
         mylist.append(d1)
 

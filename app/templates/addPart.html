@@ -17,12 +17,11 @@
         <div class="form-group">
             <label for="partQuantity">Supplier:</label>
         </div>
-
         <div class="form-group">
             <select name="selectSupplier" id="selectSupplier" class=form-control required>
                 <option value="">--Please select a supplier--</option>
                 {% for supplier in listSupplierNames: %}
-                    <option value={{supplier}}>{{supplier}}</option>
+                    <option value='{{supplier}}'>{{supplier}}</option>
                 {% endfor %}
             </select>
         </div>

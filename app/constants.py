@@ -3,6 +3,4 @@ RELOAD_DATABASE:bool = False
 
 
 
-
-
 #sqlite:///site.db

@@ -4,9 +4,16 @@ import os
 
 try:
     from flask import Flask
+    from flask_bcrypt import Bcrypt
+
     #from flask_sqlalchemy import SQLAlchemy
 
     app = Flask(__name__)
+
+    bcrypt = Bcrypt(app)
+    app.config['SECRET_KEY'] = '5791628bb0b13ce0c676dfde280ba245xxx'
+
+
 
     #from app.constants import DATABASE_NAME
     import app.constants as constants

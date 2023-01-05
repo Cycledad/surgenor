@@ -149,11 +149,11 @@ CREATE TABLE Unit (
 	unitDesc TEXT NOT NULL,
 	PRIMARY KEY ("id" AUTOINCREMENT)
 );
-/*
+
 INSERT INTO Unit(unitDesc) values('KG');
 INSERT INTO Unit(unitDesc) values('POUNDS');
 INSERT INTO Unit(unitDesc) values('PIECES');
-*/
+
 
 DROP TABLE IF EXISTS OrderNbrTbl;
 CREATE TABLE OrderNbrTbl (
@@ -177,6 +177,16 @@ INSERT INTO Department(deptName, dateCreated, active) values('Admin', '28012022'
 INSERT INTO Department(deptName, dateCreated, active) values('Parts', '28012022', true);
 INSERT INTO Department(deptName, dateCreated, active) values('Sales', '28012022', true);
 */
+
+drop table if exists User;
+CREATE TABLE User (
+	id	INTEGER,
+	username	TEXT NOT NULL UNIQUE,
+	password	TEXT NOT NULL UNIQUE,
+	createDate	TEXT,
+	active	BOOLEAN,
+	securityLevel integer,
+	PRIMARY KEY("id" AUTOINCREMENT));
 
 PRAGMA foreign_keys = ON;
 PRAGMA foreign_keys;

@@ -87,7 +87,7 @@ def getUnitId(desc:str) -> int:
 def getALLUnitDesc() -> list:
 
     try:
-        row: list = None
+        row: list = []
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
@@ -109,13 +109,13 @@ def getALLUnitDesc() -> list:
 def getPartId(Desc: str) -> int:
 
         try:
-            row: int = None
+            row: list = []
 
             db = getDatabase(constants.DATABASE_NAME)
             conn = getConnection(db)
             cur = conn.cursor()
             parm = (Desc,)
-            stmt = 'select Id from Part where partNbr = ?'
+            stmt = 'select Id from Part where partNbr = ? and partInStock is True'
             cur.execute(stmt, parm)
             row = cur.fetchone()
 
@@ -130,12 +130,12 @@ def getPartId(Desc: str) -> int:
 def getSupplierName(id:int) -> str:
 
     try:
-        row: str = None
+        row: list = []
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
         parm=(id,)
-        stmt = 'select supplierName from supplier where id = ?'
+        stmt = 'select supplierName from supplier where id = ? and supplierActive is True'
         #cur.execute('select unitDesc from unit where id = ?', parm)
         cur.execute(stmt, parm)
         row= cur.fetchone()
@@ -175,13 +175,13 @@ def getPurchaserId(name: str) -> int:
         conn = getConnection(db)
         cur = conn.cursor()
         parm=(name,)
-        stmt = 'select Id from purchaser where purchaserName = ?'
+        stmt = 'select Id from purchaser where purchaserName = ? and purchaserActive is True'
         #cur.execute('select unitDesc from unit where id = ?', parm)
         cur.execute(stmt, parm)
         row = cur.fetchone()
         cur.close()
         conn.close()
-        return(row)
+        return(row[0])
 
 
     except Exception as e:
@@ -197,7 +197,7 @@ def getPurchaserDeptId(purchaserName: str) -> int:
         conn = getConnection(db)
         cur = conn.cursor()
         parm=(purchaserName,)
-        stmt = 'select purchaserDeptId from purchaser where purchaserName = ?'
+        stmt = 'select purchaserDeptId from purchaser where purchaserName = ? and purchaserActive is True'
         #cur.execute('select unitDesc from unit where id = ?', parm)
         cur.execute(stmt, parm)
         row = cur.fetchone()
@@ -220,7 +220,7 @@ def getSupplierId(Name: str) -> int:
         conn = getConnection(db)
         cur = conn.cursor()
         parm=(Name,)
-        stmt = 'select Id from supplier where supplierName = ?'
+        stmt = 'select Id from supplier where supplierName = ? and supplierActive is True'
         #cur.execute('select unitDesc from unit where id = ?', parm)
         cur.execute(stmt, parm)
         row = cur.fetchone()
@@ -239,19 +239,21 @@ def getALLSupplierName() -> list:
 
     try:
         row: list = []
+        myList: list = []
 
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
         #parm=(Name,)
-        stmt = 'select supplierName from supplier'
+        stmt = 'select distinct supplierName from supplier where supplierActive is True'
         #cur.execute('select unitDesc from unit where id = ?', parm)
         cur.execute(stmt)
         row = cur.fetchall()
-        row = list(row)
+        for r in row:
+            myList.append(r[0])
         cur.close()
         conn.close()
-        return(row)
+        return(myList)
 
 
     except Exception as e:
@@ -293,12 +295,12 @@ def insertDepartment(parms):
 
 def getDepartmentId(deptName: str) -> int:
     try:
-        id: int
+        id: list = []
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
         parm = (deptName,)
-        stmt = 'select Id from department where deptName = ?'
+        stmt = 'select Id from department where deptName = ? and active is True'
         cur.execute(stmt, parm)
         id = cur.fetchone()
         cur.close()
@@ -314,19 +316,21 @@ def getDepartmentId(deptName: str) -> int:
 
 def getALLDepartmentNames()-> list:
     try:
+        row: list = []
+        myList: list = []
+
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
         stmt = 'select deptName from Department where active is True'
         cur.execute(stmt)
         row = cur.fetchall()
-        mylist: list = []
-        for r in range(0, len(row)):
-            mylist.append(row[r][0])
+        for r in row:
+            myList.append(r[0])
         cur.close()
         conn.close()
 
-        return (mylist)
+        return (myList)
 
 
     except Exception as e:
@@ -338,7 +342,7 @@ def getALLDepartmentNames()-> list:
 def getTableItemById(id:int, tableName: str, colName: str) -> str:
 
     try:
-        row: str = None
+        row: list = []
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
@@ -381,19 +385,44 @@ def insertPart(parms):
 def getALLPartDesc() -> list:
 
     try:
-        row: list = None
+        row: list = []
+        myList: list = []
 
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        stmt = 'select partDesc from part'
+        stmt = 'select partDesc from part where partInStock is True'
         cur.execute(stmt)
         row = cur.fetchall()
-        row = list(row)
+        for r in row:
+            myList.append(r[0])
         cur.close()
         conn.close()
 
-        return(row)
+        return(myList)
+
+
+    except Exception as e:
+        print(f'problem in getALLPartDesc: {e}')
+
+def getALLPartNbr() -> list:
+
+    try:
+        row: list = []
+        myList:list = []
+
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        stmt = 'select partNbr from part where partInStock is True'
+        cur.execute(stmt)
+        row = cur.fetchall()
+        for r in row:
+            myList.append(r[0])
+        cur.close()
+        conn.close()
+
+        return(myList)
 
 
     except Exception as e:
@@ -402,19 +431,21 @@ def getALLPartDesc() -> list:
 def getALLPurchasers() -> list:
 
     try:
-        row: list = None
+        row: list = []
+        myList: list = []
 
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        stmt = 'select purchaserName from purchaser'
+        stmt = 'select purchaserName from purchaser where purchaserActive is True'
         cur.execute(stmt)
         row = cur.fetchall()
-        row = list(row)
+        for r in row:
+            myList.append(r[0])
         cur.close()
         conn.close()
 
-        return(row)
+        return(myList)
 
 
     except Exception as e:
@@ -423,7 +454,8 @@ def getALLPurchasers() -> list:
 def getALLITEMS(tblName: str, colName: str) -> list:
 
     try:
-        row: list = None
+        row: list = []
+        mylist: list = []
 
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
@@ -432,7 +464,6 @@ def getALLITEMS(tblName: str, colName: str) -> list:
         stmt = f'select {colName} from {tblName}'
         cur.execute(stmt)
         row = cur.fetchall()
-        mylist: list = []
         for r in row:
             mylist.append(r[0])
 
@@ -518,7 +549,7 @@ def insertPurchaseOrder(purchaseOrderNbr: int, purchaserId: int, purchaserDept: 
         conn = getConnection(db)
         cur = conn.cursor()
         orderDt = datetime.datetime.now()
-        receivedDt = None
+        receivedDt = ''
         deleteFlg = False
         parms =(orderDt, receivedDt, deleteFlg, purchaseOrderNbr, purchaserId, purchaserDept)
         stmt = 'INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderpurchaserId, purchaseOrderPurchaserDeptId) values (?, ?, ?, ?, ?, ?)'
@@ -537,7 +568,7 @@ def insertPurchaseOrder(purchaseOrderNbr: int, purchaserId: int, purchaserDept: 
 def getALLPurchaseOrders() -> list:
 
     try:
-        row: list = None
+        row: list = []
 
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
@@ -546,13 +577,10 @@ def getALLPurchaseOrders() -> list:
         stmt = 'select p.id, o.id, purchaser.purchaserName, deptName, orderNbr,s.supplierName,part.partNbr,part.partDesc,o.OrderQuantity,o.OrderPartPrice,o.OrderTotalCost, o.orderReceivedDate, o.orderReturnDate, o.orderReturnQuantity from purchaseOrder p, OrderTbl o, supplier s, Part, Purchaser, Department where p.purchaseOrderNbr = o.orderNbr AND o.OrderSupplierId = s.id and o.OrderPartId = part.id and Purchaser.id = p.purchaseOrderPurchaserId and purchaserDeptid = department.id'
         cur.execute(stmt)
         row = cur.fetchall()
-        mylist: list = []
-        for r in row:
-            mylist.append(r)
-
         cur.close()
         conn.close()
-        return(mylist)
+        return(row)
+
     except Exception as e:
         print(f'problem in getALLPurchaseOrders: {e}')
 
@@ -663,3 +691,99 @@ def updateOrderReturnQuantity(id:int, quantity: int) -> None:
     except Exception as e:
         print(f'problem in updateOrderQuantity: {e}')
 
+def registerUser(username: str, hashed_pw:int) -> None:
+    try:
+
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        createdate = datetime.datetime.now()
+        active = True
+        securityLevel = 0
+        parm = (username, hashed_pw, createdate, active, securityLevel)
+        stmt = "insert into user (username, password, createDate, active, securityLevel) values(?, ?, ?, ?, ?)"
+        cur.execute(stmt, parm)
+        conn.commit()
+        cur.close()
+
+        return()
+
+    except Exception as e:
+        print(f'problem in updateOrderQuantity: {e}')
+
+
+
+def getPassword(username: str) -> str:
+    try:
+
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        parm = (username,)
+        stmt = "select password from user where username = ? and active is True"
+        cur.execute(stmt, parm)
+        pw = cur.fetchone()
+
+        cur.close()
+
+        return(pw[0])
+
+    except Exception as e:
+        print(f'problem in getPassword: {e}')
+
+def getUserSecurityLevel(username: str) -> int:
+    try:
+
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        parm = (username,)
+        stmt = "select securityLevel from user where username = ? and active is True"
+        cur.execute(stmt, parm)
+        level = cur.fetchone()
+        conn.commit()
+        cur.close()
+
+        return(level[0])
+
+    except Exception as e:
+        print(f'problem in getUserSecurityLevel: {e}')
+
+def getUserRegistered(username: str) -> bool:
+    try:
+        exists: bool = False
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        parm = (username,)
+        stmt = "select username from user where username = ? and active is True"
+        cur.execute(stmt, parm)
+        user = cur.fetchone()
+        conn.commit()
+        cur.close()
+        if user != None:
+            exists = True
+
+        return(exists)
+
+    except Exception as e:
+        print(f'problem in getUserRegistered: {e}')
+
+
+def getTable(tableName:str) -> list:
+    try:
+
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        parm = (tableName,)
+        stmt = f"select id, deptName, dateCreated, active from {tableName}"
+        cur.execute(stmt)
+        rows = cur.fetchall()
+        rows = list(rows)
+        conn.commit()
+        cur.close()
+        return(rows)
+
+    except Exception as e:
+        print(f'problem in getTable: {e}')

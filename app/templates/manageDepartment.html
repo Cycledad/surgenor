@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<br><br><br><br><br>
-<div id="example-table"></div>
+
+<div id="manageDepartment-table"></div>
 
 {% endblock %}
 
@@ -70,10 +70,10 @@ var printIcon = function(cell, formatterParams, onrendered){
 
 
 //Build Tabulator
-var table = new Tabulator("#example-table",
+var table = new Tabulator("#manageDepartment-table",
 {
 
-    ajaxURL: "/api/data",
+    ajaxURL: "/api/data/manageDepartment",
     height:"311px",
     layout:"fitData",
     selectable:true,
@@ -84,37 +84,28 @@ var table = new Tabulator("#example-table",
     movableColumns:true,
     paginationCounter:"rows",
      initialSort:[
-        {column: "4", dir:"desc"}, //sort by Purchase Order Number desc, most recent orders first
+        {column: "1", dir:"asc"}, //sort by Department name, ascending
 
     ],
     columns:[
-        {title:"purchaserOrderId", field:"0", hozAlign:"center", sorter:"string", visible:false},
-        {title:"orderid", field:"1", hozAlign:"center", sorter:"string", visible:false},
-        {title:"Purchaser", field:"2", hozAlign:"center", sorter:"string", headerFilter:"input", headerFilterPlaceholder:"Find a Purchaser ..."},
-        {title:"Purchaser Department", field:"3", hozAlign:"center", sorter:"string", headerFilter:"input", headerFilterPlaceholder:"Find an Department ..."},
-        {title:"Purchase Order Number", field:"4", hozAlign:"center", sorter:"number", headerFilter:"input", headerFilterPlaceholder:"Find an Purchaser ..."},
-        {title:"Supplier", field:"5", hozAlign:"center", sorter:"string", headerFilter:"input", headerFilterPlaceholder:"Find a Supplier ..."},
-        {title:"Part Number", field:"6", hozAlign:"center", sorter:"string", headerFilter:"input", headerFilterPlaceholder:"Find a Part Number ..."},
-        {title:"Part Description", field:"7", hozAlign:"center", headerFilter:"input", headerFilterPlaceholder:"Find a Part ..."},
-        {title:"Quantity", field:"8", hozAlign:"center", sorter:"number"},
-        {title:"Part Price", field:"9", hozAlign:"center", sorter:"number"},
-        {title:"Total Cost", field:"10", hozAlign:"center", sorter:"number"},
+        {title:"id", field:"0", hozAlign:"center", sorter:"string", visible:false},
+        {title:"deptName", field:"1", hozAlign:"center", sorter:"string", visible:true, editor:true, headerFilter:"input", headerFilterPlaceholder:"Find a Department ..."},
+        {title:"dateCreated", field:"2", hozAlign:"center", sorter:"date", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Date Created ..."},
+        {title:"active", field:"3", hozAlign:"center", sorter:"string", editor:true, headerFilter:"input", headerFilterPlaceholder:"Find Active Departments ..."},
         //column definition in the columns array
         //{formatter:"buttonCross", width:40, align:"center", cellClick:function(e, cell){
         //    cell.getRow().delete()}},
-        //{title:"Delete Row", editor:dateEditor, width:140, align:"center"},
+        {title:"Delete Row", editor:dateEditor, width:140, align:"center", cellClick:function(e, cell){deleteit(e,cell);},},
         //{title:"Order Received Date", field:"10", align:"center", sorter:"date", editor:true},
         //{title:"Delete Row", editor:dateEditor, width:40, align:"center", cellClick:function(e, cell){doit(e,cell);},},
-        {title:"Order Received Date", field:"11", editor:dateEditor},
-        {title:"Order Return Date", field:"12", editor:dateEditor},
         //{title:"Order Return Quantity", field:"13", hozAlign:"center", sorter:"number", editor:true},
-        {title:"Order Return Quantity", field:"13", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateQuantity},
+        //{title:"Order Return Quantity", field:"13", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateQuantity},
         //{title:"Print", formatter:printIcon, align:"center", cellClick:function(e, cell){printit(e,cell);},},
-        {title:"Print", formatter:"image", formatterParams:{urlPrefix:"./static/img/printer-16", urlSuffix:".png"}, align:"center", cellClick:function(e, cell){printit(e,cell);},},
+        //{title:"Print", formatter:"image", formatterParams:{urlPrefix:"./static/img/printer-16", urlSuffix:".png"}, align:"center", cellClick:function(e, cell){printit(e,cell);},},
         ],
         });
 
-columns: ['', '', '', '', '', '', '', '', '', '']
+columns: ['', '', '', '', '']
 
 
 
@@ -159,7 +150,10 @@ function printit(cell)
     alert("print it");
 }
 
-
+function deleteit(cell)
+{
+    alert("print it");
+}
 
 </script>
 {% endblock %}

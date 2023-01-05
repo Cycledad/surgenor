@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'AdminBase.html' %}
 
 {% block content %}
 <br><br>
@@ -7,12 +7,12 @@
 <form action="#" method="post">
 
   <div class="form-group">
-    <label for="pName">Purchaser Name</label>
+    <label for="pName">Purchaser Name:</label>
     <input type="text" class='form-control' name="pName" id="pName" required/>
   </div>
 
-  <div class="form-group">
-    <label for="selectpurchaser">Purchaser Department</label>
+  <div class="form-group mt-3">
+    <label for="selectpurchaser">Purchaser Department:</label>
     <select name="selectDepartment" id="selectDepartment" class=form-control required>
       <option value="">--Please select a purchaser department--</option>
         {% for deptNames in listDeptNames: %}
@@ -21,17 +21,17 @@
       </select>
   </div>
 
-  <div class="form-group">
+  <div class="form-group mt-3">
     <label for="pActive">Purchaser active:</label>
-    <input type="radio" class='form-control' id='pActive1' name="pActive" value="YES" required> YES
-    <input type="radio" class='form-control' id='pActive2' name="pActive" value="NO" required> NO
+    <p>
+      <input type="radio" class='form-check-input' id='pActive1' name="pActive" value="YES" required> YES
+      <input type="radio" class='form-check-input' id='pActive2' name="pActive" value="NO" required> NO
+    </p>
   </div>
 
 
 
-  <div class="form-group">
-        <button class="btn btn-default" type="submit">lets post back</button>
-    </div>
+  <button type="submit" class="btn btn-primary mt-4 bg-steel">Submit</button>
 </form>
 
 {% endblock content %}

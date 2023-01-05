@@ -1,7 +1,7 @@
 import datetime
 
-from app import app
-from flask import render_template, request, redirect
+from app import app, bcrypt
+from flask import render_template, request, redirect, url_for, flash, session
 import datetime as dt
 from app import utilities
 import json
@@ -12,12 +12,26 @@ import json
 
 @app.route('/home')
 def home():
+    try:
+        '''
+        if session.get('loggedOn', None)  == None:
+            flash('Please login!', 'danger' )
+            return redirect(url_for('login'))
+        '''
+
+    except Exception as e:
+        print(f'problem in home: {e}')
+
     return render_template('home.html')
 
 @app.route('/addPurchaser', methods=['GET', 'POST'])
 def addPurchaser():
 
     try:
+        if session.get('loggedOn', None)  == None:
+            flash('Please login!', 'danger' )
+            return redirect(url_for('login'))
+
         if request.method == "POST":
             req = request.form
             name = req['pName']
@@ -40,6 +54,10 @@ def addPurchaser():
 def addDepartment():
 
     try:
+        if session.get('loggedOn', None)  == None:
+            flash('Please login!', 'danger' )
+            return redirect(url_for('login'))
+
         if request.method == "POST":
             req = request.form
             deptName = req['deptName']
@@ -59,6 +77,10 @@ def addDepartment():
 def addSupplier():
 
     try:
+        if session.get('loggedOn', None)  == None:
+            flash('Please login!', 'danger' )
+            return redirect(url_for('login'))
+
         if request.method == "POST":
             req = request.form
             supplierName = req['supplierName']
@@ -98,6 +120,10 @@ def listPurchaseOrder():
 def addOrder():
 
     try:
+        if session.get('loggedOn', None)  == None:
+            flash('Please login!', 'danger' )
+            return redirect(url_for('login'))
+
         if request.method == "POST":
             req = request.form
             print(f'This is a request - {req}')
@@ -106,8 +132,7 @@ def addOrder():
             #1st update the purchaseOrder table then update the order table
             purchaseOrderNbr = resultList[0]
             purchaserName = resultList[1]
-            aList = utilities.getPurchaserId(purchaserName)
-            purchaserId = aList[0]
+            purchaserId = utilities.getPurchaserId(purchaserName)
             purchaserDeptId = utilities.getPurchaserDeptId(purchaserName)
             utilities.insertPurchaseOrder(purchaseOrderNbr, purchaserId, purchaserDeptId)
 
@@ -152,18 +177,25 @@ def addOrder():
 
     orderNbr = utilities.getMaxOrderNbr() + 1
 
-    listPurchaserName = utilities.getALLITEMS('purchaser', 'purchaserName')
-    listPartDesc = utilities.getALLITEMS('part', 'partDesc')
-    listPartNbr = utilities.getALLITEMS('part', 'partNbr')
-    listSupplierNames = utilities.getALLITEMS('supplier', 'SupplierName')
+    listPurchaserName = utilities.getALLPurchasers()
+    #listPurchaserName = utilities.getALLITEMS('purchaser', 'purchaserName')
+    listPartDesc = utilities.getALLPartDesc()
+    #listPartDesc = utilities.getALLITEMS('part', 'partDesc')
+    listPartNbr = utilities.getALLPartNbr()
+    #listPartNbr = utilities.getALLITEMS('part', 'partNbr')
+    listSupplierNames = utilities.getALLSupplierName()
+    #listSupplierNames = utilities.getALLITEMS('supplier', 'SupplierName')
     listUnits = utilities.getALLITEMS('UNIT', 'UnitDesc')
     return render_template('addOrder.html', listPartDesc=listPartDesc, listPartNbr=listPartNbr, listPurchaserName=listPurchaserName, listSupplierNames=listSupplierNames, listUnits=listUnits, orderNbr=orderNbr)
 
 
 @app.route('/addPart', methods=['GET', 'POST'])
-def part():
+def addPart():
 
     try:
+        if session.get('loggedOn', None)  == None:
+            flash('Please login!', 'danger' )
+            return redirect(url_for('login'))
 
         if request.method == 'POST':
             req = request.form
@@ -194,7 +226,8 @@ def part():
 
     listSupplierNames = utilities.getALLITEMS('supplier', 'SupplierName')
     listUnits = utilities.getALLITEMS('UNIT', 'UnitDesc')
-    listPurchaserName = utilities.getALLITEMS('purchaser', 'purchaserName')
+    listPurchaserName = utilities.getALLPurchasers()
+        #.getALLITEMS('purchaser', 'purchaserName')
 
 
     return render_template('addPart.html', listSupplierNames=listSupplierNames, listUnits=listUnits, listPurchaserName=listPurchaserName)
@@ -202,8 +235,111 @@ def part():
 
 
 @app.route('/testme', methods=['GET', 'POST'])
-def testme2():
-    return render_template('testme2.html')
+def testme():
+    return render_template('xxx.html')
+
+@app.route('/adminHome')
+def adminHome():
+    try:
+        if session.get('loggedOn', None) == None:
+            flash('Please login!', 'danger')
+            return redirect(url_for('login'))
+
+    except Exception as e:
+        print(f'problem in adminHome: {e}')
+
+    return render_template('AdminBase.html')
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    try:
+        if not session.get('loggedOn', None) == None :
+            flash('You are aready looged in!', 'info')
+            return redirect(url_for('home'))
+
+        if request.method == 'POST':
+            req = request.form
+            username = req['username']
+            pw = req['password']
+            registered = utilities.getUserRegistered(username)
+            if not registered:
+                flash('You are not registered as a user, please register', 'danger')
+                return redirect(url_for('register'))
+            else:
+                # hashed_pw = bcrypt.generate_password_hash(pw).decode('utf-8')
+                hashed_pw = utilities.getPassword(username)
+                # TO COMPARE PASSWORD FOR VALIDITY
+                pw_check = bcrypt.check_password_hash(hashed_pw, pw)
+                if not pw_check:
+                    flash('Invalid password entered!', 'Danger')
+                    return redirect(url_for('login'))
+                else:
+                    session['loggedOn'] = True
+                    session['securityLevel'] = utilities.getUserSecurityLevel(username)
+                    return redirect(url_for('home'))
+
+    except Exception as e:
+        print(f'problem in login: {e}')
+
+    return render_template('login.html')  #passed user and password validation
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+
+    try:
+
+        if not session.get('loggedOn', None) == None :
+            flash('You are aready looged in!', 'info')
+            return redirect(url_for('home'))
+
+        if request.method == 'POST':
+            req = request.form
+            username = req['username']
+            pw = req['password']
+            hashed_pw = bcrypt.generate_password_hash(pw).decode('utf-8')
+            #TO COMPARE PASSWORD FOR VALIDITY
+            pw_check = bcrypt.check_password_hash(hashed_pw, pw)
+            registered = utilities.getUserRegistered(username)
+            if registered:
+                flash('Username already exists, please try again!', 'danger')
+                #return redirect(url_for('login'))
+            else:
+                utilities.registerUser(username, hashed_pw)
+                flash('You have been registered, please login', 'success')
+                return redirect(url_for('login'))
+
+    except Exception as e:
+        print(f'problem in register: {e}')
+
+
+    return render_template('register.html')
+
+@app.route('/api/data/manageDepartment', methods=['GET'])
+def apimanageDepartment():
+    myList: list = []
+    aList: list = []
+    resultList = utilities.getTable('Department')
+    for row in resultList:
+        aList = (row[0], row[1], row[2], row[3])
+        d1 = dict(enumerate(aList))
+        myList.append(d1)
+    return(myList)
+
+@app.route('/manageDepartment')
+def manageDepartment():
+    try:
+        '''
+        if session.get('loggedOn', None) == None:
+            flash('Please login!', 'danger')
+            return redirect(url_for('login'))
+        '''
+
+    except Exception as e:
+        print(f'problem in manageDepartment: {e}')
+
+    return render_template('manageDepartment.html')
 
 
 
@@ -219,7 +355,6 @@ def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=
         utilities.updateOrderReceivedDate(orderId, dt_order_received, dt_order_returned)
     if orderId != None and (quantity):
         utilities.updateOrderReturnQuantity(orderId, quantity)
-    resultList: list
     resultList = utilities.getALLPurchaseOrders()  # returns a list of a list, so indice 1 = row, indice 2 = col within row, i.e. mylist[0][1]
     mylist: list = []
     alist:list = []
@@ -233,5 +368,20 @@ def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=
     return (mylist) #arry list
 
 @app.route('/managePurchaseOrder', methods=['GET', 'POST'])
-def tabulator():
+def managePurchaseOrder():
+    try:
+        '''
+        if session.get('loggedOn', None) == None:
+            flash('Please login!', 'danger')
+            return redirect(url_for('login'))
+        '''
+    except Exception as e:
+        print(f'problem in managePurchaseOrder: {e}')
+
     return render_template('managePurchaseOrder.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('loggedOn')
+    session.pop('securityLevel')
+    return redirect(url_for('home'))

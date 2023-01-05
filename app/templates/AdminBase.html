@@ -20,9 +20,9 @@
 
 
     {% if title %}
-        <title>List Purchase Orders - {{ title }}</title>
+        <title>Admin - {{ title }}</title>
     {% else %}
-        <title>List Purchase Order</title>
+        <title>Admin</title>
     {% endif %}
 </head>
 <body>
@@ -45,7 +45,42 @@
                         <li><a class="dropdown-item" href="{{url_for('managePurchaseOrder')}}">Manage</a></li>
                       </ul>
                     </li>
-                  <a class="nav-item nav-link" href="{{url_for('adminHome')}}">Admin</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                          Purchaser
+                        </a>
+                        <ul class="dropdown-menu">
+                          <li><a class="dropdown-item" href="{{url_for('addPurchaser')}}">Create</a></li>
+                          <li><a class="dropdown-item" href="#">Manage</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                          Department
+                        </a>
+                        <ul class="dropdown-menu">
+                          <li><a class="dropdown-item" href="{{url_for('addDepartment')}}">Create</a></li>
+                          <li><a class="dropdown-item" href="#">Manage</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Parts
+                          </a>
+                          <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{url_for('addPart')}}">Create</a></li>
+                            <li><a class="dropdown-item" href="#">Manage</a></li>
+                          </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                              Supplier
+                            </a>
+                            <ul class="dropdown-menu">
+                              <li><a class="dropdown-item" href="{{url_for('addSupplier')}}">Create</a></li>
+                              <li><a class="dropdown-item" href="#">Manage</a></li>
+                            </ul>
+                    </li>
                 </div>
 
               </div>
@@ -57,6 +92,7 @@
                     <a class="nav-item nav-link" href="{{ url_for('login') }}">Login</a>
                     <a class="nav-item nav-link" href="{{ url_for('register') }}">Register</a>
                 {% endif %}
+
               </div>
             </div>
       </nav>
@@ -97,4 +133,4 @@
 
     {% endblock %}
 </body>
-</html>
+</html>l>

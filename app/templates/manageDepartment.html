@@ -15,18 +15,18 @@
 var dateEditor = (cell, onClick, success, cancel, editorParams) => {
    var editor = document.createElement("input");
    editor.value = cell.getValue();
-   debugger;
+   //debugger;
    var datepicker = flatpickr(editor, {
      enableTime: true,
      dateFormat: "Y-m-d",
      onClose: (selectedDates, dateStr, instance) => {
        success(dateStr);
-       updateDate(cell);
+       updateCol(cell);
        instance.destroy();
      },
      onChange: (selectedDates, dateStr, instance) => {
        success(dateStr);
-       updateDate(cell)
+       updateCol(cell)
        instance.destroy();
      },
    });
@@ -37,6 +37,34 @@ var dateEditor = (cell, onClick, success, cancel, editorParams) => {
 
    return editor;
  };
+
+var updateCol = (cell) =>
+{
+    debugger;
+    var row = cell.getRow();
+    var rowData = row.getData();
+    id = rowData["0"];
+    deptName = rowData[1];
+    dateCreated = rowData[2];
+    active = rowData[3];
+    dateInActive = rowData[4];
+    value = id + "," + deptName + "," + dateCreated + "," + active + "," + dateInActive;
+//'/api/data/manageDepartment?action=update&value=1,Executive,2023-01-04,5'
+    URL = "/api/data/manageDepartment?action=update&value=" + value;
+    table.setData(URL);
+};
+
+//db soft delete so recs are not actually removed, just flagged as deleted
+//therefore allow modification of rows and then send back for update
+var deleteRow = (deptId) =>
+{
+    debugger;
+    //value = id + "," + deptId;
+    //'/api/data/manageDepartment?action=delete&value=id'
+    URL = "/api/data/manageDepartment?action=delete&value=" + deptId;
+    table.setData(URL);
+};
+
 
 var updateQuantity = (cell) =>
 {
@@ -83,19 +111,29 @@ var table = new Tabulator("#manageDepartment-table",
     paginationSizeSelector:[3, 6, 8, 10],
     movableColumns:true,
     paginationCounter:"rows",
-     initialSort:[
+    initialSort:[
         {column: "1", dir:"asc"}, //sort by Department name, ascending
 
     ],
     columns:[
         {title:"id", field:"0", hozAlign:"center", sorter:"string", visible:false},
-        {title:"deptName", field:"1", hozAlign:"center", sorter:"string", visible:true, editor:true, headerFilter:"input", headerFilterPlaceholder:"Find a Department ..."},
+        {title:"deptName", field:"1", hozAlign:"center", sorter:"string", visible:true, editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find a Department ..."},
         {title:"dateCreated", field:"2", hozAlign:"center", sorter:"date", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Date Created ..."},
-        {title:"active", field:"3", hozAlign:"center", sorter:"string", editor:true, headerFilter:"input", headerFilterPlaceholder:"Find Active Departments ..."},
+        {title:"active", field:"3", hozAlign:"center", sorter:"string", editor:true, cellClick:deleteRow, headerFilter:"input", headerFilterPlaceholder:"Find Active Departments ..."},
+        {title:"dateInActive", field:"4", hozAlign:"center", sorter:"date", editor:true, editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Date Inactive ..."},
+        //{formatter:"buttonCross", align:"center", title:"del", headerSort:false, cellClick:function(e, cell){
+	    //    if(confirm('Are you sure you want to delete this entry?'))
+	    //        debugger;
+		//        rowData = cell.getRow().getData();
+		//        deptId = rowData[0];
+		//        deleteRow(deptId);
+		//        //cell.getRow().delete();
+	    //    }
+        //},
         //column definition in the columns array
         //{formatter:"buttonCross", width:40, align:"center", cellClick:function(e, cell){
         //    cell.getRow().delete()}},
-        {title:"Delete Row", editor:dateEditor, width:140, align:"center", cellClick:function(e, cell){deleteit(e,cell);},},
+        //{title:"Delete Row", field:"4", editor:true, cellClick:deleteRow, formatter:"buttonCross", width:140, align:"center"},
         //{title:"Order Received Date", field:"10", align:"center", sorter:"date", editor:true},
         //{title:"Delete Row", editor:dateEditor, width:40, align:"center", cellClick:function(e, cell){doit(e,cell);},},
         //{title:"Order Return Quantity", field:"13", hozAlign:"center", sorter:"number", editor:true},
@@ -108,7 +146,7 @@ var table = new Tabulator("#manageDepartment-table",
 columns: ['', '', '', '', '']
 
 
-
+//cellEdited:updateCol,
 
 
 /*
@@ -130,30 +168,27 @@ document.getElementById("ajax-trigger").addEventListener("click", function(){
 });
 
 */
-
+/*
 function updateDate(cell) {
-    debugger;
+    //debugger;
     var row = cell.getRow();
     var rowData = row.getData();
-    //alert("OrderId is: " + rowData["1"]) //id in purchaserOrder table
-    id = rowData["1"]
-    dt_order_received = rowData[11] //date order received col
-    dt_order_returned = rowData[12] //date order returned col
-    URL = "/api/data?orderId=" + id + "&dt_order_received=" + dt_order_received + "&dt_order_returned=" + dt_order_returned
-    table.setData(URL);
+    alert("OrderId is: " + rowData["1"]) //id in purchaserOrder table
+    //id = rowData["1"]
+    //dt_order_received = rowData[11] //date order received col
+    //dt_order_returned = rowData[12] //date order returned col
+    //URL = "/api/data/manageDepartment?orderId=" + id + "&dt_order_received=" + dt_order_received + "&dt_order_returned=" + dt_order_returned
+    //table.setData(URL);
 
 
 }
-
+*/
 function printit(cell)
 {
     alert("print it");
 }
 
-function deleteit(cell)
-{
-    alert("print it");
-}
+
 
 </script>
 {% endblock %}

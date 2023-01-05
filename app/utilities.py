@@ -1,30 +1,31 @@
 import datetime
-import sqlite3
-from app import app, constants
 import os
+import sqlite3
+
+from app import app, constants
 
 
 def getDatabase(dataBaseName: str) -> str:
-    return(os.path.join(app.root_path, dataBaseName))
+    return (os.path.join(app.root_path, dataBaseName))
 
 
-def getConnection(db:str) -> sqlite3.Connection:
-
+def getConnection(db: str) -> sqlite3.Connection:
     conn = None
 
     try:
-        #database will be created if doesn't already exist
+        # database will be created if doesn't already exist
         conn = sqlite3.connect(db)
-        conn.row_factory = sqlite3.Row
-        print(f'Opened database successfully')
+        # conn = sqlite3.connect(r'C:\Users\wayne\APP\app\mysite.db')
 
-        return(conn)
+        conn.row_factory = sqlite3.Row
+
+        return (conn)
 
     except Exception as e:
         print(f'Could not establish a connection with database {db}, error {e}')
 
-def reloadDatabase():
 
+def reloadDatabase():
     try:
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
@@ -40,66 +41,66 @@ def reloadDatabase():
     except Exception as e:
         print(f'problem in reloadDatabase: {e}')
 
-def getUnitDesc(id:int) -> str:
 
+def getUnitDesc(id: int) -> str:
     try:
         row: str = None
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        parm=(id,)
+        parm = (id,)
         stmt = 'select unitDesc from unit where id = ?'
         cur.execute(stmt, parm)
-        row= cur.fetchone()
-        #for row in cur:
+        row = cur.fetchone()
+        # for row in cur:
         #    print(f'row:{row}')
         print(f'row: {row[0]}')
         cur.close()
         conn.close()
 
-        return(row[0])
+        return (row[0])
 
 
     except Exception as e:
         print(f'problem in getUnitDesc: {e}')
 
-def getUnitId(desc:str) -> int:
 
+def getUnitId(desc: str) -> int:
     try:
         row: int = None
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        parm=(desc,)
+        parm = (desc,)
         stmt = 'select Id from unit where unitDesc = ?'
         cur.execute(stmt, parm)
-        row= cur.fetchone()
+        row = cur.fetchone()
         print(f'row: {row[0]}')
         cur.close()
         conn.close()
 
-        return(row[0])
+        return (row[0])
 
 
     except Exception as e:
         print(f'problem in getUnitId: {e}')
 
-def getALLUnitDesc() -> list:
 
+def getALLUnitDesc() -> list:
     try:
         row: list = []
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
         stmt = 'select unitDesc from unit'
-        #cur.execute('select unitDesc from unit where id = ?', parm)
+        # cur.execute('select unitDesc from unit where id = ?', parm)
         cur.execute(stmt)
         row = cur.fetchall()
         row = list(row)
         cur.close()
         conn.close()
 
-        return(row)
+        return (row)
 
 
     except Exception as e:
@@ -107,48 +108,68 @@ def getALLUnitDesc() -> list:
 
 
 def getPartId(Desc: str) -> int:
+    try:
+        row: list = []
 
-        try:
-            row: list = []
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        parm = (Desc,)
+        stmt = 'select Id from Part where partNbr = ? and partInStock is True'
+        cur.execute(stmt, parm)
+        row = cur.fetchone()
 
-            db = getDatabase(constants.DATABASE_NAME)
-            conn = getConnection(db)
-            cur = conn.cursor()
-            parm = (Desc,)
-            stmt = 'select Id from Part where partNbr = ? and partInStock is True'
-            cur.execute(stmt, parm)
-            row = cur.fetchone()
+        cur.close()
+        conn.close()
 
-            cur.close()
-            conn.close()
+        return (row[0])
 
-            return (row[0])
+    except Exception as e:
+        print(f'problem in getPartId: {e}')
 
-        except Exception as e:
-            print(f'problem in getPartId: {e}')
+def updateParts(id:int, partNbr:int, partDesc:str, partSupplierId:int, partQuantity:int, partInStock:bool, partDateOutOfStock:str, partDateCreated:str):
+    try:
+        # soft delete
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        parms = (partNbr, partDesc, partSupplierId, partQuantity, partInStock, partDateOutOfStock, partDateCreated, id,)
+        stmt = 'update Part set partNbr = ?, partDesc = ?, partSupplierId = ?, partQuantity = ?, partInStock = ?, partDateOutOfStock = ?, partDateCreated = ? where id = ?'
+        cur.execute(stmt, parms)
+        cur.close()
+        conn.commit()
+        conn.close()
 
-def getSupplierName(id:int) -> str:
+        return ()
 
+
+    except Exception as e:
+        print(f'problem in updateParts: {e}')
+
+
+
+def getSupplierName(id: int) -> str:
     try:
         row: list = []
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        parm=(id,)
+        parm = (id,)
         stmt = 'select supplierName from supplier where id = ? and supplierActive is True'
-        #cur.execute('select unitDesc from unit where id = ?', parm)
+        # cur.execute('select unitDesc from unit where id = ?', parm)
         cur.execute(stmt, parm)
-        row= cur.fetchone()
-        #for row in cur:
+        row = cur.fetchone()
+        # for row in cur:
         #    print(f'row:{row}')
         print(f'row: {row[0]}')
         cur.close()
         conn.close()
-        return(row[0])
+        return (row[0])
 
 
     except Exception as e:
         print(f'problem in getSupplierName: {e}')
+
 
 def insertPurchaser(parms):
     try:
@@ -161,11 +182,12 @@ def insertPurchaser(parms):
         conn.commit()
         conn.close()
 
-        return()
+        return ()
 
 
     except Exception as e:
         print(f'problem in insertPurchaser: {e}')
+
 
 def getPurchaserId(name: str) -> int:
     try:
@@ -174,19 +196,18 @@ def getPurchaserId(name: str) -> int:
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        parm=(name,)
+        parm = (name,)
         stmt = 'select Id from purchaser where purchaserName = ? and purchaserActive is True'
-        #cur.execute('select unitDesc from unit where id = ?', parm)
+        # cur.execute('select unitDesc from unit where id = ?', parm)
         cur.execute(stmt, parm)
         row = cur.fetchone()
         cur.close()
         conn.close()
-        return(row[0])
+        return (row[0])
 
 
     except Exception as e:
         print(f'problem in getPurchaserId: {e}')
-
 
 
 def getPurchaserDeptId(purchaserName: str) -> int:
@@ -196,47 +217,42 @@ def getPurchaserDeptId(purchaserName: str) -> int:
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        parm=(purchaserName,)
+        parm = (purchaserName,)
         stmt = 'select purchaserDeptId from purchaser where purchaserName = ? and purchaserActive is True'
-        #cur.execute('select unitDesc from unit where id = ?', parm)
+        # cur.execute('select unitDesc from unit where id = ?', parm)
         cur.execute(stmt, parm)
         row = cur.fetchone()
         cur.close()
         conn.close()
-        return(row[0])
+        return (row[0])
 
 
     except Exception as e:
         print(f'problem in getPurchaserId: {e}')
 
 
-
 def getSupplierId(Name: str) -> int:
-
     try:
         row: list = []
 
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        parm=(Name,)
+        parm = (Name,)
         stmt = 'select Id from supplier where supplierName = ? and supplierActive is True'
-        #cur.execute('select unitDesc from unit where id = ?', parm)
+        # cur.execute('select unitDesc from unit where id = ?', parm)
         cur.execute(stmt, parm)
         row = cur.fetchone()
         cur.close()
         conn.close()
-        return(row[0])
+        return (row[0])
 
 
     except Exception as e:
         print(f'problem in getSupplierId: {e}')
 
 
-
-
 def getALLSupplierName() -> list:
-
     try:
         row: list = []
         myList: list = []
@@ -244,20 +260,21 @@ def getALLSupplierName() -> list:
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        #parm=(Name,)
+        # parm=(Name,)
         stmt = 'select distinct supplierName from supplier where supplierActive is True'
-        #cur.execute('select unitDesc from unit where id = ?', parm)
+        # cur.execute('select unitDesc from unit where id = ?', parm)
         cur.execute(stmt)
         row = cur.fetchall()
         for r in row:
             myList.append(r[0])
         cur.close()
         conn.close()
-        return(myList)
+        return (myList)
 
 
     except Exception as e:
         print(f'problem in getALLSupplierName: {e}')
+
 
 def insertSupplier(parms):
     try:
@@ -270,13 +287,14 @@ def insertSupplier(parms):
         conn.commit()
         conn.close()
 
-        return()
+        return ()
 
 
     except Exception as e:
         print(f'problem in insertSupplier: {e}')
 
-def insertDepartment(parms):
+
+def insertDepartment(parms) -> None:
     try:
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
@@ -287,11 +305,53 @@ def insertDepartment(parms):
         conn.commit()
         conn.close()
 
-        return()
+        return ()
 
 
     except Exception as e:
         print(f'problem in insertDepartment: {e}')
+
+
+def deleteDepartment(id: int) -> None:
+    try:
+        # soft delete
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        dt = datetime.date.today()
+        parms = (dt, id,)
+        stmt = 'update Department set active = False, dateInActive = ? where id = ?'
+        cur.execute(stmt, parms)
+        cur.close()
+        conn.commit()
+        conn.close()
+
+        return ()
+
+
+    except Exception as e:
+        print(f'problem in deleteDepartment: {e}')
+
+
+def updateDepartment(id: int, dept: str, dateCreated: str, active: bool, dateInActive: str) -> None:
+    try:
+
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        parms = (dept, dateCreated, active, dateInActive, id,)
+        stmt = 'update Department set deptName = ?, dateCreated = ?, active = ?, dateInActive = ? where id = ?'
+        cur.execute(stmt, parms)
+        cur.close()
+        conn.commit()
+        conn.close()
+
+        return ()
+
+
+    except Exception as e:
+        print(f'problem in updateDepartment: {e}')
+
 
 def getDepartmentId(deptName: str) -> int:
     try:
@@ -307,14 +367,14 @@ def getDepartmentId(deptName: str) -> int:
         conn.commit()
         conn.close()
 
-        return(id[0])
+        return (id[0])
 
 
     except Exception as e:
         print(f'problem in getDepartmentId: {e}')
 
 
-def getALLDepartmentNames()-> list:
+def getALLDepartmentNames() -> list:
     try:
         row: list = []
         myList: list = []
@@ -337,37 +397,33 @@ def getALLDepartmentNames()-> list:
         print(f'problem in getALLDepartmentNames: {e}')
 
 
-
-
-def getTableItemById(id:int, tableName: str, colName: str) -> str:
-
+def getTableItemById(id: int, tableName: str, colName: str) -> str:
     try:
         row: list = []
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        parm=(id,)
+        parm = (id,)
         stmt = f'select {colName} from {tableName} where id = ?'
-        #cur.execute('select unitDesc from unit where id = ?', parm)
+        # cur.execute('select unitDesc from unit where id = ?', parm)
         cur.execute(stmt, parm)
         row = cur.fetchone()
         cur.close()
         conn.close()
-        return(row[0])
+        return (row[0])
 
 
     except Exception as e:
         print(f'problem in getTableItemById: {e}')
 
 
-def insertPart(parms):
-
+def insertPart(parms) -> None:
     try:
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
         supplierName = parms[2]
-        supplierId = getSupplierId(supplierName)
+       # supplierId = getSupplierId(supplierName)
 
         stmt = 'insert into Part(partNbr, partDesc, partSupplierId, partQuantity, partInStock, partDateCreated) values (?, ?, ?, ?, ?, ?)'
         cur.execute(stmt, parms)
@@ -375,7 +431,7 @@ def insertPart(parms):
         conn.commit()
         conn.close()
 
-        return()
+        return ()
 
 
     except Exception as e:
@@ -383,7 +439,6 @@ def insertPart(parms):
 
 
 def getALLPartDesc() -> list:
-
     try:
         row: list = []
         myList: list = []
@@ -399,17 +454,17 @@ def getALLPartDesc() -> list:
         cur.close()
         conn.close()
 
-        return(myList)
+        return (myList)
 
 
     except Exception as e:
         print(f'problem in getALLPartDesc: {e}')
 
-def getALLPartNbr() -> list:
 
+def getALLPartNbr() -> list:
     try:
         row: list = []
-        myList:list = []
+        myList: list = []
 
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
@@ -422,14 +477,14 @@ def getALLPartNbr() -> list:
         cur.close()
         conn.close()
 
-        return(myList)
+        return (myList)
 
 
     except Exception as e:
         print(f'problem in getALLPartDesc: {e}')
 
-def getALLPurchasers() -> list:
 
+def getALLPurchasers() -> list:
     try:
         row: list = []
         myList: list = []
@@ -445,21 +500,21 @@ def getALLPurchasers() -> list:
         cur.close()
         conn.close()
 
-        return(myList)
+        return (myList)
 
 
     except Exception as e:
         print(f'problem in getALLPurchaser: {e}')
 
-def getALLITEMS(tblName: str, colName: str) -> list:
 
+def getALLITEMS(tblName: str, colName: str) -> list:
     try:
         row: list = []
         mylist: list = []
 
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
-        #conn.row_factory = sqlite3.Row
+        # conn.row_factory = sqlite3.Row
         cur = conn.cursor()
         stmt = f'select {colName} from {tblName}'
         cur.execute(stmt)
@@ -469,20 +524,18 @@ def getALLITEMS(tblName: str, colName: str) -> list:
 
         cur.close()
         conn.close()
-        return(mylist)
+        return (mylist)
 
     except Exception as e:
         print(f'problem in getALLITEMS: {e}')
 
 
-
 def getMaxOrderNbr() -> int:
-
     try:
-        result:int  = None
+        result: int = None
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
-        #conn.row_factory = sqlite3.Row
+        # conn.row_factory = sqlite3.Row
         cur = conn.cursor()
         stmt = f'select max(orderNbr) from OrderNbrTbl'
         cur.execute(stmt)
@@ -501,8 +554,8 @@ def getMaxOrderNbr() -> int:
     except Exception as e:
         print(f'problem in getMaxOrderNbr: {e}')
 
-def updateMaxOrderNbr(orderNbr: int):
 
+def updateMaxOrderNbr(orderNbr: int):
     try:
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
@@ -525,6 +578,7 @@ def updateMaxOrderNbr(orderNbr: int):
     except Exception as e:
         print(f'problem in updateMaxOrderNbr: {e}')
 
+
 def insertOrder(parms):
     try:
         db = getDatabase(constants.DATABASE_NAME)
@@ -536,7 +590,7 @@ def insertOrder(parms):
         conn.commit()
         conn.close()
 
-        return()
+        return ()
 
 
     except Exception as e:
@@ -548,17 +602,17 @@ def insertPurchaseOrder(purchaseOrderNbr: int, purchaserId: int, purchaserDept: 
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        orderDt = datetime.datetime.now()
+        orderDt = datetime.date.today()
         receivedDt = ''
         deleteFlg = False
-        parms =(orderDt, receivedDt, deleteFlg, purchaseOrderNbr, purchaserId, purchaserDept)
+        parms = (orderDt, receivedDt, deleteFlg, purchaseOrderNbr, purchaserId, purchaserDept)
         stmt = 'INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderpurchaserId, purchaseOrderPurchaserDeptId) values (?, ?, ?, ?, ?, ?)'
         cur.execute(stmt, parms)
         cur.close()
         conn.commit()
         conn.close()
 
-        return()
+        return ()
 
 
     except Exception as e:
@@ -566,28 +620,27 @@ def insertPurchaseOrder(purchaseOrderNbr: int, purchaserId: int, purchaserDept: 
 
 
 def getALLPurchaseOrders() -> list:
-
     try:
         row: list = []
 
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
-        #conn.row_factory = sqlite3.Row
+        # conn.row_factory = sqlite3.Row
         cur = conn.cursor()
         stmt = 'select p.id, o.id, purchaser.purchaserName, deptName, orderNbr,s.supplierName,part.partNbr,part.partDesc,o.OrderQuantity,o.OrderPartPrice,o.OrderTotalCost, o.orderReceivedDate, o.orderReturnDate, o.orderReturnQuantity from purchaseOrder p, OrderTbl o, supplier s, Part, Purchaser, Department where p.purchaseOrderNbr = o.orderNbr AND o.OrderSupplierId = s.id and o.OrderPartId = part.id and Purchaser.id = p.purchaseOrderPurchaserId and purchaserDeptid = department.id'
         cur.execute(stmt)
         row = cur.fetchall()
         cur.close()
         conn.close()
-        return(row)
+        return (row)
 
     except Exception as e:
         print(f'problem in getALLPurchaseOrders: {e}')
 
-def deletePurchaseOrder(id:int) -> list:
 
-    #There is ONE purchaseOrder id used to track orders.
-    #there can be MANY orders per purchaseOrder
+def deletePurchaseOrder(id: int) -> list:
+    # There is ONE purchaseOrder id used to track orders.
+    # there can be MANY orders per purchaseOrder
     try:
 
         db = getDatabase(constants.DATABASE_NAME)
@@ -599,23 +652,20 @@ def deletePurchaseOrder(id:int) -> list:
         orderNbr = cur.fetchone()
         orderNbr = orderNbr[0]
 
-
-
         parm2 = (orderNbr,)
         stmt2 = 'select count(*) from orderTbl o where o.orderNbr = ?'
         cur.execute(stmt2, parm2)
         nbrOfOrders = cur.fetchone()
         nbrOfOrders = nbrOfOrders[0]
 
-        #if NbrOfOrders = 1 then delete from order table and purchaseOrder table
-        #if NbrOfOrders > 1 then delete only specific purchase form purchaseorder, other purchases remain in order
+        # if NbrOfOrders = 1 then delete from order table and purchaseOrder table
+        # if NbrOfOrders > 1 then delete only specific purchase form purchaseorder, other purchases remain in order
 
         stmt3 = 'delete from orderTbl where orderTbl.id = ?'
         cur.execute(stmt3, parm1)
         cur.fetchone()
 
         if nbrOfOrders == 1:
-
             stmt4 = 'delete from purchaseOrder where purchaseOrder.purchaserOrderNbr = ?'
             cur.execute(stmt3, parm2)
             cur.fetchone()
@@ -624,15 +674,15 @@ def deletePurchaseOrder(id:int) -> list:
         conn.commit()
         conn.close()
 
-        return()
+        return ()
 
     except Exception as e:
         print(f'problem in deletePurchaseOrder: {e}')
 
-def updateOrderReceivedDate(id:int, dt_order_received:str, dt_order_returned:str) -> None:
 
-    #There is ONE purchaseOrder id used to track orders.
-    #there can be MANY orders per purchaseOrder
+def updateOrderReceivedDate(id: int, dt_order_received: str, dt_order_returned: str) -> None:
+    # There is ONE purchaseOrder id used to track orders.
+    # there can be MANY orders per purchaseOrder
     try:
 
         db = getDatabase(constants.DATABASE_NAME)
@@ -650,10 +700,10 @@ def updateOrderReceivedDate(id:int, dt_order_received:str, dt_order_returned:str
         nbrOfOrders = cur.fetchone()
         nbrOfOrders = nbrOfOrders[0]
 
-        #if NbrOfOrders = 1 then delete from order table and purchaseOrder table
-        #if NbrOfOrders > 1 then delete only specific purchase form purchaseorder, other purchases remain in order
+        # if NbrOfOrders = 1 then delete from order table and purchaseOrder table
+        # if NbrOfOrders > 1 then delete only specific purchase form purchaseorder, other purchases remain in order
 
-        #currentDate = datetime.date.today()
+        # currentDate = datetime.date.today()
         stmt1 = f"update orderTbl set orderreceivedDate = '{dt_order_received}', orderReturndate = '{dt_order_returned}' where id = ?"
         cur.execute(stmt1, parm1)
         conn.commit()
@@ -666,38 +716,39 @@ def updateOrderReceivedDate(id:int, dt_order_received:str, dt_order_returned:str
         conn.commit()
         conn.close()
 
-        return()
+        return ()
 
     except Exception as e:
         print(f'problem in updateOrderReceivedDate: {e}')
 
-def updateOrderReturnQuantity(id:int, quantity: int) -> None:
 
-    #There is ONE purchaseOrder id used to track orders.
-    #there can be MANY orders per purchaseOrder
+def updateOrderReturnQuantity(id: int, quantity: int) -> None:
+    # There is ONE purchaseOrder id used to track orders.
+    # there can be MANY orders per purchaseOrder
     try:
 
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        parm = (quantity,id,)
+        parm = (quantity, id,)
         stmt1 = "update orderTbl set orderReturnQuantity = ? where id = ?"
         cur.execute(stmt1, parm)
         conn.commit()
         cur.close()
 
-        return()
+        return ()
 
     except Exception as e:
         print(f'problem in updateOrderQuantity: {e}')
 
-def registerUser(username: str, hashed_pw:int) -> None:
+
+def registerUser(username: str, hashed_pw: int) -> None:
     try:
 
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        createdate = datetime.datetime.now()
+        createdate = datetime.date.today()
         active = True
         securityLevel = 0
         parm = (username, hashed_pw, createdate, active, securityLevel)
@@ -706,11 +757,10 @@ def registerUser(username: str, hashed_pw:int) -> None:
         conn.commit()
         cur.close()
 
-        return()
+        return ()
 
     except Exception as e:
         print(f'problem in updateOrderQuantity: {e}')
-
 
 
 def getPassword(username: str) -> str:
@@ -726,10 +776,11 @@ def getPassword(username: str) -> str:
 
         cur.close()
 
-        return(pw[0])
+        return (pw[0])
 
     except Exception as e:
         print(f'problem in getPassword: {e}')
+
 
 def getUserSecurityLevel(username: str) -> int:
     try:
@@ -744,10 +795,11 @@ def getUserSecurityLevel(username: str) -> int:
         conn.commit()
         cur.close()
 
-        return(level[0])
+        return (level[0])
 
     except Exception as e:
         print(f'problem in getUserSecurityLevel: {e}')
+
 
 def getUserRegistered(username: str) -> bool:
     try:
@@ -764,26 +816,26 @@ def getUserRegistered(username: str) -> bool:
         if user != None:
             exists = True
 
-        return(exists)
+        return (exists)
 
     except Exception as e:
         print(f'problem in getUserRegistered: {e}')
 
 
-def getTable(tableName:str) -> list:
+def getTable(tableName: str) -> list:
     try:
 
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
         parm = (tableName,)
-        stmt = f"select id, deptName, dateCreated, active from {tableName}"
+        stmt = f"select * from {tableName}"
         cur.execute(stmt)
         rows = cur.fetchall()
         rows = list(rows)
         conn.commit()
         cur.close()
-        return(rows)
+        return (rows)
 
     except Exception as e:
         print(f'problem in getTable: {e}')

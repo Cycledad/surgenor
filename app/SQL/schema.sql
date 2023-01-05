@@ -52,14 +52,15 @@ CREATE TABLE Part (
 	partSupplierId integer,
 	partQuantity INTEGER NOT NULL,
 	partInStock boolean NOT NULL,  /* boolean */
+	partDateOutOfStock text,
 	partDateCreated TEXT NOT NULL,
 	PRIMARY KEY("id" AUTOINCREMENT),
 	UNIQUE ("partNbr"),
 	FOREIGN KEY(partSupplierId) REFERENCES Supplier (id)
 );
 /*
-INSERT into Part(partNbr,PartDesc,partSupplierId,partQuantity,partInStock,partDateCreated) VALUES('A1000', 'BOLT', 1, 20, TRUE, "AUG");
-INSERT into Part(partNbr,PartDesc,partSupplierId,partQuantity,partInStock,partDateCreated) VALUES('A2000', 'CHAIN', 2, 20, FALSE, "25122022");
+INSERT into Part(partNbr,PartDesc,partSupplierId,partQuantity,partInStock,partDateCreated) VALUES('A1000', 'BOLT', 1, 20, True, "20220101");
+INSERT into Part(partNbr,PartDesc,partSupplierId,partQuantity,partInStock,partDateCreated) VALUES('A2000', 'CHAIN', 2, 20, False, "25122022");
 INSERT into Part(partNbr,PartDesc,partSupplierId,partQuantity,partInStock,partDateCreated) VALUES('BBBBB', 'Bottom Bracket Clamp', 2, 20, True, "25122022");
 */
 
@@ -69,6 +70,7 @@ id INTEGER NOT NULL,
 purchaseOrderDate TEXT NOT NULL,
 purchaseOrderReceivedDate TEXT,
 purchaseOrderDeleteFlg BOOLEAN NOT NULL,
+purchaseOrderDateDeleted Text,
 purchaseOrderNbr INTEGER,
 purchaseOrderPurchaserId integer not null,
 purchaseOrderPurchaserDeptId integer not null,
@@ -77,25 +79,25 @@ PRIMARY KEY("id" AUTOINCREMENT)
 
 /*
 INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderPurchaserId,purchaseOrderPurchaserDeptId)
-values('02112022', '15122023', false, 1,1,1);
+values('02112022', '15122023', False, 1,1,1);
 INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderPurchaserId,purchaseOrderPurchaserDeptId)
-values('01121999', '15121999', false, 2,2,1);
+values('01121999', '15121999', False, 2,2,1);
 INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderPurchaserId,purchaseOrderPurchaserDeptId)
-values('01121999', '15121999', false, 3,2,2);
+values('01121999', '15121999', False, 3,2,2);
 INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderPurchaserId,purchaseOrderPurchaserDeptId)
-values('01121999', '15121999', false, 4,2,2);
+values('01121999', '15121999', False, 4,2,2);
 INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderPurchaserId,purchaseOrderPurchaserDeptId)
-values('01121999', '15121999', false, 5,2,2);
+values('01121999', '15121999', False, 5,2,2);
 INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderPurchaserId,purchaseOrderPurchaserDeptId)
-values('01121999', '15121999', false, 6,2,1);
+values('01121999', '15121999', False, 6,2,1);
 INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderPurchaserId,purchaseOrderPurchaserDeptId)
-values('01121999', '15121999', false, 7,2,1);
+values('01121999', '15121999', False, 7,2,1);
 INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderPurchaserId,purchaseOrderPurchaserDeptId)
-values('01121999', '15121999', false, 8,2,1);
+values('01121999', '15121999', False, 8,2,1);
 INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderPurchaserId,purchaseOrderPurchaserDeptId)
-values('01121999', '15121999', false, 9,2,1);
+values('01121999', '15121999', False, 9,2,1);
 INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderPurchaserId,purchaseOrderPurchaserDeptId)
-values('01121999', '15121999', false, 10,2,1);
+values('01121999', '15121999', False, 10,2,1);
 
 */
 
@@ -105,6 +107,7 @@ CREATE TABLE Purchaser (
 	purchaserName TEXT NOT NULL,
 	purchaserDeptId integer not null,
 	purchaserActive boolean NOT NULL,    /* boolean */
+	purchaserDateInActive TEXT,
 	purchaserDateCreated TEXT NOT NULL,
 	PRIMARY KEY("id" AUTOINCREMENT),
 	UNIQUE (purchaserName)
@@ -127,6 +130,7 @@ CREATE TABLE Supplier (
 	supplierEmail TEXT NOT NULL,
 	supplierContact TEXT NOT NULL,
 	supplierActive boolean NOT NULL,    /* boolean */
+	supplierDateInActive TEXT,
 	supplierDateCreated TEXT NOT NULL,
 	PRIMARY KEY("id" AUTOINCREMENT)
 	--UNIQUE (supplierAddr),
@@ -169,6 +173,7 @@ CREATE TABLE Department (
 	deptName TEXT NOT NULL UNIQUE,
 	dateCreated	INTEGER NOT NULL,
 	active boolean NOT NULL,    /* boolean */
+	dateInActive TEXT,
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
 /*
@@ -185,6 +190,7 @@ CREATE TABLE User (
 	password	TEXT NOT NULL UNIQUE,
 	createDate	TEXT,
 	active	BOOLEAN,
+	dateInActive TEXT,
 	securityLevel integer,
 	PRIMARY KEY("id" AUTOINCREMENT));
 

@@ -1,45 +1,36 @@
-{% extends 'base.html' %}
-
-{% block content %}
-<br><br><br><br><br>
+{% extends 'base.html' %} {% block content %} <br /><br /><br /><br /><br />
 <div id="example-table"></div>
 
-{% endblock %}
-
-{% block scripts %}
-
+{% endblock %} {% block scripts %}
 
 <script>
+  var dateEditor = (cell, onClick, success, cancel, editorParams) => {
+    var editor = document.createElement("input");
+    editor.value = cell.getValue();
+    debugger;
+    var datepicker = flatpickr(editor, {
+      enableTime: true,
+      dateFormat: "Y-m-d",
+      onClose: (selectedDates, dateStr, instance) => {
+        success(dateStr);
+        updateDate(cell);
+        instance.destroy();
+      },
+      onChange: (selectedDates, dateStr, instance) => {
+        success(dateStr);
+        updateDate(cell);
+        instance.destroy();
+      },
+    });
 
+    onClick(() => {
+      editor.focus();
+    });
 
-var dateEditor = (cell, onClick, success, cancel, editorParams) => {
-   var editor = document.createElement("input");
-   editor.value = cell.getValue();
-   debugger;
-   var datepicker = flatpickr(editor, {
-     enableTime: true,
-     dateFormat: "Y-m-d",
-     onClose: (selectedDates, dateStr, instance) => {
-       success(dateStr);
-       updateDate(cell);
-       instance.destroy();
-     },
-     onChange: (selectedDates, dateStr, instance) => {
-       success(dateStr);
-       updateDate(cell)
-       instance.destroy();
-     },
-   });
+    return editor;
+  };
 
-   onClick(() => {
-     editor.focus();
-   });
-
-   return editor;
- };
-
-var updateQuantity = (cell) =>
-{
+  var updateQuantity = (cell) => {
     //alert("say it");
     debugger;
     var row = cell.getRow();
@@ -47,80 +38,146 @@ var updateQuantity = (cell) =>
     //alert("OrderId is: " + rowData["1"]) //id in purchaserOrder table
     id = rowData["1"];
     returnQuantity = rowData[13];
-    if (isNaN(returnQuantity)){
-        alert("Not a number!!");
+    if (isNaN(returnQuantity)) {
+      alert("Not a number!!");
+    } else {
+      quantityOrdered = rowData[8];
+      if (returnQuantity > quantityOrdered) {
+        alert("Quantity returned can not exceed quantity ordered!");
+        rowData[13] = "";
+      } else {
+        URL = "/api/data?orderId=" + id + "&quantity=" + returnQuantity;
+        table.setData(URL);
+      }
     }
-    else {
-        quantityOrdered = rowData[8];
-        if (returnQuantity > quantityOrdered) {
-            alert("Quantity returned can not exceed quantity ordered!");
-            rowData[13] = ''
-        }
-        else {
-            URL = "/api/data?orderId=" + id + "&quantity=" + returnQuantity;
-            table.setData(URL);
-        };
-    };
-};
+  };
 
-//custom formatter definition
-var printIcon = function(cell, formatterParams, onrendered){
+  //custom formatter definition
+  var printIcon = function (cell, formatterParams, onrendered) {
     return "<img src=./static/img/printer-16.png>";
-};
+  };
 
-
-//Build Tabulator
-var table = new Tabulator("#example-table",
-{
-
+  //Build Tabulator
+  var table = new Tabulator("#example-table", {
     ajaxURL: "/api/data",
-    height:"311px",
-    layout:"fitData",
-    selectable:true,
-    placeholder:"No Data Set",
-    pagination:"local",
-    paginationSize:6,
-    paginationSizeSelector:[3, 6, 8, 10],
-    movableColumns:true,
-    paginationCounter:"rows",
-     initialSort:[
-        {column: "4", dir:"desc"}, //sort by Purchase Order Number desc, most recent orders first
-
+    height: "311px",
+    layout: "fitData",
+    selectable: true,
+    placeholder: "No Data Set",
+    pagination: "local",
+    paginationSize: 6,
+    paginationSizeSelector: [3, 6, 8, 10],
+    movableColumns: true,
+    paginationCounter: "rows",
+    initialSort: [
+      { column: "4", dir: "desc" }, //sort by Purchase Order Number desc, most recent orders first
     ],
-    columns:[
-        {title:"purchaserOrderId", field:"0", hozAlign:"center", sorter:"string", visible:false},
-        {title:"orderid", field:"1", hozAlign:"center", sorter:"string", visible:false},
-        {title:"Purchaser", field:"2", hozAlign:"center", sorter:"string", headerFilter:"input", headerFilterPlaceholder:"Find a Purchaser ..."},
-        {title:"Purchaser Department", field:"3", hozAlign:"center", sorter:"string", headerFilter:"input", headerFilterPlaceholder:"Find an Department ..."},
-        {title:"Purchase Order Number", field:"4", hozAlign:"center", sorter:"number", headerFilter:"input", headerFilterPlaceholder:"Find an Purchaser ..."},
-        {title:"Supplier", field:"5", hozAlign:"center", sorter:"string", headerFilter:"input", headerFilterPlaceholder:"Find a Supplier ..."},
-        {title:"Part Number", field:"6", hozAlign:"center", sorter:"string", headerFilter:"input", headerFilterPlaceholder:"Find a Part Number ..."},
-        {title:"Part Description", field:"7", hozAlign:"center", headerFilter:"input", headerFilterPlaceholder:"Find a Part ..."},
-        {title:"Quantity", field:"8", hozAlign:"center", sorter:"number"},
-        {title:"Part Price", field:"9", hozAlign:"center", sorter:"number"},
-        {title:"Total Cost", field:"10", hozAlign:"center", sorter:"number"},
-        //column definition in the columns array
-        //{formatter:"buttonCross", width:40, align:"center", cellClick:function(e, cell){
-        //    cell.getRow().delete()}},
-        //{title:"Delete Row", editor:dateEditor, width:140, align:"center"},
-        //{title:"Order Received Date", field:"10", align:"center", sorter:"date", editor:true},
-        //{title:"Delete Row", editor:dateEditor, width:40, align:"center", cellClick:function(e, cell){doit(e,cell);},},
-        {title:"Order Received Date", field:"11", editor:dateEditor},
-        {title:"Order Return Date", field:"12", editor:dateEditor},
-        //{title:"Order Return Quantity", field:"13", hozAlign:"center", sorter:"number", editor:true},
-        {title:"Order Return Quantity", field:"13", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateQuantity},
-        //{title:"Print", formatter:printIcon, align:"center", cellClick:function(e, cell){printit(e,cell);},},
-        {title:"Print", formatter:"image", formatterParams:{urlPrefix:"./static/img/printer-16", urlSuffix:".png"}, align:"center", cellClick:function(e, cell){printit(e,cell);},},
-        ],
-        });
+    columns: [
+      {
+        title: "purchaserOrderId",
+        field: "0",
+        hozAlign: "center",
+        sorter: "string",
+        visible: false,
+      },
+      {
+        title: "orderid",
+        field: "1",
+        hozAlign: "center",
+        sorter: "string",
+        visible: false,
+      },
+      {
+        title: "Purchaser",
+        field: "2",
+        hozAlign: "center",
+        sorter: "string",
+        headerFilter: "input",
+        headerFilterPlaceholder: "Find a Purchaser ...",
+      },
+      {
+        title: "Purchaser Department",
+        field: "3",
+        hozAlign: "center",
+        sorter: "string",
+        headerFilter: "input",
+        headerFilterPlaceholder: "Find an Department ...",
+      },
+      {
+        title: "Purchase Order Number",
+        field: "4",
+        hozAlign: "center",
+        sorter: "number",
+        headerFilter: "input",
+        headerFilterPlaceholder: "Find an Purchaser ...",
+      },
+      {
+        title: "Supplier",
+        field: "5",
+        hozAlign: "center",
+        sorter: "string",
+        headerFilter: "input",
+        headerFilterPlaceholder: "Find a Supplier ...",
+      },
+      {
+        title: "Part Number",
+        field: "6",
+        hozAlign: "center",
+        sorter: "string",
+        headerFilter: "input",
+        headerFilterPlaceholder: "Find a Part Number ...",
+      },
+      {
+        title: "Part Description",
+        field: "7",
+        hozAlign: "center",
+        headerFilter: "input",
+        headerFilterPlaceholder: "Find a Part ...",
+      },
+      { title: "Quantity", field: "8", hozAlign: "center", sorter: "number" },
+      { title: "Part Price", field: "9", hozAlign: "center", sorter: "number" },
+      {
+        title: "Total Cost",
+        field: "10",
+        hozAlign: "center",
+        sorter: "number",
+      },
+      //column definition in the columns array
+      //{formatter:"buttonCross", width:40, align:"center", cellClick:function(e, cell){
+      //    cell.getRow().delete()}},
+      //{title:"Delete Row", editor:dateEditor, width:140, align:"center"},
+      //{title:"Order Received Date", field:"10", align:"center", sorter:"date", editor:true},
+      //{title:"Delete Row", editor:dateEditor, width:40, align:"center", cellClick:function(e, cell){doit(e,cell);},},
+      { title: "Order Received Date", field: "11", editor: dateEditor },
+      { title: "Order Return Date", field: "12", editor: dateEditor },
+      //{title:"Order Return Quantity", field:"13", hozAlign:"center", sorter:"number", editor:true},
+      {
+        title: "Order Return Quantity",
+        field: "13",
+        hozAlign: "center",
+        sorter: "number",
+        editor: true,
+        cellEdited: updateQuantity,
+      },
+      //{title:"Print", formatter:printIcon, align:"center", cellClick:function(e, cell){printit(e,cell);},},
+      {
+        title: "Print",
+        formatter: "image",
+        formatterParams: {
+          urlPrefix: "./static/img/printer-16",
+          urlSuffix: ".png",
+        },
+        align: "center",
+        cellClick: function (e, cell) {
+          printit(e, cell);
+        },
+      },
+    ],
+  });
 
-columns: ['', '', '', '', '', '', '', '', '', '']
+  columns: ["", "", "", "", "", "", "", "", "", ""];
 
-
-
-
-
-/*
+  /*
 
 cellClick:function(e, cell){
         //e - the click event object
@@ -140,26 +197,21 @@ document.getElementById("ajax-trigger").addEventListener("click", function(){
 
 */
 
-function updateDate(cell) {
+  function updateDate(cell) {
     debugger;
     var row = cell.getRow();
     var rowData = row.getData();
     //alert("OrderId is: " + rowData["1"]) //id in purchaserOrder table
-    id = rowData["1"]
-    dt_order_received = rowData[11] //date order received col
-    dt_order_returned = rowData[12] //date order returned col
-    URL = "/api/data?orderId=" + id + "&dt_order_received=" + dt_order_received + "&dt_order_returned=" + dt_order_returned
+    id = rowData["1"];
+    dt_order_received = rowData[11]; //date order received col
+    dt_order_returned = rowData[12]; //date order returned col
+    URL =
+      "/api/data?orderId=" + id + "&dt_order_received=" + dt_order_received + "&dt_order_returned=" + dt_order_returned;
     table.setData(URL);
+  }
 
-
-}
-
-function printit(cell)
-{
+  function printit(cell) {
     alert("print it");
-}
-
-
-
+  }
 </script>
 {% endblock %}

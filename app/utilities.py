@@ -127,6 +127,25 @@ def getPartId(Desc: str) -> int:
     except Exception as e:
         print(f'problem in getPartId: {e}')
 
+def updatePurchaser(id:int, purchaserName:str, purchaserDeptId:int, purchaserActive:bool, purchaserDateInActive:str, purchaserDateCreated:str) -> None:
+    try:
+        # soft delete
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        parms = (purchaserName, purchaserDeptId, purchaserActive, purchaserDateInActive, purchaserDateCreated, id,)
+        stmt = 'update Purchaser set purchaserName = ?, purchaserDeptId = ?, purchaserActive = ?, purchaserDateInActive = ?, purchaserDateCreated = ? where id = ?'
+        cur.execute(stmt, parms)
+        cur.close()
+        conn.commit()
+        conn.close()
+
+        return ()
+
+    except Exception as e:
+        print(f'problem in updatePurchaser: {e}')
+
+
 def updateParts(id:int, partNbr:int, partDesc:str, partSupplierId:int, partQuantity:int, partInStock:bool, partDateOutOfStock:str, partDateCreated:str):
     try:
         # soft delete
@@ -142,11 +161,46 @@ def updateParts(id:int, partNbr:int, partDesc:str, partSupplierId:int, partQuant
 
         return ()
 
-
     except Exception as e:
         print(f'problem in updateParts: {e}')
 
+def updateSupplier(id:int, supplierName:str, supplierAddr:str, supplierTel:str, supplierEmail:str, supplierContact:str, supplierActive:bool, supplierDateInActive:str, supplierDateCreated:str) -> None:
+    try:
+        # soft delete
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        parms = (supplierName, supplierAddr, supplierTel, supplierEmail, supplierContact, supplierActive, supplierDateInActive, supplierDateCreated,id,)
+        stmt = 'update Supplier set supplierName = ?, supplierAddr = ?, supplierTel = ?, supplierEmail = ?, supplierContact = ?, supplierActive = ?, supplierDateInActive = ?, supplierDateCreated = ? where id = ?'
+        cur.execute(stmt, parms)
+        cur.close()
+        conn.commit()
+        conn.close()
 
+        return ()
+
+
+    except Exception as e:
+        print(f'problem in updateSupplier: {e}')
+
+def updateUser(id:int, username:str, password:str, createDate:str, active:bool, dateInactive:str, securityLevel:int) -> None:
+    try:
+        # soft delete
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        parms = (username, password, createDate, active, dateInactive, securityLevel,id,)
+        stmt = 'update User set username = ?, password = ?, createDate = ?, active = ?, dateInactive = ?, securityLevel = ? where id = ?'
+        cur.execute(stmt, parms)
+        cur.close()
+        conn.commit()
+        conn.close()
+
+        return ()
+
+
+    except Exception as e:
+        print(f'problem in updateUser: {e}')
 
 def getSupplierName(id: int) -> str:
     try:

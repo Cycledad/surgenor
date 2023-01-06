@@ -1,0 +1,108 @@
+{% extends 'AdminBase.html' %}
+
+{% block content %}
+
+<div id="managePurchaser-table"></div>
+
+{% endblock %}
+
+{% block scripts %}
+
+
+<script>
+
+
+var dateEditor = (cell, onClick, success, cancel, editorParams) => {
+   var editor = document.createElement("input");
+   editor.value = cell.getValue();
+   //debugger;
+   var datepicker = flatpickr(editor, {
+     enableTime: true,
+     dateFormat: "Y-m-d",
+     onClose: (selectedDates, dateStr, instance) => {
+       success(dateStr);
+       updateCol(cell);
+       instance.destroy();
+     },
+     onChange: (selectedDates, dateStr, instance) => {
+       success(dateStr);
+       updateCol(cell)
+       instance.destroy();
+     },
+   });
+
+   onClick(() => {
+     editor.focus();
+   });
+
+   return editor;
+ };
+
+
+var updateCol = (cell) =>
+{
+    debugger;
+    var row = cell.getRow();
+    var rowData = row.getData();
+    id = rowData[0];
+	purchaserName = rowData[1];
+	purchaserDeptId = rowData[2];
+	purchaserActive = rowData[3];
+	purchaserDateInActive = rowData[4];
+	purchaserDateCreated = rowData[5];
+    value = id + "," + purchaserName + "," + purchaserDeptId + "," +  purchaserActive + "," + purchaserDateInActive  + "," + purchaserDateCreated
+    URL = "/api/data/managePurchaser?action=update&value=" + value;
+    table.setData(URL);
+};
+
+
+//custom formatter definition
+var printIcon = function(cell, formatterParams, onrendered){
+    return "<img src=./static/img/printer-16.png>";
+};
+
+
+//Build Tabulator
+var table = new Tabulator("#managePurchaser-table",
+{
+
+    ajaxURL: "/api/data/managePurchaser",
+    height:"311px",
+    layout:"fitData",
+    selectable:true,
+    placeholder:"No Data Set",
+    pagination:"local",
+    paginationSize:6,
+    paginationSizeSelector:[3, 6, 8, 10],
+    movableColumns:true,
+    paginationCounter:"rows",
+    initialSort:[
+        {column: "1", dir:"asc"}, //sort by Department name, ascending
+
+    ],
+    columns:[
+        {title:"id", field:"0", hozAlign:"center", sorter:"number", visible:false},
+        {title:"purchaserName", field:"1", hozAlign:"center", sorter:"string", visible:true, editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Purchaser Name ..."},
+        {title:"purchaserDeptId", field:"2", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Purchaser Department Id ..."},
+        {title:"purchaserActive", field:"3", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Active Purchaser ..."},
+        {title:"purchaserDateInActive", field:"4", hozAlign:"center", sorter:"date", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Date Inactive ..."},
+        {title:"purchaserDateCreated", field:"5", hozAlign:"center", sorter:"date", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Date Created ..."},
+    ],
+});
+
+columns: ['', '', '', '', '', '', '', '']
+
+
+//cellEdited:updateCol,
+
+
+
+function printit(cell)
+{
+    alert("print it");
+}
+
+
+
+</script>
+{% endblock %}

@@ -2,7 +2,7 @@ import datetime as dt
 
 from flask import render_template, request, redirect, url_for, flash, session
 
-from app import app, bcrypt
+from app import app, bcrypt, constants
 from app import utilities
 
 
@@ -92,8 +92,6 @@ def addSupplier():
             parms = (supplierName, supplierAddr, supplierContactName, supplierEmail, supplierTel, supplierActive,
                      supplierDateCreated)
             utilities.insertSupplier(parms)
-
-
 
     except Exception as e:
         print(f'problem in addSupplier: {e}')
@@ -342,11 +340,15 @@ def apimanageDepartment():
 @app.route('/manageDepartment')
 def manageDepartment():
     try:
-        '''
+
         if session.get('loggedOn', None) == None:
             flash('Please login!', 'danger')
             return redirect(url_for('login'))
-        '''
+
+        if session['securityLevel'] < constants.GOD_LEVEL:
+            flash('Security Level of 5 required to manage Department table', 'warning')
+            return redirect(url_for('adminHome'))
+
 
     except Exception as e:
         print(f'problem in manageDepartment: {e}')
@@ -396,14 +398,18 @@ def apimanageParts():
 @app.route('/manageParts')
 def manageParts():
     try:
-        '''
+
         if session.get('loggedOn', None) == None:
             flash('Please login!', 'danger')
             return redirect(url_for('login'))
-        '''
+
+        if session['securityLevel'] < constants.GOD_LEVEL:
+            flash('Security Level of 5 required to manage Part table', 'warning')
+            return redirect(url_for('adminHome'))
+
 
     except Exception as e:
-        print(f'problem in manageDepartment: {e}')
+        print(f'problem in manageParts: {e}')
 
     return render_template('manageParts.html')
 
@@ -434,14 +440,19 @@ def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=
     return (mylist)  # arry list
 
 
+
 @app.route('/managePurchaseOrder', methods=['GET', 'POST'])
 def managePurchaseOrder():
     try:
-        '''
+
         if session.get('loggedOn', None) == None:
             flash('Please login!', 'danger')
             return redirect(url_for('login'))
-        '''
+
+        if session['securityLevel'] < constants.GOD_LEVEL:
+            flash('Security Level of 5 required to manage PurchaseOrder table', 'warning')
+            return redirect(url_for('adminHome'))
+
     except Exception as e:
         print(f'problem in managePurchaseOrder: {e}')
 
@@ -453,3 +464,158 @@ def logout():
     session.pop('loggedOn')
     session.pop('securityLevel')
     return redirect(url_for('home'))
+
+
+@app.route('/api/data/manageSupplier/<action>/<value>', methods=['GET'])
+@app.route('/api/data/manageSupplier', methods=['GET'])
+# api/data/manageSupplier?action=update&value=1,Executive,2023-01-04,5'
+def apimanageSupplier():
+    myList: list = []
+    aList: list = []
+
+    # set arg to '' not present
+    action = request.args.get('action', '')
+
+    # if args ARE passed
+    if action == 'update':
+        value = request.args.get('value', '')
+        myList = value.split(',')
+        id = myList[0]
+        supplierName = myList[1]
+        supplierAddr = myList[2]
+        supplierTel = myList[3]
+        supplierEmail = myList[4]
+        supplierContact = myList[5]
+        supplierActive = myList[6]
+        supplierDateInActive = myList[7]
+        supplierDateCreated = myList[8]
+
+        utilities.updateSupplier(id, supplierName, supplierAddr, supplierTel, supplierEmail, supplierContact, supplierActive, supplierDateInActive, supplierDateCreated)
+
+    # reload tabulator.js table
+    resultList = utilities.getTable('Supplier')
+    for row in resultList:
+        aList = (row[0], row[1], row[2], row[3], row[4], row[5],row[6],row[7], row[8])
+        d1 = dict(enumerate(aList))
+        myList.append(d1)
+    return (myList)
+
+@app.route('/manageSupplier')
+def manageSupplier():
+    try:
+
+        if session.get('loggedOn', None) == None:
+            flash('Please login!', 'danger')
+            return redirect(url_for('login'))
+
+        if session['securityLevel'] < constants.GOD_LEVEL:
+            flash('Security Level of 5 required to manage Supplier table', 'warning')
+            return redirect(url_for('adminHome'))
+
+    except Exception as e:
+        print(f'problem in manageSupplier: {e}')
+
+    return render_template('manageSupplier.html')
+
+
+
+@app.route('/api/data/managePurchasr/<action>/<value>', methods=['GET'])
+@app.route('/api/data/managePurchaser', methods=['GET'])
+# api/data/managePurchaser?action=update&value=1,Executive,2023-01-04,5'
+def apimanagePurchaser():
+    myList: list = []
+    aList: list = []
+
+    # set arg to '' not present
+    action = request.args.get('action', '')
+
+    # if args ARE passed
+    if action == 'update':
+        value = request.args.get('value', '')
+        myList = value.split(',')
+
+        id = myList[0]
+        purchaserName = myList[1]
+        purchaserDeptId = myList[2]
+        purchaserActive = myList[3]
+        purchaserDateInActive = myList[4]
+        purchaserDateCreated = myList[5]
+
+        utilities.updatePurchaser(id, purchaserName,purchaserDeptId, purchaserActive, purchaserDateInActive, purchaserDateCreated)
+
+    # reload tabulator.js table
+    resultList = utilities.getTable('Purchaser')
+    for row in resultList:
+        aList = (row[0], row[1], row[2], row[3], row[4], row[5])
+        d1 = dict(enumerate(aList))
+        myList.append(d1)
+    return (myList)
+
+@app.route('/managePurchaser')
+def managePurchaser():
+    try:
+
+        if session.get('loggedOn', None) == None:
+            flash('Please login!', 'danger')
+            return redirect(url_for('login'))
+
+        if session['securityLevel'] < constants.GOD_LEVEL:
+            flash('Security Level of 5 required to manage Purchaser table', 'warning')
+            return redirect(url_for('adminHome'))
+
+    except Exception as e:
+        print(f'problem in managePurchaser: {e}')
+
+    return render_template('managePurchaser.html')
+
+
+@app.route('/api/data/manageUser/<action>/<value>', methods=['GET'])
+@app.route('/api/data/manageUser', methods=['GET'])
+# api/data/managePurchaser?action=update&value=1,Executive,2023-01-04,5'
+def apimanageUser():
+    myList: list = []
+    aList: list = []
+
+    # set arg to '' not present
+    action = request.args.get('action', '')
+
+    # if args ARE passed
+    if action == 'update':
+        value = request.args.get('value', '')
+        myList = value.split(',')
+
+        id = myList[0]
+        username = myList[1]
+        password = myList[2]
+        createDate = myList[3]
+        active = myList[4]
+        dateInactive = myList[5]
+        securityLevel = myList[6]
+
+        utilities.updateUser(id, username, password, createDate, active, dateInactive, securityLevel)
+
+    # reload tabulator.js table
+    resultList = utilities.getTable('User')
+    for row in resultList:
+        aList = (row[0], row[1], row[2], row[3], row[4], row[5], row[6])
+        d1 = dict(enumerate(aList))
+        myList.append(d1)
+    return (myList)
+
+@app.route('/manageUser')
+def manageUser():
+    try:
+
+        if session.get('loggedOn', None) == None:
+            flash('Please login!', 'danger')
+            return redirect(url_for('login'))
+
+        if session['securityLevel'] < constants.GOD_LEVEL:
+            flash('Security Level of 5 required to manage User table', 'warning')
+            return redirect(url_for('adminHome'))
+
+    except Exception as e:
+        print(f'problem in manageUser: {e}')
+
+    return render_template('manageUser.html')
+

@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'AdminBase.html' %}
 
 {% block content %}
 
@@ -84,11 +84,11 @@ var table = new Tabulator("#manageParts-table",
     columns:[
         {title:"id", field:"0", hozAlign:"center", sorter:"string", visible:false},
         {title:"partNbr", field:"1", hozAlign:"center", sorter:"string", visible:true, editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find a Part Number ..."},
-        {title:"partDesc", field:"2", hozAlign:"center", sorter:"date", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Part Description ..."},
+        {title:"partDesc", field:"2", hozAlign:"center", sorter:"string", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Part Description ..."},
         {title:"partSupplierId", field:"3", hozAlign:"center", sorter:"string", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Supplier Id ..."},
-        {title:"partQuantity", field:"4", hozAlign:"center", sorter:"date", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Part Quantity ..."},
-        {title:"partInStock", field:"5", hozAlign:"center", sorter:"date", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Part In Stock ..."},
-        {title:"partDateOutOfStock", field:"6", hozAlign:"center", sorter:"date", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Date Part Out of Stock ..."},
+        {title:"partQuantity", field:"4", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Part Quantity ..."},
+        {title:"partInStock", field:"5", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Part In Stock ..."},
+        {title:"partDateOutOfStock", field:"6", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Date Part Out of Stock ..."},
         {title:"partDateCreated", field:"7", hozAlign:"center", sorter:"date", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Date Part Created ..."},
     ],
 });

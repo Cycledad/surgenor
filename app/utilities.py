@@ -4,6 +4,12 @@ import sqlite3
 
 from app import app, constants
 
+#URL for print routine: https://www.youtube.com/watch?v=fziZXbeaegc&list=PL7QI8ORyVSCavY8MYL3dM54SviNlnEA3T&index=11
+#for print routine
+from pathlib import Path
+from docxtpl import DocxTemplate
+
+
 
 def getDatabase(dataBaseName: str) -> str:
     return (os.path.join(app.root_path, dataBaseName))
@@ -893,3 +899,47 @@ def getTable(tableName: str) -> list:
 
     except Exception as e:
         print(f'problem in getTable: {e}')
+
+
+def printPurchaseOrder(orderId:int) -> None:
+    try:
+        docPath = Path(__file__).parent/ 'test.docx'
+        #docPath = Path(__file__).parent / 'purchaseOrderTemplate.docx'
+        doc = DocxTemplate(docPath)
+
+        context = {
+            'items': [
+                {'name': 'wayne', 'addr': '123 my way'},
+                {'name': 'chantal', 'addr': '852 paradise'},
+            ],
+        }
+
+        '''
+        context = {'name' : 'wayne',
+                   'PONbr': '1000',
+                   'supplierName' : 'General Motors',
+                   'purchaseOrderDate' : '2023/01/06',
+                   'supplierAddr': '100 General Motor Way, Detroit, Michigan, USA',
+                    'items': [
+                        {'orderQuantity' : '200', 'orderPartPrice' : '22.50', 'partDesc': 'Tractor Calliper Front Wheel Pulley'},
+                        {'orderQuantity' : '200', 'orderPartPrice' : '22.50', 'partDesc': 'Tractor Calliper Front Wheel Pulley'},
+                        {'orderQuantity' : '200', 'orderPartPrice' : '22.50', 'partDesc': 'Tractor Calliper Front Wheel Pulley'},
+                        {'orderQuantity' : '200', 'orderPartPrice' : '22.50', 'partDesc': 'Tractor Calliper Front Wheel Pulley'},
+                        {'orderQuantity' : '200', 'orderPartPrice' : '22.50', 'partDesc': 'Tractor Calliper Front Wheel Pulley'}
+                    ]
+        }
+        '''
+        doc.save(Path(__file__).parent / 'generatedDoc.docx')
+
+
+    except Exception as e:
+        print(f'problem in printPurchaseOrder: {e}')
+
+    '''
+                    'orderQuantity' : '200',
+                   'orderPartPrice' : '22.50',
+                   'partDesc': 'Tractor Calliper Front Wheel Pulley',
+                   'orderQuantity': '200',
+                   'orderPartPrice': '22.50',
+                   'partDesc': 'Tractor Calliper Front Wheel Pulley'
+    '''

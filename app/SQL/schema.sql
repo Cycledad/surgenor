@@ -14,8 +14,8 @@ CREATE TABLE OrderTbl (
 	OrderPartPrice REAL NOT NULL,
 	OrderTotalCost REAL NOT NULL,
 	OrderReceivedDate TEXT,
-	OrderReturnDate Text,
-	OrderReturnQuantity integer,
+	OrderReturnDate TEXT,
+	OrderReturnQuantity INTEGER,
 	PRIMARY KEY("id" AUTOINCREMENT),
 	FOREIGN KEY(OrderSupplierId) REFERENCES Supplier (id),
 	FOREIGN KEY(OrderNbr) REFERENCES purchaseOrder (purchaseOrderNbr),
@@ -49,10 +49,10 @@ CREATE TABLE Part (
 	id INTEGER NOT NULL,
 	partNbr TEXT NOT NULL,
 	partDesc TEXT NOT NULL,
-	partSupplierId integer,
+	partSupplierId INTEGER,
 	partQuantity INTEGER NOT NULL,
-	partInStock boolean NOT NULL,  /* boolean */
-	partDateOutOfStock text,
+	partInStock BOOLEAN NOT NULL,  /* boolean */
+	partDateOutOfStock TEXT,
 	partDateCreated TEXT NOT NULL,
 	PRIMARY KEY("id" AUTOINCREMENT),
 	UNIQUE ("partNbr"),
@@ -70,10 +70,10 @@ id INTEGER NOT NULL,
 purchaseOrderDate TEXT NOT NULL,
 purchaseOrderReceivedDate TEXT,
 purchaseOrderDeleteFlg BOOLEAN NOT NULL,
-purchaseOrderDateDeleted Text,
+purchaseOrderDateDeleted TEXT,
 purchaseOrderNbr INTEGER,
-purchaseOrderPurchaserId integer not null,
-purchaseOrderPurchaserDeptId integer not null,
+purchaseOrderPurchaserId INTEGER NOT NULL,
+purchaseOrderPurchaserDeptId INTEGER NOT NULL,
 PRIMARY KEY("id" AUTOINCREMENT)
 );
 
@@ -105,8 +105,8 @@ DROP TABLE IF EXISTS Purchaser;
 CREATE TABLE Purchaser (
 	id INTEGER NOT NULL,
 	purchaserName TEXT NOT NULL,
-	purchaserDeptId integer not null,
-	purchaserActive boolean NOT NULL,    /* boolean */
+	purchaserDeptId INTEGER NOT NULL,
+	purchaserActive BOOLEAN NOT NULL,    /* boolean */
 	purchaserDateInActive TEXT,
 	purchaserDateCreated TEXT NOT NULL,
 	PRIMARY KEY("id" AUTOINCREMENT),
@@ -129,7 +129,7 @@ CREATE TABLE Supplier (
 	supplierTel TEXT NOT NULL,
 	supplierEmail TEXT NOT NULL,
 	supplierContact TEXT NOT NULL,
-	supplierActive boolean NOT NULL,    /* boolean */
+	supplierActive BOOLEAN NOT NULL,    /* boolean */
 	supplierDateInActive TEXT,
 	supplierDateCreated TEXT NOT NULL,
 	PRIMARY KEY("id" AUTOINCREMENT)
@@ -161,7 +161,7 @@ INSERT INTO Unit(unitDesc) values('PIECES');
 
 DROP TABLE IF EXISTS OrderNbrTbl;
 CREATE TABLE OrderNbrTbl (
-	orderNbr integer NOT NULL unique
+	orderNbr INTEGER NOT NULL unique
 
 );
 
@@ -172,7 +172,7 @@ CREATE TABLE Department (
 	id	INTEGER,
 	deptName TEXT NOT NULL UNIQUE,
 	dateCreated	INTEGER NOT NULL,
-	active boolean NOT NULL,    /* boolean */
+	active BOOLEAN NOT NULL,    /* boolean */
 	dateInActive TEXT,
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
@@ -191,8 +191,14 @@ CREATE TABLE User (
 	createDate	TEXT,
 	active	BOOLEAN,
 	dateInActive TEXT,
-	securityLevel integer,
+	securityLevel INTEGER,
 	PRIMARY KEY("id" AUTOINCREMENT));
+
+
+INSERT INTO User(username, password, createDate, active, securityLevel) values('Kevin Davis', 'father', '20230106', True, 5);
+
+
+
 
 PRAGMA foreign_keys = ON;
 PRAGMA foreign_keys;

@@ -57,9 +57,20 @@ var updateQuantity = (cell) =>
             rowData[13] = ''
         }
         else {
-            URL = "/api/data?orderId=" + id + "&quantity=" + returnQuantity;
+            value = id + "," + returnQuantity
+            URL = "/api/data/managePurchaseOrder?action=updateQuantity&value=" + value
             table.setData(URL);
+
+            /*
+            URL = "/api/data/managePurchaseOrder?orderId=" + id + "&quantity=" + returnQuantity;
+            table.setData(URL);
+
+            value = id + "," + partNbr + "," + partDesc + "," +  partSupplierId + "," + partQuantity + "," + partInStock + "," +  partDateOutOfStock + "," + partDateCreated
+            URL = "/api/data/manageParts?action=update&value=" + value;
+            table.setData(URL);
+            */
         };
+
     };
 };
 
@@ -73,7 +84,8 @@ var printIcon = function(cell, formatterParams, onrendered){
 var table = new Tabulator("#example-table",
 {
 
-    ajaxURL: "/api/data",
+    //ajaxURL: "/api/data",
+    ajaxURL: "/api/data/managePurchaseOrder",
     height:"311px",
     layout:"fitData",
     selectable:true,
@@ -89,7 +101,7 @@ var table = new Tabulator("#example-table",
     ],
     columns:[
         {title:"purchaserOrderId", field:"0", hozAlign:"center", sorter:"number", visible:false},
-        {title:"orderid", field:"1", hozAlign:"center", sorter:"string", visible:false},
+        {title:"orderid", field:"1", hozAlign:"center", sorter:"number", visible:false},
         {title:"Purchaser", field:"2", hozAlign:"center", sorter:"string", headerFilter:"input", headerFilterPlaceholder:"Find a Purchaser ..."},
         {title:"Purchaser Department", field:"3", hozAlign:"center", sorter:"string", headerFilter:"input", headerFilterPlaceholder:"Find an Department ..."},
         {title:"Purchase Order Number", field:"4", hozAlign:"center", sorter:"number", headerFilter:"input", headerFilterPlaceholder:"Find an Purchaser ..."},
@@ -148,8 +160,12 @@ function updateDate(cell) {
     id = rowData["1"]
     dt_order_received = rowData[11] //date order received col
     dt_order_returned = rowData[12] //date order returned col
-    URL = "/api/data?orderId=" + id + "&dt_order_received=" + dt_order_received + "&dt_order_returned=" + dt_order_returned
+    value= id + "," + dt_order_received + "," + dt_order_returned
+    URL = "/api/data/managePurchaseOrder?action=updateOrderDate&value=" + value;
     table.setData(URL);
+
+    //URL = "/api/data?orderId=" + id + "&dt_order_received=" + dt_order_received + "&dt_order_returned=" + dt_order_returned
+    //table.setData(URL);
 
 
 }

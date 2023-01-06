@@ -413,11 +413,43 @@ def manageParts():
 
     return render_template('manageParts.html')
 
-@app.route('/api/data/<orderId>/<quantity>', methods=['GET'])
-@app.route('/api/data/<orderId>/<dt_order_received>/<dt_order_returned>',
+@app.route('/api/data/managePurchaseOrder/<action>/<orderId>/<quantity>', methods=['GET'])
+@app.route('/api/data/managePurchaseOrder/<action>/<orderId>/<dt_order_received>/<dt_order_returned>',
            methods=['GET'])  # /api/data?orderid=1&dt=28-12-2022
-@app.route('/api/data', methods=['GET'])
+@app.route('/api/data/managePurchaseOrder', methods=['GET'])
 def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=None):
+
+    # set arg to '' not present
+    action = request.args.get('action', '')
+
+    # if args ARE passed
+    if action == 'updateOrderDate':
+        value = request.args.get('value', '')
+        myList = value.split(',')
+        orderId = myList[0]
+        dt_order_received = myList[1]
+        dt_order_returned = myList[2]
+        if dt_order_received == null:
+            dt_order_received = ''
+        if dt_order_returned == null:
+            dt_order_returned = ''
+
+        utilities.updateOrderReceivedDate(orderId, dt_order_received, dt_order_returned)
+
+    if action == 'updateQuantity':
+        value = request.args.get('value', '')
+        myList = value.split(',')
+        orderId = myList[0]
+        quantity = myList[1]
+        utilities.updateOrderReturnQuantity(orderId, quantity)
+
+    if action == 'printOrder':
+        value = request.args.get('value', '')
+        myList = value.split(',')
+        orderId = myList[0]
+        utilities.printPurchaseOrder(orderId)
+
+    '''
     orderId = request.args.get('orderId')
     dt_order_received = request.args.get('dt_order_received')
     dt_order_returned = request.args.get('dt_order_returned')
@@ -426,6 +458,10 @@ def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=
         utilities.updateOrderReceivedDate(orderId, dt_order_received, dt_order_returned)
     if orderId != None and (quantity):
         utilities.updateOrderReturnQuantity(orderId, quantity)
+    '''
+
+
+
     resultList = utilities.getALLPurchaseOrders()  # returns a list of a list, so indice 1 = row, indice 2 = col within row, i.e. mylist[0][1]
     mylist: list = []
     alist: list = []

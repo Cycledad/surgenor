@@ -1,45 +1,37 @@
-{% extends 'base.html' %}
-
-{% block content %}
+{% extends 'base.html' %} {% block content %}
 
 <div id="manageDepartment-table"></div>
 
-{% endblock %}
-
-{% block scripts %}
-
+{% endblock %} {% block scripts %}
 
 <script>
+  var dateEditor = (cell, onClick, success, cancel, editorParams) => {
+    var editor = document.createElement("input");
+    editor.value = cell.getValue();
+    //debugger;
+    var datepicker = flatpickr(editor, {
+      enableTime: true,
+      dateFormat: "Y-m-d",
+      onClose: (selectedDates, dateStr, instance) => {
+        success(dateStr);
+        updateCol(cell);
+        instance.destroy();
+      },
+      onChange: (selectedDates, dateStr, instance) => {
+        success(dateStr);
+        updateCol(cell);
+        instance.destroy();
+      },
+    });
 
+    onClick(() => {
+      editor.focus();
+    });
 
-var dateEditor = (cell, onClick, success, cancel, editorParams) => {
-   var editor = document.createElement("input");
-   editor.value = cell.getValue();
-   //debugger;
-   var datepicker = flatpickr(editor, {
-     enableTime: true,
-     dateFormat: "Y-m-d",
-     onClose: (selectedDates, dateStr, instance) => {
-       success(dateStr);
-       updateCol(cell);
-       instance.destroy();
-     },
-     onChange: (selectedDates, dateStr, instance) => {
-       success(dateStr);
-       updateCol(cell)
-       instance.destroy();
-     },
-   });
+    return editor;
+  };
 
-   onClick(() => {
-     editor.focus();
-   });
-
-   return editor;
- };
-
-var updateCol = (cell) =>
-{
+  var updateCol = (cell) => {
     debugger;
     var row = cell.getRow();
     var rowData = row.getData();
@@ -49,25 +41,22 @@ var updateCol = (cell) =>
     active = rowData[3];
     dateInActive = rowData[4];
     value = id + "," + deptName + "," + dateCreated + "," + active + "," + dateInActive;
-//'/api/data/manageDepartment?action=update&value=1,Executive,2023-01-04,5'
+    //'/api/data/manageDepartment?action=update&value=1,Executive,2023-01-04,5'
     URL = "/api/data/manageDepartment?action=update&value=" + value;
     table.setData(URL);
-};
+  };
 
-//db soft delete so recs are not actually removed, just flagged as deleted
-//therefore allow modification of rows and then send back for update
-var deleteRow = (deptId) =>
-{
+  //db soft delete so recs are not actually removed, just flagged as deleted
+  //therefore allow modification of rows and then send back for update
+  var deleteRow = (deptId) => {
     debugger;
     //value = id + "," + deptId;
     //'/api/data/manageDepartment?action=delete&value=id'
     URL = "/api/data/manageDepartment?action=delete&value=" + deptId;
     table.setData(URL);
-};
+  };
 
-
-var updateQuantity = (cell) =>
-{
+  var updateQuantity = (cell) => {
     //alert("say it");
     debugger;
     var row = cell.getRow();
@@ -75,81 +64,115 @@ var updateQuantity = (cell) =>
     //alert("OrderId is: " + rowData["1"]) //id in purchaserOrder table
     id = rowData["1"];
     returnQuantity = rowData[13];
-    if (isNaN(returnQuantity)){
-        alert("Not a number!!");
+    if (isNaN(returnQuantity)) {
+      alert("Not a number!!");
+    } else {
+      quantityOrdered = rowData[8];
+      if (returnQuantity > quantityOrdered) {
+        alert("Quantity returned can not exceed quantity ordered!");
+        rowData[13] = "";
+      } else {
+        URL = "/api/data?orderId=" + id + "&quantity=" + returnQuantity;
+        table.setData(URL);
+      }
     }
-    else {
-        quantityOrdered = rowData[8];
-        if (returnQuantity > quantityOrdered) {
-            alert("Quantity returned can not exceed quantity ordered!");
-            rowData[13] = ''
-        }
-        else {
-            URL = "/api/data?orderId=" + id + "&quantity=" + returnQuantity;
-            table.setData(URL);
-        };
-    };
-};
+  };
 
-//custom formatter definition
-var printIcon = function(cell, formatterParams, onrendered){
+  //custom formatter definition
+  var printIcon = function (cell, formatterParams, onrendered) {
     return "<img src=./static/img/printer-16.png>";
-};
+  };
 
-
-//Build Tabulator
-var table = new Tabulator("#manageDepartment-table",
-{
-
+  //Build Tabulator
+  var table = new Tabulator("#manageDepartment-table", {
     ajaxURL: "/api/data/manageDepartment",
-    height:"311px",
-    layout:"fitData",
-    selectable:true,
-    placeholder:"No Data Set",
-    pagination:"local",
-    paginationSize:6,
-    paginationSizeSelector:[3, 6, 8, 10],
-    movableColumns:true,
-    paginationCounter:"rows",
-    initialSort:[
-        {column: "1", dir:"asc"}, //sort by Department name, ascending
-
+    height: "311px",
+    layout: "fitData",
+    selectable: true,
+    placeholder: "No Data Set",
+    pagination: "local",
+    paginationSize: 6,
+    paginationSizeSelector: [3, 6, 8, 10],
+    movableColumns: true,
+    paginationCounter: "rows",
+    initialSort: [
+      { column: "1", dir: "asc" }, //sort by Department name, ascending
     ],
-    columns:[
-        {title:"id", field:"0", hozAlign:"center", sorter:"string", visible:false},
-        {title:"deptName", field:"1", hozAlign:"center", sorter:"string", visible:true, editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find a Department ..."},
-        {title:"dateCreated", field:"2", hozAlign:"center", sorter:"date", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Date Created ..."},
-        {title:"active", field:"3", hozAlign:"center", sorter:"string", editor:true, cellClick:deleteRow, headerFilter:"input", headerFilterPlaceholder:"Find Active Departments ..."},
-        {title:"dateInActive", field:"4", hozAlign:"center", sorter:"date", editor:true, editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Date Inactive ..."},
-        //{formatter:"buttonCross", align:"center", title:"del", headerSort:false, cellClick:function(e, cell){
-	    //    if(confirm('Are you sure you want to delete this entry?'))
-	    //        debugger;
-		//        rowData = cell.getRow().getData();
-		//        deptId = rowData[0];
-		//        deleteRow(deptId);
-		//        //cell.getRow().delete();
-	    //    }
-        //},
-        //column definition in the columns array
-        //{formatter:"buttonCross", width:40, align:"center", cellClick:function(e, cell){
-        //    cell.getRow().delete()}},
-        //{title:"Delete Row", field:"4", editor:true, cellClick:deleteRow, formatter:"buttonCross", width:140, align:"center"},
-        //{title:"Order Received Date", field:"10", align:"center", sorter:"date", editor:true},
-        //{title:"Delete Row", editor:dateEditor, width:40, align:"center", cellClick:function(e, cell){doit(e,cell);},},
-        //{title:"Order Return Quantity", field:"13", hozAlign:"center", sorter:"number", editor:true},
-        //{title:"Order Return Quantity", field:"13", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateQuantity},
-        //{title:"Print", formatter:printIcon, align:"center", cellClick:function(e, cell){printit(e,cell);},},
-        //{title:"Print", formatter:"image", formatterParams:{urlPrefix:"./static/img/printer-16", urlSuffix:".png"}, align:"center", cellClick:function(e, cell){printit(e,cell);},},
-        ],
-        });
+    columns: [
+      {
+        title: "id",
+        field: "0",
+        hozAlign: "center",
+        sorter: "string",
+        visible: false,
+      },
+      {
+        title: "deptName",
+        field: "1",
+        hozAlign: "center",
+        sorter: "string",
+        visible: true,
+        editor: true,
+        cellEdited: updateCol,
+        headerFilter: "input",
+        headerFilterPlaceholder: "Find a Department ...",
+      },
+      {
+        title: "dateCreated",
+        field: "2",
+        hozAlign: "center",
+        sorter: "date",
+        editor: dateEditor,
+        headerFilter: "input",
+        headerFilterPlaceholder: "Find Date Created ...",
+      },
+      {
+        title: "active",
+        field: "3",
+        hozAlign: "center",
+        sorter: "string",
+        editor: true,
+        cellClick: deleteRow,
+        headerFilter: "input",
+        headerFilterPlaceholder: "Find Active Departments ...",
+      },
+      {
+        title: "dateInActive",
+        field: "4",
+        hozAlign: "center",
+        sorter: "date",
+        editor: true,
+        editor: dateEditor,
+        headerFilter: "input",
+        headerFilterPlaceholder: "Find Date Inactive ...",
+      },
+      //{formatter:"buttonCross", align:"center", title:"del", headerSort:false, cellClick:function(e, cell){
+      //    if(confirm('Are you sure you want to delete this entry?'))
+      //        debugger;
+      //        rowData = cell.getRow().getData();
+      //        deptId = rowData[0];
+      //        deleteRow(deptId);
+      //        //cell.getRow().delete();
+      //    }
+      //},
+      //column definition in the columns array
+      //{formatter:"buttonCross", width:40, align:"center", cellClick:function(e, cell){
+      //    cell.getRow().delete()}},
+      //{title:"Delete Row", field:"4", editor:true, cellClick:deleteRow, formatter:"buttonCross", width:140, align:"center"},
+      //{title:"Order Received Date", field:"10", align:"center", sorter:"date", editor:true},
+      //{title:"Delete Row", editor:dateEditor, width:40, align:"center", cellClick:function(e, cell){doit(e,cell);},},
+      //{title:"Order Return Quantity", field:"13", hozAlign:"center", sorter:"number", editor:true},
+      //{title:"Order Return Quantity", field:"13", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateQuantity},
+      //{title:"Print", formatter:printIcon, align:"center", cellClick:function(e, cell){printit(e,cell);},},
+      //{title:"Print", formatter:"image", formatterParams:{urlPrefix:"./static/img/printer-16", urlSuffix:".png"}, align:"center", cellClick:function(e, cell){printit(e,cell);},},
+    ],
+  });
 
-columns: ['', '', '', '', '']
+  columns: ["", "", "", "", ""];
 
+  //cellEdited:updateCol,
 
-//cellEdited:updateCol,
-
-
-/*
+  /*
 
 cellClick:function(e, cell){
         //e - the click event object
@@ -168,7 +191,7 @@ document.getElementById("ajax-trigger").addEventListener("click", function(){
 });
 
 */
-/*
+  /*
 function updateDate(cell) {
     //debugger;
     var row = cell.getRow();
@@ -183,12 +206,8 @@ function updateDate(cell) {
 
 }
 */
-function printit(cell)
-{
+  function printit(cell) {
     alert("print it");
-}
-
-
-
+  }
 </script>
 {% endblock %}

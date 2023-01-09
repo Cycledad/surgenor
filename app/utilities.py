@@ -1,6 +1,7 @@
 import datetime
 import os
 import sqlite3
+import random
 
 from app import app, constants
 
@@ -921,143 +922,44 @@ def getTable(tableName: str) -> list:
 
 
 def printPurchaseOrder(orderList:list) -> None:
-    try:
+    # https://nagasudhir.blogspot.com/2021/10/docxtpl-python-library-for-creating.html
 
-        value: str = ''
+    try:
         myList: list = []
-        currentSupplierId = orderList[0][2]
+        previousSupplierId = orderList[0][2]
 
         for order in orderList:
 
             supplierId = order[2]
 
-            if currentSupplierId != supplierId:
-
-                printDoc('purchaseOrderTemplate.docx', 'generatedDoc1.docx')
-                buildDoc(order)
-
-                '''
-                # docPath = Path(__file__).parent/ 'test.docx'
-                docPath = Path(__file__).parent / 'purchaseOrderTemplate.docx'
-                doc = DocxTemplate(docPath)
-                # these are common to all rows in the order
-                purchaseOrderId = order[1]
-                purchaseOrderDate = getTableItemById(purchaseOrderId, 'PurchaseOrder', 'purchaseOrderDate')
-                PONbr = purchaseOrderId
-                supplierName = getSupplierName(currentSupplierId)
-                supplierAddr = getTableItemById(currentSupplierId, 'Supplier', 'supplierAddr')
-                receivedBy = order[9]
-
-                #https://nagasudhir.blogspot.com/2021/10/docxtpl-python-library-for-creating.html           
-
-
-                context = {'supplierName': supplierName,
-                           'supplierAddr': supplierAddr,
-                           'receivedBy': receivedBy,
-                           'purchaseOrderDate': purchaseOrderDate,
-                           'PONbr': PONbr,
-                           'items': myList
-                           }
-
-                doc.render(context)
-                #now = datetime.datetime.now()
-                #fname = 'generatedDoc' + str(now) + 'docx'
-                #doc.save(Path(__file__).parent / fname)
-                doc.save(Path(__file__).parent / 'generatedDoc1.docx')
-
-                value = ''
-            '''
+            if previousSupplierId != supplierId:
+                r = random.randint(0, 1000000)
+                DocName = 'generatedDoc_' + str(r) + '.docx'
+                printDoc('purchaseOrderTemplate.docx', DocName, myList, order, previousSupplierId)
+                myList = []
+                myList = buildDoc(order, myList)
+                previousSupplierId = supplierId
             else:
-                buildDoc(order)
-                #partDesc = getTableItemById(order[3], 'Part', 'partDesc')
-                #orderQuantity = order[4]
-                #orderPartPrice = order[6]
-                #value = {'orderQuantity': orderQuantity,'orderPartPrice': orderPartPrice, 'partDesc':partDesc}
-                #myList.append(value)
+               myList = buildDoc(order, myList)
 
-
-        doc.render(context)
-        #now = datetime.datetime.now()
-        #fname = 'generatedDoc' + str(now) + 'docx'
-        #doc.save(Path(__file__).parent / fname)
-        doc.save(Path(__file__).parent / 'generatedDoc2.docx')
+        r = random.randint(0, 1000000)
+        DocName = 'generatedDoc_' + str(r) + '.docx'
+        printDoc('purchaseOrderTemplate.docx', DocName, myList, order, previousSupplierId)
 
 
     except Exception as e:
         print(f'problem in printPurchaseOrder: {e}')
 
 
-
-
-    '''
-    
-          'itemsx': myList
-    
-        'itemsx': "[" + value + "]"
-        context = {'PONbr': PONbr}
-        doc.render(context)
-
-             
-        
-        
-        
-                    for order in orderList:
-            supplierId = order[2]
-            supplierName = getSupplierName(supplierId)
-            doc.render(context)
-            
-        
-        
-            supplierAddr = getTableItemById(supplierId, 'Supplier', 'supplierAddr')
-            receivedBy = order[9]
-
-            partDesc = getTableItemById(order[3], 'Part', 'partDesc')
-
-            context = {'supplierName': supplierName,
-                       'supplierAddr': supplierAddr,
-                       'receivedBy': receivedBy,
-                       'purchaseOrderDate': purchaseOrderDate,
-                       'PONbr': PONbr,
-                       'items': [
-                           {'orderQuantity': order[4], 'orderDesc': partDesc, 'partPrice': order[6]}
-                            ]
-                       }
-            
-
-    
-    
-    
-        context = {'name': 'wayne',
-                   'PONbr': '1000',
-                   'supplierName': 'General Motors',
-                   'purchaseOrderDate': '2023/01/06',
-                   'supplierAddr': '100 General Motor Way, Detroit, Michigan, USA',
-                   'items': [
-                       {'orderQuantity': '200', 'orderPartPrice': '22.50', 'partDesc': 'Tractor Calliper Front Wheel Pulley'},
-                       {'orderQuantity': '200', 'orderPartPrice': '22.50', 'partDesc': 'Tractor Calliper Front Wheel Pulley'},
-                       {'orderQuantity': '200', 'orderPartPrice': '22.50', 'partDesc': 'Tractor Calliper Front Wheel Pulley'},
-                       {'orderQuantity': '200', 'orderPartPrice': '22.50', 'partDesc': 'Tractor Calliper Front Wheel Pulley'},
-                       {'orderQuantity': '200', 'orderPartPrice': '22.50', 'partDesc': 'Tractor Calliper Front Wheel Pulley'},
-                   ]
-                   }
-
-
-    
-
-                   
- 
-   
-        
-    '''
-def buildDoc(order) -> list:
+def buildDoc(order, myList: list) -> list:
     partDesc = getTableItemById(order[3], 'Part', 'partDesc')
     orderQuantity = order[4]
     orderPartPrice = order[6]
-    value = {'orderQuantity': orderQuantity, 'orderPartPrice': orderPartPrice, 'partDesc': partDesc}
-    return(myList.append(value))
+    myList.append({'orderQuantity': orderQuantity, 'orderPartPrice': orderPartPrice, 'partDesc': partDesc})
+    return(myList)
 
 
-def printDoc(templateName:str, docName:str) -> None:
+def printDoc(templateName:str, docName:str, myList: list, order, supplierId: int) -> None:
     docPath = Path(__file__).parent / templateName
     doc = DocxTemplate(docPath)
 
@@ -1065,8 +967,8 @@ def printDoc(templateName:str, docName:str) -> None:
     purchaseOrderId = order[1]
     purchaseOrderDate = getTableItemById(purchaseOrderId, 'PurchaseOrder', 'purchaseOrderDate')
     PONbr = purchaseOrderId
-    supplierName = getSupplierName(currentSupplierId)
-    supplierAddr = getTableItemById(currentSupplierId, 'Supplier', 'supplierAddr')
+    supplierName = getSupplierName(supplierId)
+    supplierAddr = getTableItemById(supplierId, 'Supplier', 'supplierAddr')
     receivedBy = order[9]
 
     # https://nagasudhir.blogspot.com/2021/10/docxtpl-python-library-for-creating.html

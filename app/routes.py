@@ -429,9 +429,9 @@ def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=
         orderId = myList[0]
         dt_order_received = myList[1]
         dt_order_returned = myList[2]
-        if dt_order_received == null:
+        if dt_order_received == 'null':
             dt_order_received = ''
-        if dt_order_returned == null:
+        if dt_order_returned == 'null':
             dt_order_returned = ''
 
         utilities.updateOrderReceivedDate(orderId, dt_order_received, dt_order_returned)
@@ -447,7 +447,18 @@ def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=
         value = request.args.get('value', '')
         myList = value.split(',')
         orderId = myList[0]
-        utilities.printPurchaseOrder(orderId)
+        orderList = utilities.getOrderById(orderId)
+        utilities.printPurchaseOrder(orderList)
+
+
+    if action == 'receivedBy':
+        value = request.args.get('value', '')
+        myList = value.split(',')
+        id = myList[0]
+        receivedBy = myList[1]
+        parms = (receivedBy, id,)
+        utilities.updateOrderReceivedBy(parms)
+
 
     '''
     orderId = request.args.get('orderId')
@@ -468,7 +479,7 @@ def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=
     for row in resultList:
         alist = (
         row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12],
-        row[13])
+        row[13], row[14])
         d1 = dict(enumerate(alist))
         mylist.append(d1)
 

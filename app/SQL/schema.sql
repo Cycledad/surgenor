@@ -14,6 +14,7 @@ CREATE TABLE OrderTbl (
 	OrderPartPrice REAL NOT NULL,
 	OrderTotalCost REAL NOT NULL,
 	OrderReceivedDate TEXT,
+	OrderReceivedBy TEXT,
 	OrderReturnDate TEXT,
 	OrderReturnQuantity INTEGER,
 	PRIMARY KEY("id" AUTOINCREMENT),
@@ -195,7 +196,6 @@ CREATE TABLE User (
 	PRIMARY KEY("id" AUTOINCREMENT));
 
 
-INSERT INTO User(username, password, createDate, active, securityLevel) values('Kevin Davis', 'father', '20230106', True, 5);
 
 
 

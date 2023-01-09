@@ -7,7 +7,7 @@ try:
     app = Flask(__name__)
 
     bcrypt = Bcrypt(app)
-    app.config['SECRET_KEY'] = '5791628bb0b13ce0c676dfde280ba245xxx'
+    app.config['SECRET_KEY'] = '5791628bb0b13ce0c676dfde280ba245'
 
     # from app.constants import DATABASE_NAME
     import app.constants as constants

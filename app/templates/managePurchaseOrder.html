@@ -46,7 +46,7 @@ var updateQuantity = (cell) =>
     var rowData = row.getData();
     //alert("OrderId is: " + rowData["1"]) //id in purchaserOrder table
     id = rowData["1"];
-    returnQuantity = rowData[13];
+    returnQuantity = rowData[14];
     if (isNaN(returnQuantity)){
         alert("Not a number!!");
     }
@@ -54,7 +54,7 @@ var updateQuantity = (cell) =>
         quantityOrdered = rowData[8];
         if (returnQuantity > quantityOrdered) {
             alert("Quantity returned can not exceed quantity ordered!");
-            rowData[13] = ''
+            rowData[14] = ''
         }
         else {
             value = id + "," + returnQuantity
@@ -73,6 +73,74 @@ var updateQuantity = (cell) =>
 
     };
 };
+
+
+var updateCol = (cell) =>
+{
+    debugger;
+    var row = cell.getRow();
+    var rowData = row.getData();
+    id = rowData["0"];
+    receivedBy = rowData[12];   //receivedBy
+    value = id + "," + receivedBy;
+    //'/api/data/manageDepartment?action=update&value=1,Executive,2023-01-04,5'
+    URL = "/api/data/managePurchaseOrder?action=receivedBy&value=" + value;
+    table.setData(URL);
+};
+
+
+
+
+/*
+var updateReceivedBy = (cell) =>
+{
+    //alert("say it");
+
+    //var xhr = new XMLHttpRequest();
+    //var URL = "/api/data/managePurchaseOrder?action=getPurchaser"
+    //xhr.open("GET", URL, true);
+    //xhr.onreadystatechange= function () {
+    //    if (this.readyState == 4 && this.status == 200) {
+    //        alert(this.responseText);
+    //        alert(this.responseText[0]);
+    //        rowData[13] = this.responseText;
+    //    }
+    //  }
+    //xhr.send();
+    //debugger
+    //editorParams:{values:["Kevin", "Jessie"]}
+    // Url for the request
+
+    var url = 'http://127.0.0.1:5000/api/data/managePurchaseOrder?action=getPurchaser';
+
+    // Making our request
+    fetch(url, { method: 'GET' })
+        .then(Result => Result.json())
+        .then(string => {
+
+            // Printing our response
+            console.log(string);
+
+            // Printing our field of our response
+            console.log(`string 0:  ${string[0]}`);
+            editorParams.values = ['wayne', 'chantal']
+        })
+        .catch(errorMsg => { console.log(errorMsg); });
+
+
+
+    //var row = cell.getRow();
+    //var rowData = row.getData();
+    //alert("OrderId is: " + rowData["1"]) //id in purchaserOrder table
+    //id = rowData["1"];
+    //receivedBy = rowData[13];
+
+
+};
+
+
+*/
+
 
 //custom formatter definition
 var printIcon = function(cell, formatterParams, onrendered){
@@ -95,7 +163,7 @@ var table = new Tabulator("#example-table",
     paginationSizeSelector:[3, 6, 8, 10],
     movableColumns:true,
     paginationCounter:"rows",
-     initialSort:[
+    initialSort:[
         {column: "4", dir:"desc"}, //sort by Purchase Order Number desc, most recent orders first
 
     ],
@@ -111,22 +179,24 @@ var table = new Tabulator("#example-table",
         {title:"Quantity", field:"8", hozAlign:"center", sorter:"number"},
         {title:"Part Price", field:"9", hozAlign:"center", sorter:"number"},
         {title:"Total Cost", field:"10", hozAlign:"center", sorter:"number"},
+        {title:"Order Received Date", field:"11", editor:dateEditor},
+        //I wasn't able to figure out how to load select values from the database ????????????????????????????????????????????????????????????????????????????????????????????????????
+        {title:"Order Received By", field:"12", editor:"select", editorParams:{values:["Kevin", "Jessie"]}, cellEdited:updateCol},
+        {title:"Order Return Date", field:"13", editor:dateEditor},
+        {title:"Order Return Quantity", field:"14", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateQuantity},
+        {title:"Print", formatter:"image", formatterParams:{urlPrefix:"./static/img/printer-16", urlSuffix:".png"}, align:"center", cellClick:function(e, row){printit(e,row);},},
         //column definition in the columns array
         //{formatter:"buttonCross", width:40, align:"center", cellClick:function(e, cell){
         //    cell.getRow().delete()}},
         //{title:"Delete Row", editor:dateEditor, width:140, align:"center"},
         //{title:"Order Received Date", field:"10", align:"center", sorter:"date", editor:true},
         //{title:"Delete Row", editor:dateEditor, width:40, align:"center", cellClick:function(e, cell){doit(e,cell);},},
-        {title:"Order Received Date", field:"11", editor:dateEditor},
-        {title:"Order Return Date", field:"12", editor:dateEditor},
         //{title:"Order Return Quantity", field:"13", hozAlign:"center", sorter:"number", editor:true},
-        {title:"Order Return Quantity", field:"13", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateQuantity},
         //{title:"Print", formatter:printIcon, align:"center", cellClick:function(e, cell){printit(e,cell);},},
-        {title:"Print", formatter:"image", formatterParams:{urlPrefix:"./static/img/printer-16", urlSuffix:".png"}, align:"center", cellClick:function(e, cell){printit(e,cell);},},
         ],
         });
 
-columns: ['', '', '', '', '', '', '', '', '', '']
+columns: ['', '', '', '', '', '', '', '', '', '','','','','']
 
 
 
@@ -159,7 +229,7 @@ function updateDate(cell) {
     //alert("OrderId is: " + rowData["1"]) //id in purchaserOrder table
     id = rowData["1"]
     dt_order_received = rowData[11] //date order received col
-    dt_order_returned = rowData[12] //date order returned col
+    dt_order_returned = rowData[13] //date order returned col
     value= id + "," + dt_order_received + "," + dt_order_returned
     URL = "/api/data/managePurchaseOrder?action=updateOrderDate&value=" + value;
     table.setData(URL);
@@ -170,9 +240,15 @@ function updateDate(cell) {
 
 }
 
-function printit(cell)
+function printit(e,row)
 {
-    alert("print it");
+    debugger;
+    //row.getData()[colnbr], i.e. row.getData()[1]
+    orderId = row.getData()["4"]  //orderId
+    value= orderId
+    URL = "/api/data/managePurchaseOrder?action=printOrder&value=" + value;
+    table.setData(URL);
+
 }
 
 

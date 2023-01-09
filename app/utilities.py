@@ -687,7 +687,7 @@ def getALLPurchaseOrders() -> list:
         conn = getConnection(db)
         # conn.row_factory = sqlite3.Row
         cur = conn.cursor()
-        stmt = 'select p.id, o.id, purchaser.purchaserName, deptName, orderNbr,s.supplierName,part.partNbr,part.partDesc,o.OrderQuantity,o.OrderPartPrice,o.OrderTotalCost, o.orderReceivedDate, o.orderReturnDate, o.orderReturnQuantity from purchaseOrder p, OrderTbl o, supplier s, Part, Purchaser, Department where p.purchaseOrderNbr = o.orderNbr AND o.OrderSupplierId = s.id and o.OrderPartId = part.id and Purchaser.id = p.purchaseOrderPurchaserId and purchaserDeptid = department.id'
+        stmt = 'select p.id, o.id, purchaser.purchaserName, deptName, orderNbr,s.supplierName,part.partNbr,part.partDesc,o.OrderQuantity,o.OrderPartPrice,o.OrderTotalCost, o.orderReceivedDate, o.OrderReceivedBy, o.orderReturnDate, o.orderReturnQuantity from purchaseOrder p, OrderTbl o, supplier s, Part, Purchaser, Department where p.purchaseOrderNbr = o.orderNbr AND o.OrderSupplierId = s.id and o.OrderPartId = part.id and Purchaser.id = p.purchaseOrderPurchaserId and purchaserDeptid = department.id'
         cur.execute(stmt)
         row = cur.fetchall()
         cur.close()
@@ -791,8 +791,8 @@ def updateOrderReturnQuantity(id: int, quantity: int) -> None:
         conn = getConnection(db)
         cur = conn.cursor()
         parm = (quantity, id,)
-        stmt1 = "update orderTbl set orderReturnQuantity = ? where id = ?"
-        cur.execute(stmt1, parm)
+        stmt = "update orderTbl set orderReturnQuantity = ? where id = ?"
+        cur.execute(stmt, parm)
         conn.commit()
         cur.close()
 
@@ -800,6 +800,25 @@ def updateOrderReturnQuantity(id: int, quantity: int) -> None:
 
     except Exception as e:
         print(f'problem in updateOrderQuantity: {e}')
+
+
+def updateOrderReceivedBy(parms) -> None:
+    # There is ONE purchaseOrder id used to track orders.
+    # there can be MANY orders per purchaseOrder
+    try:
+
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        stmt = "update orderTbl set orderReceivedBy = ? where id = ?"
+        cur.execute(stmt, parms)
+        conn.commit()
+        cur.close()
+
+        return ()
+
+    except Exception as e:
+        print(f'problem in updateOrderReceivedBy: {e}')
 
 
 def registerUser(username: str, hashed_pw: int) -> None:
@@ -901,45 +920,216 @@ def getTable(tableName: str) -> list:
         print(f'problem in getTable: {e}')
 
 
-def printPurchaseOrder(orderId:int) -> None:
+def printPurchaseOrder(orderList:list) -> None:
     try:
-        docPath = Path(__file__).parent/ 'test.docx'
-        #docPath = Path(__file__).parent / 'purchaseOrderTemplate.docx'
-        doc = DocxTemplate(docPath)
 
-        context = {
-            'items': [
-                {'name': 'wayne', 'addr': '123 my way'},
-                {'name': 'chantal', 'addr': '852 paradise'},
-            ],
-        }
+        value: str = ''
+        myList: list = []
+        currentSupplierId = orderList[0][2]
 
-        '''
-        context = {'name' : 'wayne',
-                   'PONbr': '1000',
-                   'supplierName' : 'General Motors',
-                   'purchaseOrderDate' : '2023/01/06',
-                   'supplierAddr': '100 General Motor Way, Detroit, Michigan, USA',
-                    'items': [
-                        {'orderQuantity' : '200', 'orderPartPrice' : '22.50', 'partDesc': 'Tractor Calliper Front Wheel Pulley'},
-                        {'orderQuantity' : '200', 'orderPartPrice' : '22.50', 'partDesc': 'Tractor Calliper Front Wheel Pulley'},
-                        {'orderQuantity' : '200', 'orderPartPrice' : '22.50', 'partDesc': 'Tractor Calliper Front Wheel Pulley'},
-                        {'orderQuantity' : '200', 'orderPartPrice' : '22.50', 'partDesc': 'Tractor Calliper Front Wheel Pulley'},
-                        {'orderQuantity' : '200', 'orderPartPrice' : '22.50', 'partDesc': 'Tractor Calliper Front Wheel Pulley'}
-                    ]
-        }
-        '''
-        doc.save(Path(__file__).parent / 'generatedDoc.docx')
+        for order in orderList:
+
+            supplierId = order[2]
+
+            if currentSupplierId != supplierId:
+
+                printDoc('purchaseOrderTemplate.docx', 'generatedDoc1.docx')
+                buildDoc(order)
+
+                '''
+                # docPath = Path(__file__).parent/ 'test.docx'
+                docPath = Path(__file__).parent / 'purchaseOrderTemplate.docx'
+                doc = DocxTemplate(docPath)
+                # these are common to all rows in the order
+                purchaseOrderId = order[1]
+                purchaseOrderDate = getTableItemById(purchaseOrderId, 'PurchaseOrder', 'purchaseOrderDate')
+                PONbr = purchaseOrderId
+                supplierName = getSupplierName(currentSupplierId)
+                supplierAddr = getTableItemById(currentSupplierId, 'Supplier', 'supplierAddr')
+                receivedBy = order[9]
+
+                #https://nagasudhir.blogspot.com/2021/10/docxtpl-python-library-for-creating.html           
+
+
+                context = {'supplierName': supplierName,
+                           'supplierAddr': supplierAddr,
+                           'receivedBy': receivedBy,
+                           'purchaseOrderDate': purchaseOrderDate,
+                           'PONbr': PONbr,
+                           'items': myList
+                           }
+
+                doc.render(context)
+                #now = datetime.datetime.now()
+                #fname = 'generatedDoc' + str(now) + 'docx'
+                #doc.save(Path(__file__).parent / fname)
+                doc.save(Path(__file__).parent / 'generatedDoc1.docx')
+
+                value = ''
+            '''
+            else:
+                buildDoc(order)
+                #partDesc = getTableItemById(order[3], 'Part', 'partDesc')
+                #orderQuantity = order[4]
+                #orderPartPrice = order[6]
+                #value = {'orderQuantity': orderQuantity,'orderPartPrice': orderPartPrice, 'partDesc':partDesc}
+                #myList.append(value)
+
+
+        doc.render(context)
+        #now = datetime.datetime.now()
+        #fname = 'generatedDoc' + str(now) + 'docx'
+        #doc.save(Path(__file__).parent / fname)
+        doc.save(Path(__file__).parent / 'generatedDoc2.docx')
 
 
     except Exception as e:
         print(f'problem in printPurchaseOrder: {e}')
 
+
+
+
     '''
-                    'orderQuantity' : '200',
-                   'orderPartPrice' : '22.50',
-                   'partDesc': 'Tractor Calliper Front Wheel Pulley',
-                   'orderQuantity': '200',
-                   'orderPartPrice': '22.50',
-                   'partDesc': 'Tractor Calliper Front Wheel Pulley'
+    
+          'itemsx': myList
+    
+        'itemsx': "[" + value + "]"
+        context = {'PONbr': PONbr}
+        doc.render(context)
+
+             
+        
+        
+        
+                    for order in orderList:
+            supplierId = order[2]
+            supplierName = getSupplierName(supplierId)
+            doc.render(context)
+            
+        
+        
+            supplierAddr = getTableItemById(supplierId, 'Supplier', 'supplierAddr')
+            receivedBy = order[9]
+
+            partDesc = getTableItemById(order[3], 'Part', 'partDesc')
+
+            context = {'supplierName': supplierName,
+                       'supplierAddr': supplierAddr,
+                       'receivedBy': receivedBy,
+                       'purchaseOrderDate': purchaseOrderDate,
+                       'PONbr': PONbr,
+                       'items': [
+                           {'orderQuantity': order[4], 'orderDesc': partDesc, 'partPrice': order[6]}
+                            ]
+                       }
+            
+
+    
+    
+    
+        context = {'name': 'wayne',
+                   'PONbr': '1000',
+                   'supplierName': 'General Motors',
+                   'purchaseOrderDate': '2023/01/06',
+                   'supplierAddr': '100 General Motor Way, Detroit, Michigan, USA',
+                   'items': [
+                       {'orderQuantity': '200', 'orderPartPrice': '22.50', 'partDesc': 'Tractor Calliper Front Wheel Pulley'},
+                       {'orderQuantity': '200', 'orderPartPrice': '22.50', 'partDesc': 'Tractor Calliper Front Wheel Pulley'},
+                       {'orderQuantity': '200', 'orderPartPrice': '22.50', 'partDesc': 'Tractor Calliper Front Wheel Pulley'},
+                       {'orderQuantity': '200', 'orderPartPrice': '22.50', 'partDesc': 'Tractor Calliper Front Wheel Pulley'},
+                       {'orderQuantity': '200', 'orderPartPrice': '22.50', 'partDesc': 'Tractor Calliper Front Wheel Pulley'},
+                   ]
+                   }
+
+
+    
+
+                   
+ 
+   
+        
     '''
+def buildDoc(order) -> list:
+    partDesc = getTableItemById(order[3], 'Part', 'partDesc')
+    orderQuantity = order[4]
+    orderPartPrice = order[6]
+    value = {'orderQuantity': orderQuantity, 'orderPartPrice': orderPartPrice, 'partDesc': partDesc}
+    return(myList.append(value))
+
+
+def printDoc(templateName:str, docName:str) -> None:
+    docPath = Path(__file__).parent / templateName
+    doc = DocxTemplate(docPath)
+
+    # these are common to all rows in the order
+    purchaseOrderId = order[1]
+    purchaseOrderDate = getTableItemById(purchaseOrderId, 'PurchaseOrder', 'purchaseOrderDate')
+    PONbr = purchaseOrderId
+    supplierName = getSupplierName(currentSupplierId)
+    supplierAddr = getTableItemById(currentSupplierId, 'Supplier', 'supplierAddr')
+    receivedBy = order[9]
+
+    # https://nagasudhir.blogspot.com/2021/10/docxtpl-python-library-for-creating.html
+
+    context = {'supplierName': supplierName,
+               'supplierAddr': supplierAddr,
+               'receivedBy': receivedBy,
+               'purchaseOrderDate': purchaseOrderDate,
+               'PONbr': PONbr,
+               'items': myList
+               }
+
+    doc.render(context)
+    doc.save(Path(__file__).parent / docName)
+
+
+def getPurchaseOrderById(orderId:int) -> list:
+    try:
+        myList = []
+        row = []
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        parm = (orderId,)
+        stmt = "select * from PurchaseOrder where id = ? and purchaseOrderDeleteFlg = False"
+        cur.execute(stmt, parm)
+        row = cur.fetchone()
+        conn.commit()
+        cur.close()
+        for i in len(row):
+            myList.append(row[i])
+
+        return (myList)
+
+    except Exception as e:
+        print(f'problem in getPurchaseOrderById: {e}')
+'''
+purchaseOrderDate  
+purchaseOrderReceivedDate  
+purchaseOrderDeleteFlg  
+purchaseOrderDateDeleted  
+purchaseOrderNbr  
+purchaseOrderPurchaserId  
+purchaseOrderPurchaserDeptId
+'''
+
+def getOrderById(orderId:int) -> list:
+    try:
+        myList = []
+        row = []
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        parm = (orderId,)
+        stmt = "select * from OrderTbl where orderNbr = ? order by orderSupplierId asc"
+        cur.execute(stmt, parm)
+        rows = cur.fetchall()
+        conn.commit()
+        cur.close()
+        for row in rows:
+            myList.append(row)
+
+        return (myList)  #myList[0][3]
+
+    except Exception as e:
+        print(f'problem in getPurchaseOrderById: {e}')

@@ -77,7 +77,7 @@ var updateQuantity = (cell) =>
 
 var updateCol = (cell) =>
 {
-    debugger;
+    //debugger;
     var row = cell.getRow();
     var rowData = row.getData();
     id = rowData["0"];
@@ -85,6 +85,7 @@ var updateCol = (cell) =>
     value = id + "," + receivedBy;
     //'/api/data/manageDepartment?action=update&value=1,Executive,2023-01-04,5'
     URL = "/api/data/managePurchaseOrder?action=receivedBy&value=" + value;
+    debugger;
     table.setData(URL);
 };
 
@@ -196,7 +197,7 @@ var table = new Tabulator("#example-table",
         ],
         });
 
-columns: ['', '', '', '', '', '', '', '', '', '','','','','']
+columns: ['', '', '', '', '', '', '', '', '', '','','','','', '']
 
 
 

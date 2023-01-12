@@ -1,4 +1,5 @@
 import datetime as dt
+import json
 
 from flask import render_template, request, redirect, url_for, flash, session
 
@@ -334,7 +335,8 @@ def apimanageDepartment():
         aList = (row[0], row[1], row[2], row[3], row[4])
         d1 = dict(enumerate(aList))
         myList.append(d1)
-    return (myList)
+    x = json.dumps(myList)
+    return (x)
 
 
 @app.route('/manageDepartment')
@@ -379,7 +381,8 @@ def apimanageParts():
         partDateOutOfStock = myList[6]
         partDateCreated = myList[7]
 
-        utilities.updateParts(id, partNbr, partDesc, partSupplierId, partQuantity, partInStock, partDateOutOfStock, partDateCreated)
+        utilities.updateParts(id, partNbr, partDesc, partSupplierId, partQuantity, partInStock, partDateOutOfStock,
+                              partDateCreated)
 
     '''
     if action == "delete" or active == False:
@@ -390,10 +393,12 @@ def apimanageParts():
     # reload tabulator.js table
     resultList = utilities.getTable('Part')
     for row in resultList:
-        aList = (row[0], row[1], row[2], row[3], row[4], row[5],row[6],row[7])
+        aList = (row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7])
         d1 = dict(enumerate(aList))
         myList.append(d1)
-    return (myList)
+    x = json.dumps(myList)
+    return (x)
+
 
 @app.route('/manageParts')
 def manageParts():
@@ -413,12 +418,12 @@ def manageParts():
 
     return render_template('manageParts.html')
 
+
 @app.route('/api/data/managePurchaseOrder/<action>/<orderId>/<quantity>', methods=['GET'])
 @app.route('/api/data/managePurchaseOrder/<action>/<orderId>/<dt_order_received>/<dt_order_returned>',
            methods=['GET'])  # /api/data?orderid=1&dt=28-12-2022
 @app.route('/api/data/managePurchaseOrder', methods=['GET'])
 def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=None):
-
     # set arg to '' not present
     action = request.args.get('action', '')
 
@@ -450,7 +455,6 @@ def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=
         orderList = utilities.getOrderById(orderId)
         utilities.printPurchaseOrder(orderList)
 
-
     if action == 'receivedBy':
         value = request.args.get('value', '')
         myList = value.split(',')
@@ -458,7 +462,6 @@ def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=
         receivedBy = myList[1]
         parms = (receivedBy, id,)
         utilities.updateOrderReceivedBy(parms)
-
 
     '''
     orderId = request.args.get('orderId')
@@ -471,21 +474,20 @@ def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=
         utilities.updateOrderReturnQuantity(orderId, quantity)
     '''
 
-
-
     resultList = utilities.getALLPurchaseOrders()  # returns a list of a list, so indice 1 = row, indice 2 = col within row, i.e. mylist[0][1]
     mylist: list = []
     alist: list = []
     for row in resultList:
         alist = (
-        row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12],
-        row[13], row[14])
+            row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12],
+            row[13], row[14])
         d1 = dict(enumerate(alist))
         mylist.append(d1)
 
     # return {'data': mylist} => use this format for datatables.js, dict of lists
-    return (mylist)  # arry list
-
+    x = json.dumps(mylist)
+    return (x)
+    #return (mylist)  # arry list
 
 
 @app.route('/managePurchaseOrder', methods=['GET', 'POST'])
@@ -537,15 +539,19 @@ def apimanageSupplier():
         supplierDateInActive = myList[7]
         supplierDateCreated = myList[8]
 
-        utilities.updateSupplier(id, supplierName, supplierAddr, supplierTel, supplierEmail, supplierContact, supplierActive, supplierDateInActive, supplierDateCreated)
+        utilities.updateSupplier(id, supplierName, supplierAddr, supplierTel, supplierEmail, supplierContact,
+                                 supplierActive, supplierDateInActive, supplierDateCreated)
 
     # reload tabulator.js table
     resultList = utilities.getTable('Supplier')
     for row in resultList:
-        aList = (row[0], row[1], row[2], row[3], row[4], row[5],row[6],row[7], row[8])
+        aList = (row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8])
         d1 = dict(enumerate(aList))
         myList.append(d1)
-    return (myList)
+    x = json.dumps(myList)
+    return (x)
+    #return (myList)
+
 
 @app.route('/manageSupplier')
 def manageSupplier():
@@ -563,7 +569,6 @@ def manageSupplier():
         print(f'problem in manageSupplier: {e}')
 
     return render_template('manageSupplier.html')
-
 
 
 @app.route('/api/data/managePurchasr/<action>/<value>', methods=['GET'])
@@ -588,7 +593,8 @@ def apimanagePurchaser():
         purchaserDateInActive = myList[4]
         purchaserDateCreated = myList[5]
 
-        utilities.updatePurchaser(id, purchaserName,purchaserDeptId, purchaserActive, purchaserDateInActive, purchaserDateCreated)
+        utilities.updatePurchaser(id, purchaserName, purchaserDeptId, purchaserActive, purchaserDateInActive,
+                                  purchaserDateCreated)
 
     # reload tabulator.js table
     resultList = utilities.getTable('Purchaser')
@@ -596,7 +602,10 @@ def apimanagePurchaser():
         aList = (row[0], row[1], row[2], row[3], row[4], row[5])
         d1 = dict(enumerate(aList))
         myList.append(d1)
-    return (myList)
+    x = json.dumps(myList)
+    return (x)
+    #return (myList)
+
 
 @app.route('/managePurchaser')
 def managePurchaser():
@@ -647,7 +656,9 @@ def apimanageUser():
         aList = (row[0], row[1], row[2], row[3], row[4], row[5], row[6])
         d1 = dict(enumerate(aList))
         myList.append(d1)
-    return (myList)
+    x = json.dumps(myList)
+    return (x)
+
 
 @app.route('/manageUser')
 def manageUser():
@@ -665,4 +676,3 @@ def manageUser():
         print(f'problem in manageUser: {e}')
 
     return render_template('manageUser.html')
-

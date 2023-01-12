@@ -1,15 +1,14 @@
 import datetime
 import os
-import sqlite3
 import random
-
-from app import app, constants
-
-#URL for print routine: https://www.youtube.com/watch?v=fziZXbeaegc&list=PL7QI8ORyVSCavY8MYL3dM54SviNlnEA3T&index=11
-#for print routine
+import sqlite3
+# URL for print routine: https://www.youtube.com/watch?v=fziZXbeaegc&list=PL7QI8ORyVSCavY8MYL3dM54SviNlnEA3T&index=11
+# for print routine
 from pathlib import Path
+
 from docxtpl import DocxTemplate
 
+from app import app, constants
 
 
 def getDatabase(dataBaseName: str) -> str:
@@ -134,7 +133,9 @@ def getPartId(Desc: str) -> int:
     except Exception as e:
         print(f'problem in getPartId: {e}')
 
-def updatePurchaser(id:int, purchaserName:str, purchaserDeptId:int, purchaserActive:bool, purchaserDateInActive:str, purchaserDateCreated:str) -> None:
+
+def updatePurchaser(id: int, purchaserName: str, purchaserDeptId: int, purchaserActive: bool,
+                    purchaserDateInActive: str, purchaserDateCreated: str) -> None:
     try:
         # soft delete
         db = getDatabase(constants.DATABASE_NAME)
@@ -153,7 +154,8 @@ def updatePurchaser(id:int, purchaserName:str, purchaserDeptId:int, purchaserAct
         print(f'problem in updatePurchaser: {e}')
 
 
-def updateParts(id:int, partNbr:int, partDesc:str, partSupplierId:int, partQuantity:int, partInStock:bool, partDateOutOfStock:str, partDateCreated:str):
+def updateParts(id: int, partNbr: int, partDesc: str, partSupplierId: int, partQuantity: int, partInStock: bool,
+                partDateOutOfStock: str, partDateCreated: str):
     try:
         # soft delete
         db = getDatabase(constants.DATABASE_NAME)
@@ -171,13 +173,18 @@ def updateParts(id:int, partNbr:int, partDesc:str, partSupplierId:int, partQuant
     except Exception as e:
         print(f'problem in updateParts: {e}')
 
-def updateSupplier(id:int, supplierName:str, supplierAddr:str, supplierTel:str, supplierEmail:str, supplierContact:str, supplierActive:bool, supplierDateInActive:str, supplierDateCreated:str) -> None:
+
+def updateSupplier(id: int, supplierName: str, supplierAddr: str, supplierTel: str, supplierEmail: str,
+                   supplierContact: str, supplierActive: bool, supplierDateInActive: str,
+                   supplierDateCreated: str) -> None:
     try:
         # soft delete
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        parms = (supplierName, supplierAddr, supplierTel, supplierEmail, supplierContact, supplierActive, supplierDateInActive, supplierDateCreated,id,)
+        parms = (
+        supplierName, supplierAddr, supplierTel, supplierEmail, supplierContact, supplierActive, supplierDateInActive,
+        supplierDateCreated, id,)
         stmt = 'update Supplier set supplierName = ?, supplierAddr = ?, supplierTel = ?, supplierEmail = ?, supplierContact = ?, supplierActive = ?, supplierDateInActive = ?, supplierDateCreated = ? where id = ?'
         cur.execute(stmt, parms)
         cur.close()
@@ -190,13 +197,15 @@ def updateSupplier(id:int, supplierName:str, supplierAddr:str, supplierTel:str, 
     except Exception as e:
         print(f'problem in updateSupplier: {e}')
 
-def updateUser(id:int, username:str, password:str, createDate:str, active:bool, dateInactive:str, securityLevel:int) -> None:
+
+def updateUser(id: int, username: str, password: str, createDate: str, active: bool, dateInactive: str,
+               securityLevel: int) -> None:
     try:
         # soft delete
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        parms = (username, password, createDate, active, dateInactive, securityLevel,id,)
+        parms = (username, password, createDate, active, dateInactive, securityLevel, id,)
         stmt = 'update User set username = ?, password = ?, createDate = ?, active = ?, dateInactive = ?, securityLevel = ? where id = ?'
         cur.execute(stmt, parms)
         cur.close()
@@ -208,6 +217,7 @@ def updateUser(id:int, username:str, password:str, createDate:str, active:bool, 
 
     except Exception as e:
         print(f'problem in updateUser: {e}')
+
 
 def getSupplierName(id: int) -> str:
     try:
@@ -484,7 +494,7 @@ def insertPart(parms) -> None:
         conn = getConnection(db)
         cur = conn.cursor()
         supplierName = parms[2]
-       # supplierId = getSupplierId(supplierName)
+        # supplierId = getSupplierId(supplierName)
 
         stmt = 'insert into Part(partNbr, partDesc, partSupplierId, partQuantity, partInStock, partDateCreated) values (?, ?, ?, ?, ?, ?)'
         cur.execute(stmt, parms)
@@ -921,7 +931,7 @@ def getTable(tableName: str) -> list:
         print(f'problem in getTable: {e}')
 
 
-def printPurchaseOrder(orderList:list) -> None:
+def printPurchaseOrder(orderList: list) -> None:
     # https://nagasudhir.blogspot.com/2021/10/docxtpl-python-library-for-creating.html
 
     try:
@@ -940,7 +950,7 @@ def printPurchaseOrder(orderList:list) -> None:
                 myList = buildDoc(order, myList)
                 previousSupplierId = supplierId
             else:
-               myList = buildDoc(order, myList)
+                myList = buildDoc(order, myList)
 
         r = random.randint(0, 1000000)
         DocName = 'generatedDoc_' + str(r) + '.docx'
@@ -956,10 +966,10 @@ def buildDoc(order, myList: list) -> list:
     orderQuantity = order[4]
     orderPartPrice = order[6]
     myList.append({'orderQuantity': orderQuantity, 'orderPartPrice': orderPartPrice, 'partDesc': partDesc})
-    return(myList)
+    return (myList)
 
 
-def printDoc(templateName:str, docName:str, myList: list, order, supplierId: int) -> None:
+def printDoc(templateName: str, docName: str, myList: list, order, supplierId: int) -> None:
     docPath = Path(__file__).parent / templateName
     doc = DocxTemplate(docPath)
 
@@ -985,7 +995,7 @@ def printDoc(templateName:str, docName:str, myList: list, order, supplierId: int
     doc.save(Path(__file__).parent / docName)
 
 
-def getPurchaseOrderById(orderId:int) -> list:
+def getPurchaseOrderById(orderId: int) -> list:
     try:
         myList = []
         row = []
@@ -1005,6 +1015,8 @@ def getPurchaseOrderById(orderId:int) -> list:
 
     except Exception as e:
         print(f'problem in getPurchaseOrderById: {e}')
+
+
 '''
 purchaseOrderDate  
 purchaseOrderReceivedDate  
@@ -1015,7 +1027,8 @@ purchaseOrderPurchaserId
 purchaseOrderPurchaserDeptId
 '''
 
-def getOrderById(orderId:int) -> list:
+
+def getOrderById(orderId: int) -> list:
     try:
         myList = []
         row = []
@@ -1031,7 +1044,7 @@ def getOrderById(orderId:int) -> list:
         for row in rows:
             myList.append(row)
 
-        return (myList)  #myList[0][3]
+        return (myList)  # myList[0][3]
 
     except Exception as e:
         print(f'problem in getPurchaseOrderById: {e}')

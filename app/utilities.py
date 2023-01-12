@@ -2,6 +2,11 @@ import datetime
 import os
 import random
 import sqlite3
+#import mammoth, webbrowser, tempfile
+import requests
+from urllib.parse import urljoin
+#from docx2html import convert
+
 # URL for print routine: https://www.youtube.com/watch?v=fziZXbeaegc&list=PL7QI8ORyVSCavY8MYL3dM54SviNlnEA3T&index=11
 # for print routine
 from pathlib import Path
@@ -970,30 +975,75 @@ def buildDoc(order, myList: list) -> list:
 
 
 def printDoc(templateName: str, docName: str, myList: list, order, supplierId: int) -> None:
-    docPath = Path(__file__).parent / templateName
-    doc = DocxTemplate(docPath)
+    try:
+        docPath = Path(__file__).parent / templateName
+        doc = DocxTemplate(docPath)
 
-    # these are common to all rows in the order
-    purchaseOrderId = order[1]
-    purchaseOrderDate = getTableItemById(purchaseOrderId, 'PurchaseOrder', 'purchaseOrderDate')
-    PONbr = purchaseOrderId
-    supplierName = getSupplierName(supplierId)
-    supplierAddr = getTableItemById(supplierId, 'Supplier', 'supplierAddr')
-    receivedBy = order[9]
+        # these are common to all rows in the order
+        purchaseOrderId = order[1]
+        purchaseOrderDate = getTableItemById(purchaseOrderId, 'PurchaseOrder', 'purchaseOrderDate')
+        PONbr = purchaseOrderId
+        supplierName = getSupplierName(supplierId)
+        supplierAddr = getTableItemById(supplierId, 'Supplier', 'supplierAddr')
+        receivedBy = order[9]
 
-    # https://nagasudhir.blogspot.com/2021/10/docxtpl-python-library-for-creating.html
+        # https://nagasudhir.blogspot.com/2021/10/docxtpl-python-library-for-creating.html
 
-    context = {'supplierName': supplierName,
-               'supplierAddr': supplierAddr,
-               'receivedBy': receivedBy,
-               'purchaseOrderDate': purchaseOrderDate,
-               'PONbr': PONbr,
-               'items': myList
-               }
+        context = {'supplierName': supplierName,
+                   'supplierAddr': supplierAddr,
+                   'receivedBy': receivedBy,
+                   'purchaseOrderDate': purchaseOrderDate,
+                   'PONbr': PONbr,
+                   'items': myList
+                   }
 
-    doc.render(context)
-    doc.save(Path(__file__).parent / docName)
+        doc.render(context)
+        doc.save(Path(__file__).parent / docName)
 
+        myDoc= Path(__file__).parent / docName
+
+        #downloadDocToLocalHost(docName)
+
+
+    except Exception as e:
+        print(f'problem in printDoc: {e}')
+
+
+
+def downloadDocToLocalHost(docName: str) -> None:
+    try:
+        #import requests
+        username = 'wayneraid'
+        api_token = '26351fda9e41892c159e6ddfb5b4bda44e2a88f1'
+        host = 'www.pythonanywhere.com'
+        api_base = "https://{host}/api/v0/user/{username}/".format(
+            host=host,
+            username=username,
+        )
+
+        resp = requests.get(
+            urljoin(api_base, "files/path/home/{username}/surgenor/app/{docName}".format(username=username, docName=docName)),
+            headers={"Authorization": "Token {api_token}".format(api_token=api_token)})
+
+
+        #response = requests.get(
+        #      'https://{host}/api/v0/user/{username}/files/{path}'.format(
+        #          host=host, username=username
+        #      ),
+        #      headers={'Authorization': 'Token {token}'.format(token=token)}
+        #  )
+
+
+        if resp.status_code == 200:
+            print('saving file:')
+            print(resp.content)
+            with open(docName, mode='wb') as localfile:
+                localfile.write(resp.content)
+        else:
+            print('Got unexpected status code {}: {!r}'.format(resp.status_code, resp.content))
+
+    except Exception as e:
+        print(f'problem in printDoc: {e}')
 
 def getPurchaseOrderById(orderId: int) -> list:
     try:

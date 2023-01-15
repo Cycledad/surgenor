@@ -1,7 +1,7 @@
 import datetime as dt
 import json
 
-from flask import render_template, request, redirect, url_for, flash, session
+from flask import render_template, request, redirect, url_for, flash, session, send_from_directory
 
 from app import app, bcrypt, constants
 from app import utilities
@@ -453,7 +453,19 @@ def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=
         myList = value.split(',')
         orderId = myList[0]
         orderList = utilities.getOrderById(orderId)
-        utilities.printPurchaseOrder(orderList)
+        fname = utilities.printPurchaseOrder(orderList)
+        print(f'filename: {fname}')
+
+        #return render_template('viewDoc.html', docName=docPath)
+        #session['fname'] = fname
+        #return redirect(url_for('viewDoc'))
+        #filename = 'generatedDoc_132106.docx'
+        #directory = '/home/wayneraid/surgenor/app/'
+        filename = 'generatedDoc_479247.docx'
+        directory = "C:\\Users\\wayne\\APP\\app\\"
+
+        send_from_directory(directory, filename, as_attachment=True)
+
 
     if action == 'receivedBy':
         value = request.args.get('value', '')
@@ -480,14 +492,14 @@ def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=
     for row in resultList:
         alist = (
             row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12],
-            row[13], row[14])
+            row[13], row[14], row[15])
         d1 = dict(enumerate(alist))
         mylist.append(d1)
 
     # return {'data': mylist} => use this format for datatables.js, dict of lists
     x = json.dumps(mylist)
-    return (x)
-    #return (mylist)  # arry list
+    return (mylist)  # arry list
+
 
 
 @app.route('/managePurchaseOrder', methods=['GET', 'POST'])
@@ -676,3 +688,42 @@ def manageUser():
         print(f'problem in manageUser: {e}')
 
     return render_template('manageUser.html')
+
+
+
+@app.route('/viewDoc', methods=['GET', 'POST'])
+def viewDoc():
+    try:
+        #docName = session['fname']
+        #return render_template('viewDoc.html', docName=docName)
+        #return render_template('viewDoc.html')
+        from flask import send_from_directory
+        #from flask import Response, send_from_directory
+        #from werkzeug.wsgi import FileWrapper
+        #from io import BytesIO, StringIO
+
+        print("*** inside viewDoc")
+        #return response(filename, as_attachment=True)
+
+        #filename = '/home/wayneraid/surgenor/app/generatedDoc_132106.docx'
+
+        #executing LOCALLY
+        filename = 'generatedDoc_479247.docx'
+        directory = "C:\\Users\\wayne\\APP\\app\\static\\"
+
+        # executing on SERVER
+        #filename = 'generatedDoc_132106.docx'
+        #directory = '/home/wayneraid/surgenor/app/'
+
+
+        print('just before send from dir')
+        return send_from_directory(directory, filename, as_attachment=True)
+        print('just AFTER send from dir --- shouldn''t see this')
+
+
+
+        #return ({})
+
+    except Exception as e:
+        print(f'problem in viewDoc: {e}')
+

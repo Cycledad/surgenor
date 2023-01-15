@@ -185,6 +185,7 @@ var table = new Tabulator("#example-table",
         {title:"Order Received By", field:"12", editor:"select", editorParams:{values:["Kevin", "Jessie"]}, cellEdited:updateCol},
         {title:"Order Return Date", field:"13", editor:dateEditor},
         {title:"Order Return Quantity", field:"14", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateQuantity},
+        {title:"PO", field:"15", hozAlign:"center", sorter:"string", editor:false},
         {title:"Print", formatter:"image", formatterParams:{urlPrefix:"./static/img/printer-16", urlSuffix:".png"}, align:"center", cellClick:function(e, row){printit(e,row);},},
         //column definition in the columns array
         //{formatter:"buttonCross", width:40, align:"center", cellClick:function(e, cell){
@@ -248,6 +249,10 @@ function printit(e,row)
     orderId = row.getData()["4"]  //orderId
     value= orderId
     URL = "/api/data/managePurchaseOrder?action=printOrder&value=" + value;
+    //URL = "/viewDoc=printOrder&value=" + value;
+    //xhttp = new XMLHttpRequest();
+    //xhttp.open("GET", URL);
+    //xhttp.send();
     table.setData(URL);
 
 }

@@ -2,7 +2,10 @@ import datetime
 import os
 import random
 import sqlite3
+
+import docx
 #import mammoth, webbrowser, tempfile
+import webbrowser
 import requests
 from urllib.parse import urljoin
 #from docx2html import convert
@@ -660,8 +663,41 @@ def insertOrder(parms):
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        stmt = 'INSERT INTO OrderTbl(OrderNbr, OrderSupplierId, OrderPartId, OrderQuantity, OrderUnitId, OrderPartPrice, orderTotalCost) values (?, ?, ?, ?, ?, ?, ?)'
-        cur.execute(stmt, parms)
+        stmt = 'select max(id) from ordertbl'
+        cur.execute(stmt)
+        id = cur.fetchone()
+        if id[0] is None:
+            id = 1
+        else:
+            id = id[0] + 1
+        #id = {id[0]:0>3} #format left padding w 0 with 3
+        supplierId = parms[1]
+        stmt = f'select supplierName from supplier where id = {supplierId}'
+        cur.execute(stmt)
+        supplierName = cur.fetchone()
+        dt = str(datetime.datetime.today())
+        dt = dt[0:10]
+        PO = supplierName[0] + '_' + dt + '_' + str(f'{id:0>3}')
+        OrderNbr = parms[0]
+        stmt = f'select distinct(a.deptName) from department a, purchaser b, purchaseorder c where purchaseOrderNbr = {OrderNbr} and c.purchaseOrderPurchaserDeptId = b.id and b.purchaseractive and a.active'
+        #stmt = 'select a.deptName from department a, ordertbl b, purchaseorder c where purchaseOrderNbr = b.ordernbr and c.purchaseOrderPurchaserDeptId = a.id and a.active is True'
+        cur.execute(stmt)
+        deptName = cur.fetchone()
+        deptName = deptName[0]
+
+        #OrderNbr = parms[0]
+        OrderSupplierId = parms[1]
+        OrderPartId = parms[2]
+        OrderQuantity= parms[3]
+        OrderUnitId = parms[4]
+        OrderPartPrice = parms[5]
+        orderTotalCost = parms[6]
+
+        #rebuild parms adding deptname and po
+        params = (OrderNbr, OrderSupplierId, deptName, OrderPartId, OrderQuantity, OrderUnitId, OrderPartPrice, orderTotalCost, PO, )
+
+        stmt = 'INSERT INTO OrderTbl(OrderNbr, OrderSupplierId, deptName, OrderPartId, OrderQuantity, OrderUnitId, OrderPartPrice, orderTotalCost, po) values (?,?,?,?,?,?,?,?,?)'
+        cur.execute(stmt, params)
         cur.close()
         conn.commit()
         conn.close()
@@ -703,7 +739,7 @@ def getALLPurchaseOrders() -> list:
         conn = getConnection(db)
         # conn.row_factory = sqlite3.Row
         cur = conn.cursor()
-        stmt = 'select p.id, o.id, purchaser.purchaserName, deptName, orderNbr,s.supplierName,part.partNbr,part.partDesc,o.OrderQuantity,o.OrderPartPrice,o.OrderTotalCost, o.orderReceivedDate, o.OrderReceivedBy, o.orderReturnDate, o.orderReturnQuantity from purchaseOrder p, OrderTbl o, supplier s, Part, Purchaser, Department where p.purchaseOrderNbr = o.orderNbr AND o.OrderSupplierId = s.id and o.OrderPartId = part.id and Purchaser.id = p.purchaseOrderPurchaserId and purchaserDeptid = department.id'
+        stmt = 'select p.id, o.id, purchaser.purchaserName, o.deptName, orderNbr,s.supplierName,part.partNbr,part.partDesc,o.OrderQuantity,o.OrderPartPrice,o.OrderTotalCost, o.orderReceivedDate, o.OrderReceivedBy, o.orderReturnDate, o.orderReturnQuantity, o.PO from purchaseOrder p, OrderTbl o, supplier s, Part, Purchaser, Department where p.purchaseOrderNbr = o.orderNbr AND o.OrderSupplierId = s.id and o.OrderPartId = part.id and Purchaser.id = p.purchaseOrderPurchaserId and purchaserDeptid = department.id'
         cur.execute(stmt)
         row = cur.fetchall()
         cur.close()
@@ -936,7 +972,7 @@ def getTable(tableName: str) -> list:
         print(f'problem in getTable: {e}')
 
 
-def printPurchaseOrder(orderList: list) -> None:
+def printPurchaseOrder(orderList: list) -> str:
     # https://nagasudhir.blogspot.com/2021/10/docxtpl-python-library-for-creating.html
 
     try:
@@ -959,8 +995,8 @@ def printPurchaseOrder(orderList: list) -> None:
 
         r = random.randint(0, 1000000)
         DocName = 'generatedDoc_' + str(r) + '.docx'
-        printDoc('purchaseOrderTemplate.docx', DocName, myList, order, previousSupplierId)
-
+        fname = printDoc('purchaseOrderTemplate.docx', DocName, myList, order, previousSupplierId)
+        return(fname)
 
     except Exception as e:
         print(f'problem in printPurchaseOrder: {e}')
@@ -974,7 +1010,7 @@ def buildDoc(order, myList: list) -> list:
     return (myList)
 
 
-def printDoc(templateName: str, docName: str, myList: list, order, supplierId: int) -> None:
+def printDoc(templateName: str, docName: str, myList: list, order, supplierId: int) -> str:
     try:
         docPath = Path(__file__).parent / templateName
         doc = DocxTemplate(docPath)
@@ -1001,6 +1037,13 @@ def printDoc(templateName: str, docName: str, myList: list, order, supplierId: i
         doc.save(Path(__file__).parent / docName)
 
         myDoc= Path(__file__).parent / docName
+
+        print("just BEFORE call to os.startfile")
+        #os.startfile(myDoc)
+        #webbrowser.open_new(myDoc)
+        print("just AFTER call to os.startfile")
+
+        return(myDoc)
 
         #downloadDocToLocalHost(docName)
 

@@ -1,15 +1,13 @@
 import datetime as dt
 import json
 
-from flask import render_template, request, redirect, url_for, flash, session, send_from_directory
+from flask import render_template, request, redirect, url_for, flash, session
 
 from app import app, bcrypt, constants
 from app import utilities
 
 
 # from app import models
-
-# print(f'inside routes')
 
 
 @app.route('/home')
@@ -157,10 +155,8 @@ def addOrder():
                     totalCost = resultList[k]  # 8
                     k += 1
                     parms = (orderNbr, partNbrId, supplierId, quantity, unitId, cost, totalCost)
-                    #creates order in the orderTbl ... there can be many orders for one purchase order
+                    # creates order in the orderTbl ... there can be many orders for one purchase order
                     utilities.insertOrder(parms)
-
-
 
             utilities.updateMaxOrderNbr(orderNbr)
 
@@ -462,17 +458,15 @@ def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=
         orderList = utilities.getOrderById(orderId)
         utilities.createPurchaseOrder(orderList)
 
+        # return render_template('viewDoc.html', docName=docPath)
+        # session['fname'] = fname
+        # return redirect(url_for('viewDoc'))
+        # filename = 'generatedDoc_132106.docx'
+        # directory = '/home/wayneraid/surgenor/app/'
+        # filename = 'generatedDoc_479247.docx'
+        # directory = "C:\\Users\\wayne\\APP\\app\\"
 
-        #return render_template('viewDoc.html', docName=docPath)
-        #session['fname'] = fname
-        #return redirect(url_for('viewDoc'))
-        #filename = 'generatedDoc_132106.docx'
-        #directory = '/home/wayneraid/surgenor/app/'
-        #filename = 'generatedDoc_479247.docx'
-        #directory = "C:\\Users\\wayne\\APP\\app\\"
-
-        #send_from_directory(directory, filename, as_attachment=True)
-
+        # send_from_directory(directory, filename, as_attachment=True)
 
     if action == 'receivedBy':
         value = request.args.get('value', '')
@@ -481,7 +475,6 @@ def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=
         receivedBy = myList[1]
         parms = (receivedBy, id,)
         utilities.updateOrderReceivedBy(parms)
-
 
     resultList = utilities.getALLPurchaseOrders()  # returns a list of a list, so indice 1 = row, indice 2 = col within row, i.e. mylist[0][1]
     mylist: list = []
@@ -496,7 +489,6 @@ def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=
     # return {'data': mylist} => use this format for datatables.js, dict of lists
     x = json.dumps(mylist)
     return (mylist)  # arry list
-
 
 
 @app.route('/managePurchaseOrder', methods=['GET', 'POST'])
@@ -559,7 +551,7 @@ def apimanageSupplier():
         myList.append(d1)
     x = json.dumps(myList)
     return (x)
-    #return (myList)
+    # return (myList)
 
 
 @app.route('/manageSupplier')
@@ -613,7 +605,7 @@ def apimanagePurchaser():
         myList.append(d1)
     x = json.dumps(myList)
     return (x)
-    #return (myList)
+    # return (myList)
 
 
 @app.route('/managePurchaser')
@@ -687,7 +679,6 @@ def manageUser():
     return render_template('manageUser.html')
 
 
-
 @app.route('/viewDoc', methods=['GET', 'POST'])
 def viewDoc():
     try:
@@ -697,7 +688,6 @@ def viewDoc():
         if session.get('loggedOn', None) == None:
             flash('Please login!', 'danger')
             return redirect(url_for('login'))
-
 
         if request.method == 'POST':
             req = request.form
@@ -712,7 +702,7 @@ def viewDoc():
             return send_from_directory(directory, fname, as_attachment=True)
             print('after send')
 
-
+        # remove/separate directory from filename
         theList = []
         fname = constants.DOC_DIRECTORY + '*.docx'
         docList = glob.glob(fname)
@@ -722,15 +712,11 @@ def viewDoc():
 
         return render_template('viewDoc.html', docList=theList)
 
-        #return response(filename, as_attachment=True)
+        # return response(filename, as_attachment=True)
 
-        #filename = '/home/wayneraid/surgenor/app/generatedDoc_132106.docx'
+        # filename = '/home/wayneraid/surgenor/app/generatedDoc_132106.docx'
 
-
-
-
-        #return ({})
+        # return ({})
 
     except Exception as e:
         print(f'problem in viewDoc: {e}')
-

@@ -157,10 +157,17 @@ def addOrder():
                     totalCost = resultList[k]  # 8
                     k += 1
                     parms = (orderNbr, partNbrId, supplierId, quantity, unitId, cost, totalCost)
+                    #creates order in the orderTbl ... there can be many orders for one purchase order
                     utilities.insertOrder(parms)
+
+
 
             utilities.updateMaxOrderNbr(orderNbr)
 
+            # now that ALL orders have been created, create the print doc in directory static/purchaseOrders ...
+            # orderId = utilities.getMaxOrderId()
+            orderList = utilities.getOrderByOrderNbr(orderNbr)
+            utilities.createPrintDoc(orderList)
 
     except Exception as e:
         print(f'problem in addOrder: {e}')
@@ -453,18 +460,18 @@ def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=
         myList = value.split(',')
         orderId = myList[0]
         orderList = utilities.getOrderById(orderId)
-        fname = utilities.printPurchaseOrder(orderList)
-        print(f'filename: {fname}')
+        utilities.createPurchaseOrder(orderList)
+
 
         #return render_template('viewDoc.html', docName=docPath)
         #session['fname'] = fname
         #return redirect(url_for('viewDoc'))
         #filename = 'generatedDoc_132106.docx'
         #directory = '/home/wayneraid/surgenor/app/'
-        filename = 'generatedDoc_479247.docx'
-        directory = "C:\\Users\\wayne\\APP\\app\\"
+        #filename = 'generatedDoc_479247.docx'
+        #directory = "C:\\Users\\wayne\\APP\\app\\"
 
-        send_from_directory(directory, filename, as_attachment=True)
+        #send_from_directory(directory, filename, as_attachment=True)
 
 
     if action == 'receivedBy':
@@ -475,16 +482,6 @@ def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=
         parms = (receivedBy, id,)
         utilities.updateOrderReceivedBy(parms)
 
-    '''
-    orderId = request.args.get('orderId')
-    dt_order_received = request.args.get('dt_order_received')
-    dt_order_returned = request.args.get('dt_order_returned')
-    quantity = request.args.get('quantity')
-    if orderId != None and (dt_order_received or dt_order_returned):
-        utilities.updateOrderReceivedDate(orderId, dt_order_received, dt_order_returned)
-    if orderId != None and (quantity):
-        utilities.updateOrderReturnQuantity(orderId, quantity)
-    '''
 
     resultList = utilities.getALLPurchaseOrders()  # returns a list of a list, so indice 1 = row, indice 2 = col within row, i.e. mylist[0][1]
     mylist: list = []
@@ -694,31 +691,41 @@ def manageUser():
 @app.route('/viewDoc', methods=['GET', 'POST'])
 def viewDoc():
     try:
-        #docName = session['fname']
-        #return render_template('viewDoc.html', docName=docName)
-        #return render_template('viewDoc.html')
         from flask import send_from_directory
-        #from flask import Response, send_from_directory
-        #from werkzeug.wsgi import FileWrapper
-        #from io import BytesIO, StringIO
+        import glob
 
-        print("*** inside viewDoc")
+        if session.get('loggedOn', None) == None:
+            flash('Please login!', 'danger')
+            return redirect(url_for('login'))
+
+
+        if request.method == 'POST':
+            req = request.form
+
+            # executing LOCALLY
+            directory = constants.DOC_DIRECTORY
+
+            # executing on SERVER
+            # directory = '/home/wayneraid/surgenor/app/'
+
+            fname = req['selFile']
+            return send_from_directory(directory, fname, as_attachment=True)
+            print('after send')
+
+
+        theList = []
+        fname = constants.DOC_DIRECTORY + '*.docx'
+        docList = glob.glob(fname)
+        for i in range(len(docList)):
+            x = docList[i].rsplit('\\')
+            theList.append(x[len(x) - 1])
+
+        return render_template('viewDoc.html', docList=theList)
+
         #return response(filename, as_attachment=True)
 
         #filename = '/home/wayneraid/surgenor/app/generatedDoc_132106.docx'
 
-        #executing LOCALLY
-        filename = 'generatedDoc_479247.docx'
-        directory = "C:\\Users\\wayne\\APP\\app\\static\\"
-
-        # executing on SERVER
-        #filename = 'generatedDoc_132106.docx'
-        #directory = '/home/wayneraid/surgenor/app/'
-
-
-        print('just before send from dir')
-        return send_from_directory(directory, filename, as_attachment=True)
-        print('just AFTER send from dir --- shouldn''t see this')
 
 
 

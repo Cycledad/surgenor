@@ -186,7 +186,7 @@ var table = new Tabulator("#example-table",
         {title:"Order Return Date", field:"13", editor:dateEditor},
         {title:"Order Return Quantity", field:"14", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateQuantity},
         {title:"PO", field:"15", hozAlign:"center", sorter:"string", editor:false},
-        {title:"Print", formatter:"image", formatterParams:{urlPrefix:"./static/img/printer-16", urlSuffix:".png"}, align:"center", cellClick:function(e, row){printit(e,row);},},
+        //{title:"Print", formatter:"image", formatterParams:{urlPrefix:"./static/img/printer-16", urlSuffix:".png"}, align:"center", cellClick:function(e, row){printit(e,row);},},
         //column definition in the columns array
         //{formatter:"buttonCross", width:40, align:"center", cellClick:function(e, cell){
         //    cell.getRow().delete()}},
@@ -194,11 +194,11 @@ var table = new Tabulator("#example-table",
         //{title:"Order Received Date", field:"10", align:"center", sorter:"date", editor:true},
         //{title:"Delete Row", editor:dateEditor, width:40, align:"center", cellClick:function(e, cell){doit(e,cell);},},
         //{title:"Order Return Quantity", field:"13", hozAlign:"center", sorter:"number", editor:true},
-        //{title:"Print", formatter:printIcon, align:"center", cellClick:function(e, cell){printit(e,cell);},},
+        ////{title:"Print", formatter:printIcon, align:"center", cellClick:function(e, cell){printit(e,cell);},},
         ],
         });
 
-columns: ['', '', '', '', '', '', '', '', '', '','','','','', '']
+columns: ['', '', '', '', '', '', '', '', '', '','','','','']
 
 
 
@@ -242,6 +242,7 @@ function updateDate(cell) {
 
 }
 
+/*
 function printit(e,row)
 {
     debugger;
@@ -257,7 +258,7 @@ function printit(e,row)
 
 }
 
-
+*/
 
 </script>
 {% endblock %}

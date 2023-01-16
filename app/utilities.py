@@ -616,18 +616,18 @@ def getMaxOrderNbr() -> int:
         conn = getConnection(db)
         # conn.row_factory = sqlite3.Row
         cur = conn.cursor()
-        stmt = f'select max(orderNbr) from OrderNbrTbl'
+        stmt = f'select max(purchaseOrderNbr) from purchaseOrder'
         cur.execute(stmt)
         row = cur.fetchone()
 
-        result = row[0]
+        maxPurchaseOrderNbr = row[0]
         if row[0] == None:
-            result = 0
+            maxPurchaseOrderNbr = 0
 
         cur.close()
         conn.close()
 
-        return (result)
+        return (maxPurchaseOrderNbr)
 
 
     except Exception as e:
@@ -658,26 +658,35 @@ def updateMaxOrderNbr(orderNbr: int):
         print(f'problem in updateMaxOrderNbr: {e}')
 
 
-def insertOrder(parms):
+def insertOrder(parms) -> None:
+    #parms = (orderNbr, partNbrId, supplierId, quantity, unitId, cost, totalCost)
     try:
+        #id = {id[0]:0>3} #format left padding w 0 with 3
+
+        maxOrderNbr = getMaxOrderNbr()
+        if maxOrderNbr == 0:
+            pass
+            #raise error
+
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        stmt = 'select max(id) from ordertbl'
-        cur.execute(stmt)
-        id = cur.fetchone()
-        if id[0] is None:
-            id = 1
-        else:
-            id = id[0] + 1
-        #id = {id[0]:0>3} #format left padding w 0 with 3
-        supplierId = parms[1]
+
+        supplierId = parms[2]
         stmt = f'select supplierName from supplier where id = {supplierId}'
         cur.execute(stmt)
         supplierName = cur.fetchone()
+
         dt = str(datetime.datetime.today())
         dt = dt[0:10]
-        PO = supplierName[0] + '_' + dt + '_' + str(f'{id:0>3}')
+
+        # at this point in time order id has NOT yet been committed to db, therefore get current max id and add one to get next
+        # this is used to create the name of the print doc which is tored on the order rec
+        maxOrderId = getMaxOrderId() + 1
+
+        PO = supplierName[0] + '_' + dt + '_' + str(f'{maxOrderNbr:0>3}')
+        #PO = supplierName[0] + '_' + dt + '_' + str(f'{maxOrderNbr:0>3}') + '_' + str(maxOrderId)
+
         OrderNbr = parms[0]
         stmt = f'select distinct(a.deptName) from department a, purchaser b, purchaseorder c where purchaseOrderNbr = {OrderNbr} and c.purchaseOrderPurchaserDeptId = b.id and b.purchaseractive and a.active'
         #stmt = 'select a.deptName from department a, ordertbl b, purchaseorder c where purchaseOrderNbr = b.ordernbr and c.purchaseOrderPurchaserDeptId = a.id and a.active is True'
@@ -686,8 +695,8 @@ def insertOrder(parms):
         deptName = deptName[0]
 
         #OrderNbr = parms[0]
-        OrderSupplierId = parms[1]
-        OrderPartId = parms[2]
+        OrderPartId = parms[1]
+        OrderSupplierId = parms[2]
         OrderQuantity= parms[3]
         OrderUnitId = parms[4]
         OrderPartPrice = parms[5]
@@ -972,48 +981,53 @@ def getTable(tableName: str) -> list:
         print(f'problem in getTable: {e}')
 
 
-def printPurchaseOrder(orderList: list) -> str:
+def createPrintDoc(orderList: list) -> None:
     # https://nagasudhir.blogspot.com/2021/10/docxtpl-python-library-for-creating.html
 
     try:
         myList: list = []
         previousSupplierId = orderList[0][2]
+        docName = orderList[0][13]
 
         for order in orderList:
 
             supplierId = order[2]
 
             if previousSupplierId != supplierId:
-                r = random.randint(0, 1000000)
-                DocName = 'generatedDoc_' + str(r) + '.docx'
-                printDoc('purchaseOrderTemplate.docx', DocName, myList, order, previousSupplierId)
+                #r = random.randint(0, 1000000)
+                #DocName = 'generatedDoc_' + str(r) + '.docx'
+                createOrderDoc('purchaseOrderTemplate.docx', docName, myList, order, previousSupplierId)
                 myList = []
                 myList = buildDoc(order, myList)
                 previousSupplierId = supplierId
+                docName = orderList[0][13]
             else:
                 myList = buildDoc(order, myList)
 
-        r = random.randint(0, 1000000)
-        DocName = 'generatedDoc_' + str(r) + '.docx'
-        fname = printDoc('purchaseOrderTemplate.docx', DocName, myList, order, previousSupplierId)
-        return(fname)
+        #r = random.randint(0, 1000000)
+        #DocName = 'generatedDoc_' + str(r) + '.docx'
+        createOrderDoc('purchaseOrderTemplate.docx', docName, myList, order, previousSupplierId)
+        return()
 
     except Exception as e:
-        print(f'problem in printPurchaseOrder: {e}')
+        print(f'problem in createPrintDoc: {e}')
 
 
 def buildDoc(order, myList: list) -> list:
-    partDesc = getTableItemById(order[3], 'Part', 'partDesc')
-    orderQuantity = order[4]
-    orderPartPrice = order[6]
-    myList.append({'orderQuantity': orderQuantity, 'orderPartPrice': orderPartPrice, 'partDesc': partDesc})
-    return (myList)
-
-
-def printDoc(templateName: str, docName: str, myList: list, order, supplierId: int) -> str:
     try:
-        docPath = Path(__file__).parent / templateName
-        doc = DocxTemplate(docPath)
+        partDesc = getTableItemById(order[4], 'Part', 'partDesc')
+        orderQuantity = order[5]
+        orderPartPrice = order[7]
+        myList.append({'orderQuantity': orderQuantity, 'orderPartPrice': orderPartPrice, 'partDesc': partDesc})
+        return (myList)
+    except Exception as e:
+        print(f'problem in buildDoc: {e}')
+
+def createOrderDoc(templateName: str, docName: str, myList: list, order, supplierId: int) -> None:
+    try:
+        #docPath = Path(__file__).parent / templateName
+        docPathTemplate = constants.TEMPLATE_DIRECTORY + templateName
+        doc = DocxTemplate(docPathTemplate)
 
         # these are common to all rows in the order
         purchaseOrderId = order[1]
@@ -1034,22 +1048,24 @@ def printDoc(templateName: str, docName: str, myList: list, order, supplierId: i
                    }
 
         doc.render(context)
-        doc.save(Path(__file__).parent / docName)
 
-        myDoc= Path(__file__).parent / docName
+        myDir = r'c:/users/wayne/APP/app/static/purchaseOrders'
 
-        print("just BEFORE call to os.startfile")
-        #os.startfile(myDoc)
-        #webbrowser.open_new(myDoc)
-        print("just AFTER call to os.startfile")
+        myDoc = constants.DOC_DIRECTORY + docName + '.docx'
 
-        return(myDoc)
+        #doc.save(Path(__file__).parent / myDoc)
+        doc.save(myDoc)
 
-        #downloadDocToLocalHost(docName)
+
+
+
+        return()
+
+
 
 
     except Exception as e:
-        print(f'problem in printDoc: {e}')
+        print(f'problem in createPurchaseOrderDoc: {e}')
 
 
 
@@ -1086,7 +1102,7 @@ def downloadDocToLocalHost(docName: str) -> None:
             print('Got unexpected status code {}: {!r}'.format(resp.status_code, resp.content))
 
     except Exception as e:
-        print(f'problem in printDoc: {e}')
+        print(f'problem in downloadDocToLocalHost: {e}')
 
 def getPurchaseOrderById(orderId: int) -> list:
     try:
@@ -1121,14 +1137,14 @@ purchaseOrderPurchaserDeptId
 '''
 
 
-def getOrderById(orderId: int) -> list:
+def getOrderByOrderNbr(orderNbr: int) -> list:
     try:
         myList = []
         row = []
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        parm = (orderId,)
+        parm = (orderNbr,)
         stmt = "select * from OrderTbl where orderNbr = ? order by orderSupplierId asc"
         cur.execute(stmt, parm)
         rows = cur.fetchall()
@@ -1141,3 +1157,24 @@ def getOrderById(orderId: int) -> list:
 
     except Exception as e:
         print(f'problem in getPurchaseOrderById: {e}')
+
+
+def getMaxOrderId():
+    try:
+
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        stmt = "select max(id) from OrderTbl"
+        cur.execute(stmt)
+        row = cur.fetchone()
+        conn.commit()
+        cur.close()
+        maxOrderId = 0
+        if row[0] != None:
+            maxOrderId = row[0]
+
+        return(maxOrderId)
+
+    except Exception as e:
+        print(f'problem in getMaxOrderId: {e}')

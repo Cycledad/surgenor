@@ -1,9 +1,28 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<br><br>
+<h1>View/Print Purchase Order</h1>
+<br><br>
+
+<form action="#" method="post" class="form-group">
+    <div class="form-group">
 
 
-<a href="C:\Users\wayne\APP\app\generatedDoc_479247.docx" download="C:\Users\wayne\APP\app\generatedDoc_479247.docx">Read the full file</a>.
+        <div class="form-group mt-3">
+            {% for f in docList: %}
+
+            <label for="selFile">{{ f }}:</label>
+            <p>
+               <input type="radio" class='form-check-input' id='selFile' name='selFile' value='{{ f }}' > View/Print Purchase Order
+            </p>
+            {% endfor %}
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-4 bg-steel">Submit</button>
+    </div>
+</form>
 
 
-{% endblock %}
+
+{% endblock content %}

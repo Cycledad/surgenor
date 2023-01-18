@@ -11,7 +11,9 @@
     </div>
 
     <div class="form-group mt-3">
-          <label for="selectpurchaser">Purchaser:</label>
+          <label for="purchaseName">Purchaser:</label>
+           <!---<input type="text" class='form-control' name="purchaseName" id="purchaseName" value="{{username}}" readonly/>-->
+
           <select name="selectPurchaser" id="selectPurchaser" class=form-control required>
               <option value="">--Please select a purchaser--</option>
                   {% for purchaserName in listPurchaserName: %}
@@ -22,40 +24,20 @@
     </div>
     <br>
     <table id="myTable"  class="table order-list table-sm" style="table-layout: fixed;">
-<!-- <table id="myTable" class="table order-list" style="width: 100%"> style="table-layout: fixed ; width: 100%;"-->
+<!-- <table id="myTable" class="table order-list" style="width: 100%"> style="table-layout: fixed ; width: 100%;" -->
     <thead>
         <tr class="col-sm-3">
-            <td>Part Number</td>
-            <td>Part</td>
             <td>Supplier</td>
             <td>Quantity</td>
-            <td>Unit</td>
+            <td>Part Number</td>
+            <td>Part Description</td>
+            <!--<td>Unit</td>-->
             <td>Unit price</td>
-            <td>Cost</td>
+            <!--<td>Cost</td>-->
         </tr>
     </thead>
     <tbody>
         <tr id="rowContainer">
-            <td class="col-sm-6">
-                <div class="form-group mt-3">
-                    <select name="selectPartNbr" id="selectPartNbr" class='form-control' required >
-                        <option value=''>--Please select a part nbr:</option>
-                        {% for partNbr in listPartNbr: %}
-                        <option value='{{partNbr}}'>{{partNbr}}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </td>
-            <td class="col-sm-6">
-                <div class="form-group mt-3">
-                    <select name="selectPartDesc" id="selectPartDesc" class='form-control' required>
-                            <option value=''>--Please select part description</option>
-                            {% for part in listPartDesc: %}
-                                <option value='{{part}}'>{{part}}</option>
-                            {% endfor %}
-                    </select>
-                </div>
-            </td>
             <td class="col-sm-6">
                 <div class="form-group mt-3">
                     <select name="selectSupplier" id="selectSupplier" class='form-control' required>
@@ -68,10 +50,39 @@
             </td>
             <td class="col-sm-6">
                 <div class="form-group mt-3">
-                    <input type="text" name="quantity" id="quantity" class='form-control' required/>
+                    <input type="number" step="0" name="quantity" id="quantity" class='form-control' required />
                 </div>
             </td>
-            <td>
+            <td class="col-sm-6">
+                <div class="form-group mt-3">
+                     <input type="text" name="partNbr" id="partNbr" class='form-control' required />
+
+                    <!--
+                    <select name="selectPartNbr" id="selectPartNbr" class='form-control' required >
+                        <option value=''>--Please select a part nbr:</option>
+                        {% for partNbr in listPartNbr: %}
+                        <option value='{{partNbr}}'>{{partNbr}}</option>
+                        {% endfor %}
+                    </select>
+                    -->
+                </div>
+            </td>
+            <td class="col-sm-6">
+                <div class="form-group mt-3">
+                    <input type="text" name="partDesc" id="partDesc" class='form-control' required />
+                    <!--
+                    <select name="selectPartDesc" id="selectPartDesc" class='form-control' required>
+                            <option value=''>--Please select part description</option>
+                            {% for part in listPartDesc: %}
+                                <option value='{{part}}'>{{part}}</option>
+                            {% endfor %}
+                    </select>
+                    -->
+                </div>
+            </td>
+
+
+            <!--- as per Kevin Jan 16, 2023 <td>
                 <div class="form-group mt-3">
                     <select name="selectUnit" id="selectUnit" class='form-control' required>
 			        <option value="">--Please select a unit--</option>
@@ -81,16 +92,13 @@
                     </select>
                 </div>
             </td>
+            -->
             <td>
                 <div class="form-group mt-3">
-                    <input type="text" name="unitprice" id="unitprice" class='form-control' required/>
+                    <input type="number" step="0.01" name="unitprice" id="unitprice" class='form-control' required/>
                 </div>
             </td>
-            <td>
-                <div class="form-group mt-3">
-                    <input type="text" name="cost" id="cost" class='form-control' onclick="calculateRow(name)"  readonly/>
-                </div>
-            </td>
+
 
             <td class="col-sm-2"><a class="deleteRow"></a>
 
@@ -106,12 +114,12 @@
                 </div>
             </td>
             <td></td>
-             <td>
+             <!--<td>
                 <div class="form-group">
                     <input type="text" name="grandtotal" id="grandtotal" class='form-control' readonly/>
                 </div>
             </td>
-
+            -->
         </tr>
         <tr>
         </tr>

@@ -2,6 +2,7 @@ import datetime
 import os
 import random
 import sqlite3
+import stat
 
 import docx
 #import mammoth, webbrowser, tempfile
@@ -276,7 +277,8 @@ def getPurchaserId(name: str) -> int:
         conn = getConnection(db)
         cur = conn.cursor()
         parm = (name,)
-        stmt = 'select Id from purchaser where purchaserName = ? and purchaserActive is True'
+        #stmt = 'select Id from user where username = ? and active' #as per kevin Jan 16, 2023
+        stmt = 'select Id from purchaser where purchaserName = ? and purchaserActive'
         # cur.execute('select unitDesc from unit where id = ?', parm)
         cur.execute(stmt, parm)
         row = cur.fetchone()
@@ -660,6 +662,7 @@ def updateMaxOrderNbr(orderNbr: int):
 
 def insertOrder(parms) -> None:
     #parms = (orderNbr, partNbrId, supplierId, quantity, unitId, cost, totalCost)
+    #parms = (orderNbr, partNbr, partDesc, supplierName, quantity, unitPrice, username)
     try:
         #id = {id[0]:0>3} #format left padding w 0 with 3
 
@@ -672,10 +675,11 @@ def insertOrder(parms) -> None:
         conn = getConnection(db)
         cur = conn.cursor()
 
-        supplierId = parms[2]
-        stmt = f'select supplierName from supplier where id = {supplierId}'
+        supplierName = parms[3]
+        stmt = f'select id from supplier where supplierName = "{supplierName}"'
         cur.execute(stmt)
-        supplierName = cur.fetchone()
+        supplierId = cur.fetchone()
+        supplierId = supplierId[0]
 
         dt = str(datetime.datetime.today())
         dt = dt[0:10]
@@ -684,28 +688,29 @@ def insertOrder(parms) -> None:
         # this is used to create the name of the print doc which is tored on the order rec
         maxOrderId = getMaxOrderId() + 1
 
-        PO = supplierName[0] + '_' + dt + '_' + str(f'{maxOrderNbr:0>3}')
+        PO = supplierName + '_' + dt + '_' + str(f'{maxOrderNbr:0>3}')
         #PO = supplierName[0] + '_' + dt + '_' + str(f'{maxOrderNbr:0>3}') + '_' + str(maxOrderId)
 
-        OrderNbr = parms[0]
-        stmt = f'select distinct(a.deptName) from department a, purchaser b, purchaseorder c where purchaseOrderNbr = {OrderNbr} and c.purchaseOrderPurchaserDeptId = b.id and b.purchaseractive and a.active'
+        orderNbr = parms[0]
+        stmt = f'select distinct(a.deptName) from department a, purchaser b, purchaseorder c where purchaseOrderNbr = {orderNbr} and c.purchaseOrderPurchaserDeptId = b.id and b.purchaseractive and a.active'
         #stmt = 'select a.deptName from department a, ordertbl b, purchaseorder c where purchaseOrderNbr = b.ordernbr and c.purchaseOrderPurchaserDeptId = a.id and a.active is True'
         cur.execute(stmt)
         deptName = cur.fetchone()
         deptName = deptName[0]
 
         #OrderNbr = parms[0]
-        OrderPartId = parms[1]
-        OrderSupplierId = parms[2]
-        OrderQuantity= parms[3]
-        OrderUnitId = parms[4]
-        OrderPartPrice = parms[5]
-        orderTotalCost = parms[6]
+        orderPartNbr = parms[1]
+        orderDesc = parms[2]
+        orderSupplierId = supplierId
+        orderQuantity= parms[4]
+        orderPartPrice = parms[5]
+        #orderTotalCost = parms[5]
+        orderUsername = parms[6]
 
-        #rebuild parms adding deptname and po
-        params = (OrderNbr, OrderSupplierId, deptName, OrderPartId, OrderQuantity, OrderUnitId, OrderPartPrice, orderTotalCost, PO, )
+        #rebuild parms adding deptname, po and username
+        params = (orderNbr, orderSupplierId, deptName, orderPartNbr, orderDesc, orderQuantity, orderPartPrice, PO, orderUsername, )
 
-        stmt = 'INSERT INTO OrderTbl(OrderNbr, OrderSupplierId, deptName, OrderPartId, OrderQuantity, OrderUnitId, OrderPartPrice, orderTotalCost, po) values (?,?,?,?,?,?,?,?,?)'
+        stmt = 'INSERT INTO OrderTbl(orderNbr, orderSupplierId, deptName, orderPartNbr, orderPartDesc, orderQuantity, orderPartPrice, PO, orderUsername) values (?,?,?,?,?,?,?,?,?)'
         cur.execute(stmt, params)
         cur.close()
         conn.commit()
@@ -748,7 +753,8 @@ def getALLPurchaseOrders() -> list:
         conn = getConnection(db)
         # conn.row_factory = sqlite3.Row
         cur = conn.cursor()
-        stmt = 'select p.id, o.id, purchaser.purchaserName, o.deptName, orderNbr,s.supplierName,part.partNbr,part.partDesc,o.OrderQuantity,o.OrderPartPrice,o.OrderTotalCost, o.orderReceivedDate, o.OrderReceivedBy, o.orderReturnDate, o.orderReturnQuantity, o.PO from purchaseOrder p, OrderTbl o, supplier s, Part, Purchaser, Department where p.purchaseOrderNbr = o.orderNbr AND o.OrderSupplierId = s.id and o.OrderPartId = part.id and Purchaser.id = p.purchaseOrderPurchaserId and purchaserDeptid = department.id'
+        stmt = 'select p.id, o.id, purchaser.purchaserName, o.deptName, orderNbr, s.supplierName, o.orderPartNbr, o.orderPartDesc, o.OrderQuantity,o.OrderPartPrice, o.orderReceivedDate, o.OrderReceivedBy, o.orderReturnDate, o.orderReturnQuantity, o.PO, o.orderUsername from purchaseOrder p, OrderTbl o, supplier s, Purchaser, Department where p.purchaseOrderNbr = o.orderNbr AND o.OrderSupplierId = s.id and Purchaser.id = p.purchaseOrderPurchaserId and purchaserDeptid = department.id'
+        #stmt = 'select p.id, o.id, purchaser.purchaserName, o.deptName, orderNbr,s.supplierName, part.partNbr,part.partDesc,o.OrderQuantity,o.OrderPartPrice,o.OrderTotalCost, o.orderReceivedDate, o.OrderReceivedBy, o.orderReturnDate, o.orderReturnQuantity, o.PO from purchaseOrder p, OrderTbl o, supplier s, Part, Purchaser, Department where p.purchaseOrderNbr = o.orderNbr AND o.OrderSupplierId = s.id and o.OrderPartId = part.id and Purchaser.id = p.purchaseOrderPurchaserId and purchaserDeptid = department.id'
         cur.execute(stmt)
         row = cur.fetchall()
         cur.close()
@@ -1055,6 +1061,10 @@ def createOrderDoc(templateName: str, docName: str, myList: list, order, supplie
 
         #doc.save(Path(__file__).parent / myDoc)
         doc.save(myDoc)
+
+        #write protect document, IROTH = can be read by others
+        os.chmod(myDoc, stat.S_IROTH)
+
 
 
 

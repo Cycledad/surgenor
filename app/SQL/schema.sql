@@ -9,20 +9,22 @@ CREATE TABLE OrderTbl (
 	OrderNbr INTEGER NOT NULL,
 	OrderSupplierId INTEGER,
 	deptName TEXT,
-	OrderPartId INTEGER,
+	OrderPartNbr TEXT,
+	OrderPartDesc TEXT,
 	OrderQuantity INTEGER NOT NULL,
-	OrderUnitId INTEGER NOT NULL,
+	--OrderUnitId INTEGER NOT NULL,
 	OrderPartPrice REAL NOT NULL,
-	OrderTotalCost REAL NOT NULL,
+	--OrderTotalCost REAL NOT NULL,
 	OrderReceivedDate TEXT,
 	OrderReceivedBy TEXT,
 	OrderReturnDate TEXT,
 	OrderReturnQuantity INTEGER,
 	PO TEXT,
+	OrderUsername TEXT,
 	PRIMARY KEY("id" AUTOINCREMENT),
 	FOREIGN KEY(OrderSupplierId) REFERENCES Supplier (id),
-	FOREIGN KEY(OrderNbr) REFERENCES purchaseOrder (purchaseOrderNbr),
-	FOREIGN KEY(OrderPartId) REFERENCES Part (id)
+	FOREIGN KEY(OrderNbr) REFERENCES purchaseOrder (purchaseOrderNbr)
+	--FOREIGN KEY(OrderPartId) REFERENCES Part (id)
 );
 /*
 INSERT INTO OrderTbl(OrderNbr, OrderSupplierId, OrderPartId, OrderQuantity, OrderUnitId, OrderPartPrice, OrderTotalCost, orderReceivedDate)

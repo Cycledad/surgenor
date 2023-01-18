@@ -129,34 +129,34 @@ def addOrder():
             # resultList minus 3 gives total nbr of order items, less PONbr and purchaser
             # take total nbr of order items and divide by seven gives nbr of recs to insert
 
-            nbrOfOrderItems = len(resultList) - 3
-            nbrOfRecs = nbrOfOrderItems / 7
+            resultList.insert(2, session['username'])
 
-            j: int = 0
-            k: int = 2
-            # 2nd update order table
-            x = len(resultList)
-            for i in range(2, x):
-                if (i == k):
-                    j += 1
-                    if j > nbrOfRecs:
-                        break
-                    orderNbr = purchaseOrderNbr
-                    partNbrId = utilities.getPartId(resultList[k])  # 2
-                    k += 2
-                    supplierId = utilities.getSupplierId(resultList[k])  # 4
-                    k += 1
-                    quantity = resultList[k]  # 5
-                    k += 1
-                    unitId = utilities.getUnitId(resultList[k])  # 6
-                    k += 1
-                    cost = resultList[k]  # 7
-                    k += 1
-                    totalCost = resultList[k]  # 8
-                    k += 1
-                    parms = (orderNbr, partNbrId, supplierId, quantity, unitId, cost, totalCost)
-                    # creates order in the orderTbl ... there can be many orders for one purchase order
-                    utilities.insertOrder(parms)
+            nbrOfOrderItems = len(resultList) - 3  #first 3 items are the same for all orders
+            nbrOfRecs = int(nbrOfOrderItems / 5) #5 is the nbr of items per rec
+
+
+            i: int = 3
+            for idx in range(0, nbrOfRecs):
+                if idx == nbrOfRecs:
+                    break;
+                orderNbr = purchaseOrderNbr
+                username = resultList[2]
+                supplierName = resultList[i]
+                i += 1
+                quantity = resultList[i]
+                i += 1
+                partNbr = resultList[i]
+                i += 1
+                partDesc = resultList[i]
+                i += 1
+                unitPrice = resultList[i]
+                i += 1
+
+                parms = (orderNbr, partNbr, partDesc, supplierName, quantity, unitPrice, username)
+
+                # creates order in the orderTbl ... there can be many orders for one purchase order
+                utilities.insertOrder(parms)
+
 
             utilities.updateMaxOrderNbr(orderNbr)
 
@@ -181,7 +181,7 @@ def addOrder():
     listUnits = utilities.getALLITEMS('UNIT', 'UnitDesc')
     return render_template('addOrder.html', listPartDesc=listPartDesc, listPartNbr=listPartNbr,
                            listPurchaserName=listPurchaserName, listSupplierNames=listSupplierNames,
-                           listUnits=listUnits, orderNbr=orderNbr)
+                           listUnits=listUnits, orderNbr=orderNbr, username=session['username'])
 
 
 @app.route('/addPart', methods=['GET', 'POST'])
@@ -267,6 +267,7 @@ def login():
                 else:
                     session['loggedOn'] = True
                     session['securityLevel'] = utilities.getUserSecurityLevel(username)
+                    session['username'] = username
                     return redirect(url_for('home'))
 
     except Exception as e:
@@ -488,7 +489,7 @@ def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=
 
     # return {'data': mylist} => use this format for datatables.js, dict of lists
     x = json.dumps(mylist)
-    return (mylist)  # arry list
+    return (x)  # arry list
 
 
 @app.route('/managePurchaseOrder', methods=['GET', 'POST'])
@@ -700,14 +701,15 @@ def viewDoc():
 
             fname = req['selFile']
             return send_from_directory(directory, fname, as_attachment=True)
-            print('after send')
 
         # remove/separate directory from filename
         theList = []
         fname = constants.DOC_DIRECTORY + '*.docx'
         docList = glob.glob(fname)
+
         for i in range(len(docList)):
-            x = docList[i].rsplit('\\')
+            x = docList[i].replace('\\', '/')
+            x = x.rsplit('/')
             theList.append(x[len(x) - 1])
 
         return render_template('viewDoc.html', docList=theList)

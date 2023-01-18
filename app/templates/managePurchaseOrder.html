@@ -46,7 +46,7 @@ var updateQuantity = (cell) =>
     var rowData = row.getData();
     //alert("OrderId is: " + rowData["1"]) //id in purchaserOrder table
     id = rowData["1"];
-    returnQuantity = rowData[14];
+    returnQuantity = rowData[13];
     if (isNaN(returnQuantity)){
         alert("Not a number!!");
     }
@@ -54,7 +54,7 @@ var updateQuantity = (cell) =>
         quantityOrdered = rowData[8];
         if (returnQuantity > quantityOrdered) {
             alert("Quantity returned can not exceed quantity ordered!");
-            rowData[14] = ''
+            rowData[13] = ''
         }
         else {
             value = id + "," + returnQuantity
@@ -81,7 +81,7 @@ var updateCol = (cell) =>
     var row = cell.getRow();
     var rowData = row.getData();
     id = rowData["0"];
-    receivedBy = rowData[12];   //receivedBy
+    receivedBy = rowData[11];   //receivedBy
     value = id + "," + receivedBy;
     //'/api/data/manageDepartment?action=update&value=1,Executive,2023-01-04,5'
     URL = "/api/data/managePurchaseOrder?action=receivedBy&value=" + value;
@@ -179,13 +179,14 @@ var table = new Tabulator("#example-table",
         {title:"Part Description", field:"7", hozAlign:"center", headerFilter:"input", headerFilterPlaceholder:"Find a Part ..."},
         {title:"Quantity", field:"8", hozAlign:"center", sorter:"number"},
         {title:"Part Price", field:"9", hozAlign:"center", sorter:"number"},
-        {title:"Total Cost", field:"10", hozAlign:"center", sorter:"number"},
-        {title:"Order Received Date", field:"11", editor:dateEditor},
+        //{title:"Total Cost", field:"10", hozAlign:"center", sorter:"number"},
+        {title:"Order Received Date", field:"10", editor:dateEditor},
         //I wasn't able to figure out how to load select values from the database ????????????????????????????????????????????????????????????????????????????????????????????????????
-        {title:"Order Received By", field:"12", editor:"select", editorParams:{values:["Kevin", "Jessie"]}, cellEdited:updateCol},
-        {title:"Order Return Date", field:"13", editor:dateEditor},
-        {title:"Order Return Quantity", field:"14", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateQuantity},
-        {title:"PO", field:"15", hozAlign:"center", sorter:"string", editor:false},
+        {title:"Order Received By", field:"11", editor:"select", editorParams:{values:["Kevin", "Jessie"]}, cellEdited:updateCol},
+        {title:"Order Return Date", field:"12", editor:dateEditor},
+        {title:"Order Return Quantity", field:"13", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateQuantity},
+        {title:"PO", field:"14", hozAlign:"center", sorter:"string", editor:false},
+        {title:"User", field:"15", hozAlign:"center", sorter:"string", editor:false},
         //{title:"Print", formatter:"image", formatterParams:{urlPrefix:"./static/img/printer-16", urlSuffix:".png"}, align:"center", cellClick:function(e, row){printit(e,row);},},
         //column definition in the columns array
         //{formatter:"buttonCross", width:40, align:"center", cellClick:function(e, cell){
@@ -198,7 +199,7 @@ var table = new Tabulator("#example-table",
         ],
         });
 
-columns: ['', '', '', '', '', '', '', '', '', '','','','','']
+columns: ['', '', '', '', '', '', '', '', '', '','','','','', '']
 
 
 
@@ -230,8 +231,8 @@ function updateDate(cell) {
     var rowData = row.getData();
     //alert("OrderId is: " + rowData["1"]) //id in purchaserOrder table
     id = rowData["1"]
-    dt_order_received = rowData[11] //date order received col
-    dt_order_returned = rowData[13] //date order returned col
+    dt_order_received = rowData[10] //date order received col
+    dt_order_returned = rowData[12] //date order returned col
     value= id + "," + dt_order_received + "," + dt_order_returned
     URL = "/api/data/managePurchaseOrder?action=updateOrderDate&value=" + value;
     table.setData(URL);

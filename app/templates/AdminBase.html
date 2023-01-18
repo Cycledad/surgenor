@@ -43,7 +43,7 @@
                       <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="{{url_for('addOrder')}}">Create</a></li>
                         <li><a class="dropdown-item" href="{{url_for('managePurchaseOrder')}}">Manage</a></li>
-                         <li><a class="dropdown-item" href="{{url_for('viewDoc')}}">View/Print Purchase Order</a></li>
+                         <li><a class="dropdown-item" href="{{url_for('viewDoc')}}">Print/View Purchase Order</a></li>
                       </ul>
                     </li>
                     <li class="nav-item dropdown">
@@ -64,6 +64,7 @@
                           <li><a class="dropdown-item" href="{{url_for('manageDepartment')}}">Manage</a></li>
                         </ul>
                     </li>
+                    <!--
                     <li class="nav-item dropdown">
                           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Parts
@@ -73,6 +74,7 @@
                             <li><a class="dropdown-item" href="{{url_for('manageParts')}}">Manage</a></li>
                           </ul>
                     </li>
+                    -->
                     <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                               Supplier
@@ -90,6 +92,19 @@
                               <li><a class="dropdown-item" href="{{url_for('manageUser')}}">Manage</a></li>
                             </ul>
                     </li>
+                    <li class="nav-item dropdown">
+                          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Statistics
+                          </a>
+                          <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">Coming .... </a></li>
+                            <!--
+                            <li><a class="dropdown-item" href="{{url_for('addPart')}}">Create</a></li>
+                            <li><a class="dropdown-item" href="{{url_for('manageParts')}}">Manage</a></li>
+                            -->
+                          </ul>
+                    </li>
+
                 </div>
 
               </div>

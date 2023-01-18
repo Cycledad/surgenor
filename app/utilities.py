@@ -1176,3 +1176,48 @@ def getMaxOrderId():
 
     except Exception as e:
         print(f'problem in getMaxOrderId: {e}')
+
+def getCount(tableName: str) -> int:
+    try:
+
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        stmt = f"select count(*) from {tableName}"
+        cur.execute(stmt)
+        row = cur.fetchone()
+        conn.commit()
+        cur.close()
+
+        count = 0
+        if row[0] != None:
+            count = row[0]
+
+        return (count)
+
+    except Exception as e:
+        print(f'problem in getCount: {e}')
+
+
+def getOrderByCount() -> list:
+    try:
+
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        stmt = 'select orderpartdesc, count(orderpartdesc) count from ordertbl group by OrderPartDesc order by count desc'
+        cur.execute(stmt)
+        rows = cur.fetchall()
+        conn.commit()
+        cur.close()
+
+        myList = []
+        for row in rows:
+            ar = list(row)
+            myList.append(ar)
+
+
+        return (myList)
+
+    except Exception as e:
+        print(f'problem in getOrderbyCount: {e}')

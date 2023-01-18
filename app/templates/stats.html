@@ -1,0 +1,39 @@
+{% extends 'Adminbase.html' %}
+
+{% block content %}
+<p>
+    Total number of purchase orders: {{ purchaseOrders }}
+</p>
+<p>
+    Total number of parts ordered: {{ orders }}
+</p>
+<p>
+    Total number of registered users: {{ users }}
+</p>
+<p>
+    Total number of suppliers: {{ suppliers }}
+</p>
+<p>
+    Total number of purchasers: {{ purchaser }}
+</p>
+<p>
+    Total number of departments: {{ department }}
+</p>
+<hr>
+<p>
+    Items ordered by count:
+    <table>
+    {% for row in orderByCount: %}
+    <tr>
+        <td> {{ row[0] }}</td>
+        <td> {{ row[1] }}</td>
+    </tr>
+     {% endfor %}
+    </table>
+
+
+
+
+
+
+{% endblock content %}

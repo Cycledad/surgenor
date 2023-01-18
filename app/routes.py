@@ -1,6 +1,6 @@
 import datetime as dt
 import json
-import os, stat
+
 from flask import render_template, request, redirect, url_for, flash, session
 
 from app import app, bcrypt, constants
@@ -131,9 +131,8 @@ def addOrder():
 
             resultList.insert(2, session['username'])
 
-            nbrOfOrderItems = len(resultList) - 3  #first 3 items are the same for all orders
-            nbrOfRecs = int(nbrOfOrderItems / 5) #5 is the nbr of items per rec
-
+            nbrOfOrderItems = len(resultList) - 3  # first 3 items are the same for all orders
+            nbrOfRecs = int(nbrOfOrderItems / 5)  # 5 is the nbr of items per rec
 
             i: int = 3
             for idx in range(0, nbrOfRecs):
@@ -156,7 +155,6 @@ def addOrder():
 
                 # creates order in the orderTbl ... there can be many orders for one purchase order
                 utilities.insertOrder(parms)
-
 
             utilities.updateMaxOrderNbr(orderNbr)
 
@@ -700,18 +698,17 @@ def viewDoc():
             # executing on SERVER
             # directory = '/home/wayneraid/surgenor/app/'
 
-            #was getting permission err, so now change permission to ALL access, print, and then switch back to write protect
-            #problem in viewDoc: [Errno 13] Permission denied: '/home/wayneraid/surgenor/app/static/purchaseOrders/GMC_2023-01-18_001.docx'
+            # was getting permission err, so now change permission to ALL access, print, and then switch back to write protect
+            # problem in viewDoc: [Errno 13] Permission denied: '/home/wayneraid/surgenor/app/static/purchaseOrders/GMC_2023-01-18_001.docx'
             # write protect document, IROTH = can be read by others
             fname = req['selFile']
-            #filePathName = directory + fname
-            #os.chmod(filePathName, stat.S_IRWXO )
+            # filePathName = directory + fname
+            # os.chmod(filePathName, stat.S_IRWXO )
 
             fname = req['selFile']
             return send_from_directory(directory, fname, as_attachment=True)
             print(f'just after send file: {directory}')
-            #os.chmod(filePathName, stat.S_IROTH)  #set back to write protect / read only
-
+            # os.chmod(filePathName, stat.S_IROTH)  #set back to write protect / read only
 
         # remove/separate directory from filename
         theList = []
@@ -730,3 +727,17 @@ def viewDoc():
 
     except Exception as e:
         print(f'problem in viewDoc: {e}')
+
+
+@app.route('/stats', methods=['GET'])
+def stats():
+    purchaseOrders = utilities.getCount('purchaseOrder')
+    orders = utilities.getCount('orderTbl')
+    users = utilities.getCount('user')
+    suppliers = utilities.getCount('supplier')
+    purchaser = utilities.getCount('purchaser')
+    department = utilities.getCount('department')
+    orderByCount = utilities.getOrderByCount()
+
+    return render_template('stats.html', purchaseOrders=purchaseOrders, orders=orders, users=users, suppliers=suppliers,
+                           purchaser=purchaser, department=department, orderByCount=orderByCount)

@@ -1221,3 +1221,27 @@ def getOrderByCount() -> list:
 
     except Exception as e:
         print(f'problem in getOrderbyCount: {e}')
+
+
+def getOrderByMonth() -> list:
+    try:
+
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        stmt = 'SELECT STRFTIME("%m", purchaseorderdate) AS month, COUNT(id) AS count FROM purchaseorder GROUP BY STRFTIME("%m", purchaseorderdate)'
+        cur.execute(stmt)
+        rows = cur.fetchall()
+        conn.commit()
+        cur.close()
+
+        myList = []
+        for row in rows:
+            ar = list(row)
+            myList.append(ar)
+
+
+        return (myList)
+
+    except Exception as e:
+        print(f'problem in getOrderbyMonth: {e}')

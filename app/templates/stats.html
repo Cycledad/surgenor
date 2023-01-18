@@ -1,4 +1,4 @@
-{% extends 'Adminbase.html' %}
+{% extends 'AdminBase.html' %}
 
 {% block content %}
 <p>
@@ -24,6 +24,18 @@
     Items ordered by count:
     <table>
     {% for row in orderByCount: %}
+    <tr>
+        <td> {{ row[0] }}</td>
+        <td> {{ row[1] }}</td>
+    </tr>
+     {% endfor %}
+    </table>
+
+<hr>
+
+Number of orders by month:
+    <table>
+    {% for row in orderByMonth: %}
     <tr>
         <td> {{ row[0] }}</td>
         <td> {{ row[1] }}</td>

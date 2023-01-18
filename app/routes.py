@@ -738,6 +738,7 @@ def stats():
     purchaser = utilities.getCount('purchaser')
     department = utilities.getCount('department')
     orderByCount = utilities.getOrderByCount()
+    orderbyMonth = utilities.getOrderByMonth()
 
     return render_template('stats.html', purchaseOrders=purchaseOrders, orders=orders, users=users, suppliers=suppliers,
-                           purchaser=purchaser, department=department, orderByCount=orderByCount)
+                           purchaser=purchaser, department=department, orderByCount=orderByCount, orderByMonth=orderbyMonth)

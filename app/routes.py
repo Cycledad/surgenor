@@ -455,9 +455,9 @@ def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=
     if action == 'printOrder':
         value = request.args.get('value', '')
         myList = value.split(',')
-        orderId = myList[0]
-        orderList = utilities.getOrderById(orderId)
-        utilities.createPurchaseOrder(orderList)
+        orderNbr = myList[0]
+        orderList = utilities.getOrderByOrderNbr(orderNbr)
+        utilities.createPrintDoc(orderList)
 
         # return render_template('viewDoc.html', docName=docPath)
         # session['fname'] = fname

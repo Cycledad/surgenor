@@ -187,7 +187,7 @@ var table = new Tabulator("#example-table",
         {title:"Order Return Quantity", field:"13", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateQuantity},
         {title:"PO", field:"14", hozAlign:"center", sorter:"string", editor:false},
         {title:"User", field:"15", hozAlign:"center", sorter:"string", editor:false},
-        //{title:"Print", formatter:"image", formatterParams:{urlPrefix:"./static/img/printer-16", urlSuffix:".png"}, align:"center", cellClick:function(e, row){printit(e,row);},},
+        {title:"Print", formatter:"image", formatterParams:{urlPrefix:"./static/img/printer-16", urlSuffix:".png"}, align:"center", cellClick:function(e, row){printit(e,row);},},
         //column definition in the columns array
         //{formatter:"buttonCross", width:40, align:"center", cellClick:function(e, cell){
         //    cell.getRow().delete()}},
@@ -243,13 +243,13 @@ function updateDate(cell) {
 
 }
 
-/*
+
 function printit(e,row)
 {
     debugger;
     //row.getData()[colnbr], i.e. row.getData()[1]
-    orderId = row.getData()["4"]  //orderId
-    value= orderId
+    orderNbr = row.getData()["4"]  //orderNbr
+    value= orderNbr
     URL = "/api/data/managePurchaseOrder?action=printOrder&value=" + value;
     //URL = "/viewDoc=printOrder&value=" + value;
     //xhttp = new XMLHttpRequest();
@@ -259,7 +259,7 @@ function printit(e,row)
 
 }
 
-*/
+
 
 </script>
 {% endblock %}

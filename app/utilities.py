@@ -5,7 +5,6 @@ import sqlite3
 import stat
 
 import docx
-#import mammoth, webbrowser, tempfile
 import webbrowser
 import requests
 from urllib.parse import urljoin
@@ -370,7 +369,6 @@ def insertSupplier(parms):
 
         return ()
 
-
     except Exception as e:
         print(f'problem in insertSupplier: {e}')
 
@@ -387,7 +385,6 @@ def insertDepartment(parms) -> None:
         conn.close()
 
         return ()
-
 
     except Exception as e:
         print(f'problem in insertDepartment: {e}')
@@ -765,7 +762,7 @@ def getALLPurchaseOrders() -> list:
         print(f'problem in getALLPurchaseOrders: {e}')
 
 
-def deletePurchaseOrder(id: int) -> list:
+def deletePurchaseOrder(orderId: int) -> list:
     # There is ONE purchaseOrder id used to track orders.
     # there can be MANY orders per purchaseOrder
     try:
@@ -773,7 +770,7 @@ def deletePurchaseOrder(id: int) -> list:
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        parm1 = (id,)
+        parm1 = (orderId,)
         stmt1 = 'select o.OrderNbr from orderTbl o where o.id = ?'
         cur.execute(stmt1, parm1)
         orderNbr = cur.fetchone()
@@ -993,7 +990,7 @@ def createPrintDoc(orderList: list) -> None:
     try:
         myList: list = []
         previousSupplierId = orderList[0][2]
-        docName = orderList[0][13]
+        docName = orderList[0][12]
 
         for order in orderList:
 
@@ -1006,7 +1003,7 @@ def createPrintDoc(orderList: list) -> None:
                 myList = []
                 myList = buildDoc(order, myList)
                 previousSupplierId = supplierId
-                docName = orderList[0][13]
+                docName = orderList[0][12]
             else:
                 myList = buildDoc(order, myList)
 
@@ -1021,8 +1018,9 @@ def createPrintDoc(orderList: list) -> None:
 
 def buildDoc(order, myList: list) -> list:
     try:
-        partDesc = getTableItemById(order[4], 'Part', 'partDesc')
-        orderQuantity = order[5]
+        #partDesc = getTableItemById(order[4], 'Part', 'partDesc')
+        partDesc = order[5]
+        orderQuantity = order[6]
         orderPartPrice = order[7]
         myList.append({'orderQuantity': orderQuantity, 'orderPartPrice': orderPartPrice, 'partDesc': partDesc})
         return (myList)
@@ -1065,17 +1063,10 @@ def createOrderDoc(templateName: str, docName: str, myList: list, order, supplie
         #write protect document, IROTH = can be read by others
         os.chmod(myDoc, stat.S_IROTH)
 
-
-
-
-
         return()
 
-
-
-
     except Exception as e:
-        print(f'problem in createPurchaseOrderDoc: {e}')
+        print(f'problem in createOrderDoc: {e}')
 
 
 
@@ -1166,7 +1157,7 @@ def getOrderByOrderNbr(orderNbr: int) -> list:
         return (myList)  # myList[0][3]
 
     except Exception as e:
-        print(f'problem in getPurchaseOrderById: {e}')
+        print(f'problem in getOrderByOrderNbr: {e}')
 
 
 def getMaxOrderId():

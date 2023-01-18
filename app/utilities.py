@@ -997,18 +997,15 @@ def createPrintDoc(orderList: list) -> None:
             supplierId = order[2]
 
             if previousSupplierId != supplierId:
-                #r = random.randint(0, 1000000)
-                #DocName = 'generatedDoc_' + str(r) + '.docx'
                 createOrderDoc('purchaseOrderTemplate.docx', docName, myList, order, previousSupplierId)
                 myList = []
                 myList = buildDoc(order, myList)
                 previousSupplierId = supplierId
-                docName = orderList[0][12]
+                docName = order[12]
             else:
                 myList = buildDoc(order, myList)
 
-        #r = random.randint(0, 1000000)
-        #DocName = 'generatedDoc_' + str(r) + '.docx'
+
         createOrderDoc('purchaseOrderTemplate.docx', docName, myList, order, previousSupplierId)
         return()
 
@@ -1061,7 +1058,7 @@ def createOrderDoc(templateName: str, docName: str, myList: list, order, supplie
         doc.save(myDoc)
 
         #write protect document, IROTH = can be read by others
-        os.chmod(myDoc, stat.S_IROTH)
+        #os.chmod(myDoc, stat.S_IROTH)
 
         return()
 

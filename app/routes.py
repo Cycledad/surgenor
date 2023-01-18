@@ -1,6 +1,6 @@
 import datetime as dt
 import json
-
+import os, stat
 from flask import render_template, request, redirect, url_for, flash, session
 
 from app import app, bcrypt, constants
@@ -693,14 +693,25 @@ def viewDoc():
         if request.method == 'POST':
             req = request.form
 
+            print(f'viewdoc post - req is: {req}')
             # executing LOCALLY
             directory = constants.DOC_DIRECTORY
 
             # executing on SERVER
             # directory = '/home/wayneraid/surgenor/app/'
 
+            #was getting permission err, so now change permission to ALL access, print, and then switch back to write protect
+            #problem in viewDoc: [Errno 13] Permission denied: '/home/wayneraid/surgenor/app/static/purchaseOrders/GMC_2023-01-18_001.docx'
+            # write protect document, IROTH = can be read by others
+            fname = req['selFile']
+            #filePathName = directory + fname
+            #os.chmod(filePathName, stat.S_IRWXO )
+
             fname = req['selFile']
             return send_from_directory(directory, fname, as_attachment=True)
+            print(f'just after send file: {directory}')
+            #os.chmod(filePathName, stat.S_IROTH)  #set back to write protect / read only
+
 
         # remove/separate directory from filename
         theList = []
@@ -712,13 +723,10 @@ def viewDoc():
             x = x.rsplit('/')
             theList.append(x[len(x) - 1])
 
+        print(f'theList: {theList}')
         return render_template('viewDoc.html', docList=theList)
 
-        # return response(filename, as_attachment=True)
 
-        # filename = '/home/wayneraid/surgenor/app/generatedDoc_132106.docx'
-
-        # return ({})
 
     except Exception as e:
         print(f'problem in viewDoc: {e}')

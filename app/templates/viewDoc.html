@@ -11,10 +11,12 @@
         <div class="container">
             <div class="row">
                 {% for f in docList: %}
+                <p>
                 <div class="col-sm">
                     <label for="selFile1">{{ f }}</label>
                     <input type="radio" class='form-check-input' id='selFile1' name='selFile' value='{{ f }}' > Print/View Purchase Order
                 </div>
+                </p>
 
                 {% endfor %}
             </div>

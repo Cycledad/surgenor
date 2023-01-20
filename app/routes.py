@@ -1,8 +1,6 @@
 import datetime as dt
 import json
-
 from flask import render_template, request, redirect, url_for, flash, session
-
 from app import app, bcrypt, constants
 from app import utilities
 
@@ -265,11 +263,12 @@ def login():
                 else:
                     session['loggedOn'] = True
                     session['securityLevel'] = utilities.getUserSecurityLevel(username)
-                    session['username'] = username
+                    session['username'] = username  # used to identify who has made modifications to order
                     return redirect(url_for('home'))
 
     except Exception as e:
         print(f'problem in login: {e}')
+        flash(f'Problem in login => {e}', 'danger') #salt err when pw stored on db is not hashed
 
     return render_template('login.html')  # passed user and password validation
 
@@ -451,21 +450,15 @@ def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=
         utilities.updateOrderReturnQuantity(orderId, quantity)
 
     if action == 'printOrder':
+        '''
+        this creates a new doc in the purchaseOrders folder which can then be downloaded to local machine
+        use this to recreate doc if needed
+        '''
         value = request.args.get('value', '')
         myList = value.split(',')
         orderNbr = myList[0]
         orderList = utilities.getOrderByOrderNbr(orderNbr)
         utilities.createPrintDoc(orderList)
-
-        # return render_template('viewDoc.html', docName=docPath)
-        # session['fname'] = fname
-        # return redirect(url_for('viewDoc'))
-        # filename = 'generatedDoc_132106.docx'
-        # directory = '/home/wayneraid/surgenor/app/'
-        # filename = 'generatedDoc_479247.docx'
-        # directory = "C:\\Users\\wayne\\APP\\app\\"
-
-        # send_from_directory(directory, filename, as_attachment=True)
 
     if action == 'receivedBy':
         value = request.args.get('value', '')
@@ -550,7 +543,6 @@ def apimanageSupplier():
         myList.append(d1)
     x = json.dumps(myList)
     return (x)
-    # return (myList)
 
 
 @app.route('/manageSupplier')
@@ -604,7 +596,6 @@ def apimanagePurchaser():
         myList.append(d1)
     x = json.dumps(myList)
     return (x)
-    # return (myList)
 
 
 @app.route('/managePurchaser')
@@ -680,6 +671,9 @@ def manageUser():
 
 @app.route('/viewDoc', methods=['GET', 'POST'])
 def viewDoc():
+    '''
+    list ALL docs in template folder, select one and it is downloaded to local machine
+    '''
     try:
         from flask import send_from_directory
         import glob
@@ -695,6 +689,9 @@ def viewDoc():
             # executing LOCALLY
             directory = constants.DOC_DIRECTORY
 
+            '''
+            followup with setting permissions later ...
+            '''
             # executing on SERVER
             # directory = '/home/wayneraid/surgenor/app/'
 
@@ -715,12 +712,13 @@ def viewDoc():
         fname = constants.DOC_DIRECTORY + '*.docx'
         docList = glob.glob(fname)
 
+        # path was a bit different on my local machine and server, this fixes that ...
         for i in range(len(docList)):
             x = docList[i].replace('\\', '/')
             x = x.rsplit('/')
             theList.append(x[len(x) - 1])
 
-        print(f'theList: {theList}')
+        # print(f'theList: {theList}')
         return render_template('viewDoc.html', docList=theList)
 
 
@@ -729,8 +727,21 @@ def viewDoc():
         print(f'problem in viewDoc: {e}')
 
 
+@app.route('/getPurchaserName', methods=['GET'])
+def getPurchaserName():
+    try:
+        names = utilities.getALLPurchasers()
+
+        return(json.dumps(names))
+
+    except Exception as e:
+        print(f'problem in getPurchasename: {e}')
+
 @app.route('/stats', methods=['GET'])
 def stats():
+    '''
+    Pump out some various stats
+    '''
     purchaseOrders = utilities.getCount('purchaseOrder')
     orders = utilities.getCount('orderTbl')
     users = utilities.getCount('user')
@@ -741,4 +752,5 @@ def stats():
     orderbyMonth = utilities.getOrderByMonth()
 
     return render_template('stats.html', purchaseOrders=purchaseOrders, orders=orders, users=users, suppliers=suppliers,
-                           purchaser=purchaser, department=department, orderByCount=orderByCount, orderByMonth=orderbyMonth)
+                           purchaser=purchaser, department=department, orderByCount=orderByCount,
+                           orderByMonth=orderbyMonth)

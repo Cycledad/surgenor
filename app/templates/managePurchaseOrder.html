@@ -89,7 +89,12 @@ var updateCol = (cell) =>
     table.setData(URL);
 };
 
-
+var parmLookup = (cell) =>
+{
+    //debugger;
+    //used to populate dropdown for receivedby
+    return ({valuesURL: "/getPurchaserName"})
+}
 
 
 /*
@@ -182,7 +187,8 @@ var table = new Tabulator("#example-table",
         //{title:"Total Cost", field:"10", hozAlign:"center", sorter:"number"},
         {title:"Order Received Date", field:"10", editor:dateEditor},
         //I wasn't able to figure out how to load select values from the database ????????????????????????????????????????????????????????????????????????????????????????????????????
-        {title:"Order Received By", field:"11", editor:"select", editorParams:{values:["Kevin", "Jessie"]}, cellEdited:updateCol},
+        {title:"Order Received By", field:"11", editor:"list", editorParams:parmLookup, cellEdited:updateCol},
+        //{title:"Order Received By", field:"11", editor:"select", editorParams:{values:["Kevin", "Jessie"]}, cellEdited:updateCol},
         {title:"Order Return Date", field:"12", editor:dateEditor},
         {title:"Order Return Quantity", field:"13", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateQuantity},
         {title:"PO", field:"14", hozAlign:"center", sorter:"string", editor:false},

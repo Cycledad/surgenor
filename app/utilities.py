@@ -727,9 +727,9 @@ def insertPurchaseOrder(purchaseOrderNbr: int, purchaserId: int, purchaserDept: 
         cur = conn.cursor()
         orderDt = datetime.date.today()
         receivedDt = ''
-        deleteFlg = False
-        parms = (orderDt, receivedDt, deleteFlg, purchaseOrderNbr, purchaserId, purchaserDept)
-        stmt = 'INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderpurchaserId, purchaseOrderPurchaserDeptId) values (?, ?, ?, ?, ?, ?)'
+        Active = False
+        parms = (orderDt, receivedDt, Active, purchaseOrderNbr, purchaserId, purchaserDept)
+        stmt = 'INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderActive, purchaseOrderNbr, purchaseOrderpurchaserId, purchaseOrderPurchaserDeptId) values (?, ?, ?, ?, ?, ?)'
         cur.execute(stmt, parms)
         cur.close()
         conn.commit()
@@ -913,7 +913,7 @@ def getPassword(username: str) -> str:
         conn = getConnection(db)
         cur = conn.cursor()
         parm = (username,)
-        stmt = "select password from user where username = ? and active is True"
+        stmt = "select password from user where username = ? and active"
         cur.execute(stmt, parm)
         pw = cur.fetchone()
 
@@ -1110,7 +1110,7 @@ def getPurchaseOrderById(orderId: int) -> list:
         conn = getConnection(db)
         cur = conn.cursor()
         parm = (orderId,)
-        stmt = "select * from PurchaseOrder where id = ? and purchaseOrderDeleteFlg = False"
+        stmt = "select * from PurchaseOrder where id = ? and purchaseOrderActive = False"
         cur.execute(stmt, parm)
         row = cur.fetchone()
         conn.commit()
@@ -1127,7 +1127,7 @@ def getPurchaseOrderById(orderId: int) -> list:
 '''
 purchaseOrderDate  
 purchaseOrderReceivedDate  
-purchaseOrderDeleteFlg  
+purchaseOrderActive  
 purchaseOrderDateDeleted  
 purchaseOrderNbr  
 purchaseOrderPurchaserId  

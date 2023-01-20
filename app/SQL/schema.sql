@@ -21,6 +21,7 @@ CREATE TABLE OrderTbl (
 	OrderReturnQuantity INTEGER,
 	PO TEXT,
 	OrderUsername TEXT,
+	OrderActive BOOLEAN,
 	PRIMARY KEY("id" AUTOINCREMENT),
 	FOREIGN KEY(OrderSupplierId) REFERENCES Supplier (id),
 	FOREIGN KEY(OrderNbr) REFERENCES purchaseOrder (purchaseOrderNbr)
@@ -74,7 +75,7 @@ CREATE TABLE PurchaseOrder(
 id INTEGER NOT NULL,
 purchaseOrderDate TEXT NOT NULL,
 purchaseOrderReceivedDate TEXT,
-purchaseOrderDeleteFlg BOOLEAN NOT NULL,
+purchaseOrderActive BOOLEAN NOT NULL,
 purchaseOrderDateDeleted TEXT,
 purchaseOrderNbr INTEGER,
 purchaseOrderPurchaserId INTEGER NOT NULL,
@@ -83,25 +84,25 @@ PRIMARY KEY("id" AUTOINCREMENT)
 );
 
 /*
-INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderPurchaserId,purchaseOrderPurchaserDeptId)
+INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderActive, purchaseOrderNbr, purchaseOrderPurchaserId,purchaseOrderPurchaserDeptId)
 values('02112022', '15122023', False, 1,1,1);
-INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderPurchaserId,purchaseOrderPurchaserDeptId)
+INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderActive, purchaseOrderNbr, purchaseOrderPurchaserId,purchaseOrderPurchaserDeptId)
 values('01121999', '15121999', False, 2,2,1);
-INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderPurchaserId,purchaseOrderPurchaserDeptId)
+INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderActive, purchaseOrderNbr, purchaseOrderPurchaserId,purchaseOrderPurchaserDeptId)
 values('01121999', '15121999', False, 3,2,2);
-INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderPurchaserId,purchaseOrderPurchaserDeptId)
+INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderActive, purchaseOrderNbr, purchaseOrderPurchaserId,purchaseOrderPurchaserDeptId)
 values('01121999', '15121999', False, 4,2,2);
-INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderPurchaserId,purchaseOrderPurchaserDeptId)
+INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderActive, purchaseOrderNbr, purchaseOrderPurchaserId,purchaseOrderPurchaserDeptId)
 values('01121999', '15121999', False, 5,2,2);
-INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderPurchaserId,purchaseOrderPurchaserDeptId)
+INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderActive, purchaseOrderNbr, purchaseOrderPurchaserId,purchaseOrderPurchaserDeptId)
 values('01121999', '15121999', False, 6,2,1);
-INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderPurchaserId,purchaseOrderPurchaserDeptId)
+INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderActive, purchaseOrderNbr, purchaseOrderPurchaserId,purchaseOrderPurchaserDeptId)
 values('01121999', '15121999', False, 7,2,1);
-INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderPurchaserId,purchaseOrderPurchaserDeptId)
+INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderActive, purchaseOrderNbr, purchaseOrderPurchaserId,purchaseOrderPurchaserDeptId)
 values('01121999', '15121999', False, 8,2,1);
-INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderPurchaserId,purchaseOrderPurchaserDeptId)
+INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderActive, purchaseOrderNbr, purchaseOrderPurchaserId,purchaseOrderPurchaserDeptId)
 values('01121999', '15121999', False, 9,2,1);
-INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderDeleteFlg, purchaseOrderNbr, purchaseOrderPurchaserId,purchaseOrderPurchaserDeptId)
+INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderActive, purchaseOrderNbr, purchaseOrderPurchaserId,purchaseOrderPurchaserDeptId)
 values('01121999', '15121999', False, 10,2,1);
 
 */
@@ -200,7 +201,8 @@ CREATE TABLE User (
 	PRIMARY KEY("id" AUTOINCREMENT));
 
 
-
+insert into user (username, password, createDate, active, securityLevel) values('admin', '$2b$12$QFMmOK4vmBjhXUcPYjUATe7bxuiFCmBUG2xvc8mpLqM8T8wr9piFm', DATE('now'), True, 5);
+insert into user (username, password, createDate, active, securityLevel) values('test', '12345678', DATE('now'), True, 5);
 
 
 

@@ -1245,3 +1245,71 @@ def getOrderByMonth() -> list:
 
     except Exception as e:
         print(f'problem in getOrderbyMonth: {e}')
+
+def getUserLanguage(username: str) -> str:
+    try:
+
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        parm = (username,)
+        stmt = "select language from user where username = ? and active is True"
+        cur.execute(stmt, parm)
+        lang = cur.fetchone()
+        conn.commit()
+        cur.close()
+
+        return (lang[0])
+
+    except Exception as e:
+        print(f'problem in getUserLanguage: {e}')
+
+
+
+def createSessionObjects(currentLang: str, session) -> str:
+    try:
+
+        if currentLang == 'en':
+            session['home'] = 'Accueil'
+            session['purchaseOrder'] = 'Commande d''achat'
+            session['admin'] = 'admin'
+            session['create'] = 'créer'
+            session['manage'] = 'débrouiller'
+            session['print'] = 'imprimez/voyez l''ordre d''achat'
+            session['purchaser'] = 'acheteur'
+            session['department'] = 'département'
+            session['supplier'] = 'fournisseur'
+            session['user'] = 'utilisateur'
+            session['statistics'] = 'statistique'
+            session['lang'] = 'fr'
+            session['login'] = 'connectez-vous'
+            session['register'] = 'registre'
+            session['logout'] = 'déconnexion'
+            currentLang = 'fr'
+        else:
+            session['home'] = 'Home'
+            session['purchaseOrder'] = 'Purchase Order'
+            session['admin'] = 'Admin'
+            session['create'] = 'Create'
+            session['manage'] = 'Manage'
+            session['print'] = 'Print/View Purchase Order'
+            session['purchaser'] = 'Purchaser'
+            session['department'] = 'Departement'
+            session['supplier'] = 'Supplier'
+            session['user'] = 'User'
+            session['statistics'] = 'Statistics'
+            session['lang'] = 'en'
+            session['login'] = 'Login'
+            session['register'] = 'Register'
+            session['logout'] = 'Logout'
+            currentLang = 'en'
+
+
+
+
+        return(currentLang)
+
+
+
+    except Exception as e:
+        print(f'problem in createSessionObjects: {e}')

@@ -37,29 +37,36 @@
 
             <div class="collapse navbar-collapse" id="navbarToggle">
                 <div class="navbar-nav mr-auto">
-                    <a class="nav-item nav-link" href="{{ url_for('home') }}">Home</a>
+                    <a class="nav-item nav-link" href="{{ url_for('home') }}">{% if 'home' in session %} {{ session['home'] }} {% else %} Home {% endif %}</a>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                            aria-expanded="false">
-                            Purchase Order
-                        </a>
+                            {% if 'purchaseOrder' in session %} {{ session['purchaseOrder'] }} {% else %} Purchase Order {% endif %}</a>
+
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{url_for('addOrder')}}">Create</a></li>
-                            <li><a class="dropdown-item" href="{{url_for('managePurchaseOrder')}}">Manage</a></li>
-                            <li><a class="dropdown-item" href="{{url_for('viewDoc')}}">Print/View Purchase Order</a></li>
+                            <li><a class="dropdown-item" href="{{url_for('addOrder')}}">{% if 'create' in session %} {{ session['create'] }} {% else %} Create {% endif %}</a></li>
+                            <li><a class="dropdown-item" href="{{url_for('managePurchaseOrder')}}">{% if 'manage' in session %} {{ session['manage'] }} {% else %} Manage {% endif %}</a></li>
+                            <li><a class="dropdown-item" href="{{url_for('viewDoc')}}">{% if 'print' in session %} {{ session['print'] }} {% else %} View/Print Purchase Order {% endif %}</a></li>
                         </ul>
                     </li>
-                    <a class="nav-item nav-link" href="{{url_for('adminHome')}}">Admin</a>
+                    <a class="nav-item nav-link" href="{{url_for('adminHome')}}">{% if 'admin' in session %} {{ session['admin'] }} {% else %} Admin {% endif %}</a>
                 </div>
 
             </div>
             <!-- Navbar Right Side -->
             <div class="navbar-nav ml-auto">
                 {% if not session.get('loggedOn', None) == None: %} <!-- user is logged in -->
-                <a class="nav-item nav-link" href="{{ url_for('logout') }}">Logout</a>
+                <a class="nav-item nav-link" href="{{ url_for('logout') }}">{% if 'logout' in session %} {{ session['logout'] }} {% else %} Logout {% endif %}</a>
                 {% else %}
-                <a class="nav-item nav-link" href="{{ url_for('login') }}">Login</a>
-                <a class="nav-item nav-link" href="{{ url_for('register') }}">Register</a>
+                <a class="nav-item nav-link" href="{{ url_for('login') }}">{% if 'login' in session %} {{ session['login'] }} {% else %} Login {% endif %}</a>
+                <a class="nav-item nav-link" href="{{ url_for('register') }}">{% if 'register' in session %} {{ session['register'] }} {% else %} Register {% endif %}</a>
+                {% endif %}
+                {% if 'lang' not in session: %}
+                    <a class ="navbar-brand mr-4" href="{{ url_for('language') }}" ><img src="{{ url_for('static', filename='/img/fr.png') }}" height=30 alt='' > </a >
+                {% elif session['lang'] == 'en': %}
+                     <a class ="navbar-brand mr-4" href="{{ url_for('language') }}" ><img src="{{ url_for('static', filename='/img/fr.png') }}" height=30 alt='' > </a >
+                {% else %}
+                    <a class ="navbar-brand mr-4" href="{{ url_for('language') }}" ><img src="{{ url_for('static', filename='/img/en.png') }}" height=30 alt='' > </a >
                 {% endif %}
             </div>
         </div>

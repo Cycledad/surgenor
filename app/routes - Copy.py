@@ -1,8 +1,6 @@
 import datetime as dt
 import json
-
-from flask import render_template, request, redirect, url_for, flash, session, make_response
-
+from flask import render_template, request, redirect, url_for, flash, session
 from app import app, bcrypt, constants
 from app import utilities
 
@@ -13,19 +11,16 @@ from app import utilities
 @app.route('/home')
 def home():
     try:
-
         '''
         if session.get('loggedOn', None)  == None:
             flash('Please login!', 'danger' )
             return redirect(url_for('login'))
-       
-        utilities.createSessionObjects(session)
         '''
 
     except Exception as e:
         print(f'problem in home: {e}')
 
-    return render_template('home.html')
+    return render_template('home.html', lang=constants.langFR)
 
 
 @app.route('/addPurchaser', methods=['GET', 'POST'])
@@ -234,12 +229,12 @@ def adminHome():
     try:
         if session.get('loggedOn', None) == None:
             flash('Please login!', 'danger')
-            return redirect(url_for('login'))
+            return redirect(url_for('login', lang=constants.langFR))
 
     except Exception as e:
         print(f'problem in adminHome: {e}')
 
-    return render_template('AdminBase.html')
+    return render_template('AdminBase.html', lang=constants.langFR)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -247,7 +242,7 @@ def login():
     try:
         if not session.get('loggedOn', None) == None:
             flash('You are aready looged in!', 'info')
-            return redirect(url_for('home'))
+            return redirect(url_for('home', lang=constants.langFR))
 
         if request.method == 'POST':
             req = request.form
@@ -264,17 +259,16 @@ def login():
                 pw_check = bcrypt.check_password_hash(hashed_pw, pw)
                 if not pw_check:
                     flash('Invalid password entered!', 'Danger')
-                    return redirect(url_for('login'))
+                    return redirect(url_for('login', constants.langFR))
                 else:
                     session['loggedOn'] = True
-                    session['securityLevel'] = getUserSecurityLevel(username)
-                    session['lang'] = 'en' #english is default language
-                    utilities.createSessionObjects()
-
-                    return redirect(url_for('home'))
+                    session['securityLevel'] = utilities.getUserSecurityLevel(username)
+                    session['username'] = username  # used to identify who has made modifications to order
+                    return redirect(url_for('home', lang=constants.langFR))
 
     except Exception as e:
         print(f'problem in login: {e}')
+        flash(f'Problem in login => {e}', 'danger') #salt err when pw stored on db is not hashed
 
     return render_template('login.html')  # passed user and password validation
 
@@ -285,7 +279,7 @@ def register():
 
         if not session.get('loggedOn', None) == None:
             flash('You are aready looged in!', 'info')
-            return redirect(url_for('home'))
+            return redirect(url_for('home', lang=constants.langFR))
 
         if request.method == 'POST':
             req = request.form
@@ -356,7 +350,7 @@ def manageDepartment():
 
         if session['securityLevel'] < constants.GOD_LEVEL:
             flash('Security Level of 5 required to manage Department table', 'warning')
-            return redirect(url_for('adminHome'))
+            return redirect(url_for('adminHome', lang=constants.langFR))
 
 
     except Exception as e:
@@ -456,21 +450,15 @@ def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=
         utilities.updateOrderReturnQuantity(orderId, quantity)
 
     if action == 'printOrder':
+        '''
+        this creates a new doc in the purchaseOrders folder which can then be downloaded to local machine
+        use this to recreate doc if needed
+        '''
         value = request.args.get('value', '')
         myList = value.split(',')
         orderNbr = myList[0]
         orderList = utilities.getOrderByOrderNbr(orderNbr)
         utilities.createPrintDoc(orderList)
-
-        # return render_template('viewDoc.html', docName=docPath)
-        # session['fname'] = fname
-        # return redirect(url_for('viewDoc'))
-        # filename = 'generatedDoc_132106.docx'
-        # directory = '/home/wayneraid/surgenor/app/'
-        # filename = 'generatedDoc_479247.docx'
-        # directory = "C:\\Users\\wayne\\APP\\app\\"
-
-        # send_from_directory(directory, filename, as_attachment=True)
 
     if action == 'receivedBy':
         value = request.args.get('value', '')
@@ -555,7 +543,6 @@ def apimanageSupplier():
         myList.append(d1)
     x = json.dumps(myList)
     return (x)
-    # return (myList)
 
 
 @app.route('/manageSupplier')
@@ -609,7 +596,6 @@ def apimanagePurchaser():
         myList.append(d1)
     x = json.dumps(myList)
     return (x)
-    # return (myList)
 
 
 @app.route('/managePurchaser')
@@ -685,6 +671,9 @@ def manageUser():
 
 @app.route('/viewDoc', methods=['GET', 'POST'])
 def viewDoc():
+    '''
+    list ALL docs in template folder, select one and it is downloaded to local machine
+    '''
     try:
         from flask import send_from_directory
         import glob
@@ -700,6 +689,9 @@ def viewDoc():
             # executing LOCALLY
             directory = constants.DOC_DIRECTORY
 
+            '''
+            followup with setting permissions later ...
+            '''
             # executing on SERVER
             # directory = '/home/wayneraid/surgenor/app/'
 
@@ -720,12 +712,13 @@ def viewDoc():
         fname = constants.DOC_DIRECTORY + '*.docx'
         docList = glob.glob(fname)
 
+        # path was a bit different on my local machine and server, this fixes that ...
         for i in range(len(docList)):
             x = docList[i].replace('\\', '/')
             x = x.rsplit('/')
             theList.append(x[len(x) - 1])
 
-        print(f'theList: {theList}')
+        # print(f'theList: {theList}')
         return render_template('viewDoc.html', docList=theList)
 
 
@@ -734,33 +727,30 @@ def viewDoc():
         print(f'problem in viewDoc: {e}')
 
 
+@app.route('/getPurchaserName', methods=['GET'])
+def getPurchaserName():
+    try:
+        names = utilities.getALLPurchasers()
+
+        return(json.dumps(names))
+
+    except Exception as e:
+        print(f'problem in getPurchasename: {e}')
+
 @app.route('/stats', methods=['GET'])
 def stats():
-    try:
-        purchaseOrders = utilities.getCount('purchaseOrder')
-        orders = utilities.getCount('orderTbl')
-        users = utilities.getCount('user')
-        suppliers = utilities.getCount('supplier')
-        purchaser = utilities.getCount('purchaser')
-        department = utilities.getCount('department')
-        orderByCount = utilities.getOrderByCount()
-        orderbyMonth = utilities.getOrderByMonth()
+    '''
+    Pump out some various stats
+    '''
+    purchaseOrders = utilities.getCount('purchaseOrder')
+    orders = utilities.getCount('orderTbl')
+    users = utilities.getCount('user')
+    suppliers = utilities.getCount('supplier')
+    purchaser = utilities.getCount('purchaser')
+    department = utilities.getCount('department')
+    orderByCount = utilities.getOrderByCount()
+    orderbyMonth = utilities.getOrderByMonth()
 
-        return render_template('stats.html', purchaseOrders=purchaseOrders, orders=orders, users=users, suppliers=suppliers,
-                               purchaser=purchaser, department=department, orderByCount=orderByCount,
-                               orderByMonth=orderbyMonth)
-    except Exception as e:
-        print(f'problem in stats: {e}')
-
-@app.route('/language', methods=['GET'])
-def language():
-    try:
-        if constants.currentLang is None:
-            constants.currentLang = 'en'
-
-        constants.currentLang = utilities.createSessionObjects(constants.currentLang, session)
-
-        return render_template('home.html')
-
-    except Exception as e:
-        print(f'problem in language: {e}')
+    return render_template('stats.html', purchaseOrders=purchaseOrders, orders=orders, users=users, suppliers=suppliers,
+                           purchaser=purchaser, department=department, orderByCount=orderByCount,
+                           orderByMonth=orderbyMonth, lang=constants.langFR)

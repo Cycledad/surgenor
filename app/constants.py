@@ -9,6 +9,7 @@ TEMPLATE_DIRECTORY = r'c:/users/wayne/APP/app/templates/'
 #DOC_DIRECTORY = r'/home/wayneraid/surgenor/app/static/purchaseOrders/'
 #TEMPLATE_DIRECTORY = r'/home/wayneraid/surgenor/app/templates/'
 
+'''
 langFR = {  'home' : 'Accueil',
             'purchaseOrder' : 'Commande d''achat',
             'admin' : 'admin',
@@ -22,7 +23,7 @@ langFR = {  'home' : 'Accueil',
             'statistics' : 'statistique'
 
 }
-
+'''
 GOD_LEVEL = 0  # bump this up in prod
 
 currentLang = None

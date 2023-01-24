@@ -2,7 +2,7 @@
 
 {% block content %}
 <br><br>
-<h1>Print/View Purchase Order</h1>
+<h1>{% if 'viewPrint' in session %} {{ session['viewPrint'] }} {% else %} View/Print Purchase Order {% endif %}</h1>
 <br><br>
 
 <form action="#" method="post" class="form-group">

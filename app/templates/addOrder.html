@@ -2,20 +2,20 @@
 
 {% block content %}
 <br><br>
-<h1>Place your Order!</h1>
+<h1>{% if 'placeOrder' in session %} {{ session['placeOrder'] }} {% else %} Place your Order! {% endif %}</h1>
 <br><br>
 <form action="#" method="post">
     <div class="form-group">
-        <label for="PONbr">Purchase Order Number:</label>
+        <label for="PONbr">{% if 'purchaseOrderNumber' in session %} {{ session['purchaseOrderNumber'] }} {% else %} Purchase Order Number: {% endif %}</label>
         <input type="text" class='form-control' name="PONbr" id="PONbr" value="{{orderNbr}}" readonly/>
     </div>
 
     <div class="form-group mt-3">
-          <label for="purchaseName">Purchaser:</label>
+          <label>{% if 'purchaser' in session %} {{ session['purchaser'] }} {% else %} Purchaser: {% endif %}</label>
            <!---<input type="text" class='form-control' name="purchaseName" id="purchaseName" value="{{username}}" readonly/>-->
 
           <select name="selectPurchaser" id="selectPurchaser" class=form-control required>
-              <option value="">--Please select a purchaser--</option>
+              <option value="">--{% if 'selectPurchaser' in session %} {{ session['selectPurchaser'] }} {% else %} Select a Purchaser{% endif %}--</option>
                   {% for purchaserName in listPurchaserName: %}
                       <option value='{{purchaserName}}'>{{purchaserName}}</option>
                   {% endfor %}
@@ -27,12 +27,12 @@
 <!-- <table id="myTable" class="table order-list" style="width: 100%"> style="table-layout: fixed ; width: 100%;" -->
     <thead>
         <tr class="col-sm-3">
-            <td>Supplier</td>
-            <td>Quantity</td>
-            <td>Part Number</td>
-            <td>Part Description</td>
+            <td>{% if 'supplier' in session %} {{ session['supplier'] }} {% else %} Supplier{% endif %}</td>
+            <td>{% if 'quantity' in session %} {{ session['quantity'] }} {% else %} Quantity{% endif %}</td>
+            <td>{% if 'partNumber' in session %} {{ session['partNumber'] }} {% else %} Part Number{% endif %}</td>
+            <td>{% if 'partDescription' in session %} {{ session['partDescription'] }} {% else %} Part Description{% endif %}</td>
             <!--<td>Unit</td>-->
-            <td>Unit price</td>
+            <td>{% if 'unitPrice' in session %} {{ session['unitPrice'] }} {% else %} Unit price{% endif %}</td>
             <!--<td>Cost</td>-->
         </tr>
     </thead>
@@ -41,7 +41,7 @@
             <td class="col-sm-6">
                 <div class="form-group mt-3">
                     <select name="selectSupplier" id="selectSupplier" class='form-control' required>
-                        <option value=''>--Please select a supplier---</option>
+                        <option value=''>--{% if 'supplier' in session %} {{ session['supplier'] }} {% else %} Please select a Supplier{% endif %}---</option>
                         {% for supplier in listSupplierNames: %}
                             <option value='{{supplier}}'>{{supplier}}</option>
                         {% endfor %}

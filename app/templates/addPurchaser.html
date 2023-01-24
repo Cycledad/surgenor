@@ -2,19 +2,19 @@
 
 {% block content %}
 <br><br>
-<h1>Add Purchaser</h1>
+<h1>{% if 'addPurchaser' in session %} {{ session['addPurchaser'] }} {% else %} Add Purchaser {% endif %}</h1>
 <br><br>
 <form action="#" method="post">
 
   <div class="form-group">
-    <label for="pName">Purchaser Name:</label>
+    <label for="pName">{% if 'purchaserName' in session %} {{ session['purchaserName'] }} {% else %} Purchaser Name: {% endif %}</label>
     <input type="text" class='form-control' name="pName" id="pName" required/>
   </div>
 
   <div class="form-group mt-3">
-    <label for="selectpurchaser">Purchaser Department:</label>
+    <label for="selectDepartment">{% if 'purchaserDept' in session %} {{ session['purchaserDept'] }} {% else %} Purchaser Department: {% endif %}</label>
     <select name="selectDepartment" id="selectDepartment" class=form-control required>
-      <option value="">--Please select a purchaser department--</option>
+      <option value="">--{% if 'purchaserDept' in session %} {{ session['purchaserDept'] }} {% else %} Purchaser Department: {% endif %}--</option>
         {% for deptNames in listDeptNames: %}
           <option value='{{deptNames}}'>{{deptNames}}</option>
         {% endfor %}
@@ -22,10 +22,10 @@
   </div>
 
   <div class="form-group mt-3">
-    <label for="pActive">Purchaser active:</label>
+    <label>{% if 'purchaserActive' in session %} {{ session['purchaserActive'] }} {% else %} Purchaser Active: {% endif %}</label>
     <p>
-      <input type="radio" class='form-check-input' id='pActive1' name="pActive" value="YES" required> YES
-      <input type="radio" class='form-check-input' id='pActive2' name="pActive" value="NO" required> NO
+      <input type="radio" class='form-check-input' id='pActive1' name="pActive" value="YES" required> {% if 'yes' in session %} {{ session['yes'] }} {% else %} Yes{% endif %}
+      <input type="radio" class='form-check-input' id='pActive2' name="pActive" value="NO" required> {% if 'no' in session %} {{ session['no'] }} {% else %} No{% endif %}
     </p>
   </div>
 

@@ -18,9 +18,10 @@ def home():
         if session.get('loggedOn', None)  == None:
             flash('Please login!', 'danger' )
             return redirect(url_for('login'))
-       
-        utilities.createSessionObjects(session)
         '''
+        if 'lang' not in session:
+            utilities.createSessionObjects('', session)
+
 
     except Exception as e:
         print(f'problem in home: {e}')
@@ -32,7 +33,7 @@ def home():
 def addPurchaser():
     try:
         if session.get('loggedOn', None) == None:
-            flash('Please login!', 'danger')
+            flash(session['pleaseLogin'], 'danger')
             return redirect(url_for('login'))
 
         if request.method == "POST":
@@ -57,7 +58,7 @@ def addPurchaser():
 def addDepartment():
     try:
         if session.get('loggedOn', None) == None:
-            flash('Please login!', 'danger')
+            flash(session['pleaseLogin'], 'danger')
             return redirect(url_for('login'))
 
         if request.method == "POST":
@@ -79,7 +80,7 @@ def addDepartment():
 def addSupplier():
     try:
         if session.get('loggedOn', None) == None:
-            flash('Please login!', 'danger')
+            flash(session['pleaseLogin'], 'danger')
             return redirect(url_for('login'))
 
         if request.method == "POST":
@@ -114,7 +115,7 @@ def listPurchaseOrder():
 def addOrder():
     try:
         if session.get('loggedOn', None) == None:
-            flash('Please login!', 'danger')
+            flash(session['pleaseLogin'], 'danger')
             return redirect(url_for('login'))
 
         if request.method == "POST":
@@ -154,7 +155,7 @@ def addOrder():
                 unitPrice = resultList[i]
                 i += 1
 
-                parms = (orderNbr, partNbr, partDesc, supplierName, quantity, unitPrice, username)
+                parms = (orderNbr, partNbr, partDesc, supplierName, quantity, unitPrice, session['username'])
 
                 # creates order in the orderTbl ... there can be many orders for one purchase order
                 utilities.insertOrder(parms)
@@ -189,7 +190,7 @@ def addOrder():
 def addPart():
     try:
         if session.get('loggedOn', None) == None:
-            flash('Please login!', 'danger')
+            flash(session['pleaseLogin'], 'danger')
             return redirect(url_for('login'))
 
         if request.method == 'POST':
@@ -233,7 +234,7 @@ def testme():
 def adminHome():
     try:
         if session.get('loggedOn', None) == None:
-            flash('Please login!', 'danger')
+            flash(session['pleaseLogin'], 'danger')
             return redirect(url_for('login'))
 
     except Exception as e:
@@ -246,7 +247,7 @@ def adminHome():
 def login():
     try:
         if not session.get('loggedOn', None) == None:
-            flash('You are aready looged in!', 'info')
+            flash(session['alreadyLoggedIn'], 'info')
             return redirect(url_for('home'))
 
         if request.method == 'POST':
@@ -255,7 +256,7 @@ def login():
             pw = req['password']
             registered = utilities.getUserRegistered(username)
             if not registered:
-                flash('You are not registered as a user, please register', 'danger')
+                flash(session['notRegistered'], 'danger')
                 return redirect(url_for('register'))
             else:
                 # hashed_pw = bcrypt.generate_password_hash(pw).decode('utf-8')
@@ -263,13 +264,14 @@ def login():
                 # TO COMPARE PASSWORD FOR VALIDITY
                 pw_check = bcrypt.check_password_hash(hashed_pw, pw)
                 if not pw_check:
-                    flash('Invalid password entered!', 'Danger')
+                    flash(session['invalidpw'], 'danger')
                     return redirect(url_for('login'))
                 else:
                     session['loggedOn'] = True
-                    session['securityLevel'] = getUserSecurityLevel(username)
+                    session['securityLevel'] = utilities.getUserSecurityLevel(username)
                     session['lang'] = 'en' #english is default language
-                    utilities.createSessionObjects()
+                    session['username'] = username
+                    #utilities.createSessionObjects('fr', session) #send 'fr' so that 'en' lang is loaded ... yeah I know .... wtf ...
 
                     return redirect(url_for('home'))
 
@@ -284,7 +286,7 @@ def register():
     try:
 
         if not session.get('loggedOn', None) == None:
-            flash('You are aready looged in!', 'info')
+            flash(session['alreadyLoggedIn'], 'info')
             return redirect(url_for('home'))
 
         if request.method == 'POST':
@@ -296,11 +298,11 @@ def register():
             pw_check = bcrypt.check_password_hash(hashed_pw, pw)
             registered = utilities.getUserRegistered(username)
             if registered:
-                flash('Username already exists, please try again!', 'danger')
+                flash(session['alreadyRegistered'], 'danger')
                 # return redirect(url_for('login'))
             else:
                 utilities.registerUser(username, hashed_pw)
-                flash('You have been registered, please login', 'success')
+                flash(session['registered'], 'success')
                 return redirect(url_for('login'))
 
     except Exception as e:
@@ -351,11 +353,11 @@ def manageDepartment():
     try:
 
         if session.get('loggedOn', None) == None:
-            flash('Please login!', 'danger')
+            flash(session['pleaseLogin'], 'danger')
             return redirect(url_for('login'))
 
         if session['securityLevel'] < constants.GOD_LEVEL:
-            flash('Security Level of 5 required to manage Department table', 'warning')
+            flash(session['securityLevel5'], 'warning')
             return redirect(url_for('adminHome'))
 
 
@@ -412,11 +414,11 @@ def manageParts():
     try:
 
         if session.get('loggedOn', None) == None:
-            flash('Please login!', 'danger')
+            flash(session['pleaseLogin'], 'danger')
             return redirect(url_for('login'))
 
         if session['securityLevel'] < constants.GOD_LEVEL:
-            flash('Security Level of 5 required to manage Part table', 'warning')
+            flash(session['securityLevel5'], 'warning')
             return redirect(url_for('adminHome'))
 
 
@@ -500,11 +502,11 @@ def managePurchaseOrder():
     try:
 
         if session.get('loggedOn', None) == None:
-            flash('Please login!', 'danger')
+            flash(session['pleaseLogin'], 'danger')
             return redirect(url_for('login'))
 
         if session['securityLevel'] < constants.GOD_LEVEL:
-            flash('Security Level of 5 required to manage PurchaseOrder table', 'warning')
+            flash(session['securityLevel5'], 'warning')
             return redirect(url_for('adminHome'))
 
     except Exception as e:
@@ -563,11 +565,11 @@ def manageSupplier():
     try:
 
         if session.get('loggedOn', None) == None:
-            flash('Please login!', 'danger')
+            flash(session['pleaseLogin'], 'danger')
             return redirect(url_for('login'))
 
         if session['securityLevel'] < constants.GOD_LEVEL:
-            flash('Security Level of 5 required to manage Supplier table', 'warning')
+            flash(session['securityLevel5'], 'warning')
             return redirect(url_for('adminHome'))
 
     except Exception as e:
@@ -617,11 +619,11 @@ def managePurchaser():
     try:
 
         if session.get('loggedOn', None) == None:
-            flash('Please login!', 'danger')
+            flash(session['pleaseLogin'], 'danger')
             return redirect(url_for('login'))
 
         if session['securityLevel'] < constants.GOD_LEVEL:
-            flash('Security Level of 5 required to manage Purchaser table', 'warning')
+            flash(session['securityLevel5'], 'warning')
             return redirect(url_for('adminHome'))
 
     except Exception as e:
@@ -670,11 +672,11 @@ def manageUser():
     try:
 
         if session.get('loggedOn', None) == None:
-            flash('Please login!', 'danger')
+            flash(session['pleaseLogin'] , 'danger')
             return redirect(url_for('login'))
 
         if session['securityLevel'] < constants.GOD_LEVEL:
-            flash('Security Level of 5 required to manage User table', 'warning')
+            flash(session['securityLevel5'], 'warning')
             return redirect(url_for('adminHome'))
 
     except Exception as e:
@@ -690,7 +692,7 @@ def viewDoc():
         import glob
 
         if session.get('loggedOn', None) == None:
-            flash('Please login!', 'danger')
+            flash(session['pleaseLogin'] , 'danger')
             return redirect(url_for('login'))
 
         if request.method == 'POST':

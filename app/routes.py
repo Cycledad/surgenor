@@ -762,7 +762,8 @@ def language():
 
         constants.currentLang = utilities.createSessionObjects(constants.currentLang, session)
 
-        return render_template('home.html')
+        #return render_template('home.html')
+        return redirect(request.referrer)
 
     except Exception as e:
         print(f'problem in language: {e}')

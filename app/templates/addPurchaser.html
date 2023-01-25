@@ -14,7 +14,7 @@
   <div class="form-group mt-3">
     <label for="selectDepartment">{% if 'purchaserDept' in session %} {{ session['purchaserDept'] }} {% else %} Purchaser Department: {% endif %}</label>
     <select name="selectDepartment" id="selectDepartment" class=form-control required>
-      <option value="">--{% if 'purchaserDept' in session %} {{ session['purchaserDept'] }} {% else %} Purchaser Department: {% endif %}--</option>
+      <option value="">--{% if 'purchaserDept' in session %} {{ session['purchaserDept'] }} {% else %} Purchaser Department {% endif %}--</option>
         {% for deptNames in listDeptNames: %}
           <option value='{{deptNames}}'>{{deptNames}}</option>
         {% endfor %}

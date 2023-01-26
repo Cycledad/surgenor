@@ -15,7 +15,7 @@
 var dateEditor = (cell, onClick, success, cancel, editorParams) => {
    var editor = document.createElement("input");
    editor.value = cell.getValue();
-   debugger;
+   //debugger;
    var datepicker = flatpickr(editor, {
      enableTime: true,
      dateFormat: "Y-m-d",
@@ -77,7 +77,7 @@ var updateQuantity = (cell) =>
 
 var updateCol = (cell) =>
 {
-    //debugger;
+    debugger;
     var row = cell.getRow();
     var rowData = row.getData();
     id = rowData["0"];
@@ -85,8 +85,11 @@ var updateCol = (cell) =>
     value = id + "," + receivedBy;
     //'/api/data/manageDepartment?action=update&value=1,Executive,2023-01-04,5'
     URL = "/api/data/managePurchaseOrder?action=receivedBy&value=" + value;
-    debugger;
+    //debugger;
     table.setData(URL);
+    debugger;
+    //rowData[11].setFocus
+
 };
 
 var parmLookup = (cell) =>

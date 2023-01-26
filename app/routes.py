@@ -767,3 +767,13 @@ def language():
 
     except Exception as e:
         print(f'problem in language: {e}')
+
+@app.route('/getPurchaserName', methods=['GET'])
+def getPurchaserName():
+    try:
+        names = utilities.getALLPurchasers()
+
+        return(json.dumps(names))
+
+    except Exception as e:
+        print(f'problem in getPurchasename: {e}')

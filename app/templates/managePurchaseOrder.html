@@ -53,8 +53,18 @@ var updateQuantity = (cell) =>
     else {
         quantityOrdered = rowData[8];
         if (returnQuantity > quantityOrdered) {
-            alert("Quantity returned can not exceed quantity ordered!");
-            rowData[13] = ''
+            if (lang == 'en')
+            {
+                msg = "Quantity returned can not exceed quantity ordered!";
+            }
+            else
+            {
+                msg = "La quantité retournée ne peut excéder la quantité commandée !";
+            }
+
+            alert(msg);
+            cell.setValue('');
+            //rowData[13] = ''
         }
         else {
             value = id + "," + returnQuantity

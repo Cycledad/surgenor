@@ -1320,10 +1320,10 @@ def createSessionObjects(currentLang: str, session) -> str:
             session['selectSupplier'] = 'Sélectionner un fournisseur'
             # ----- addPurchaser.html -----
             session['addPurchaser'] = 'Ajouter un acheteur'
-            session['purchaserName'] = 'Nom de l’acheteur:'
-            session['purchaserDept'] = 'Service des acheteurs:'
+            session['purchaserName'] = 'Nom de l’acheteur'
+            session['purchaserDept'] = 'Service des acheteurs'
             session['selectPurchaser'] = 'Veuillez sélectionner un service acheteur'
-            session['purchaserActive'] = 'Acheteur actif:'
+            session['purchaserActive'] = 'Acheteur actif'
             # ----- viewDoc.html -----
             session['viewPrint'] = 'Afficher/Imprimer le bon de commande'
         else:

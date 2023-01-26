@@ -188,7 +188,7 @@ var table = new Tabulator("#example-table",
                     "8" : "quantité",                           //Quantity,
                     "9" : "prix unitaire",                      //Part Price
                     "10": "date de réception de la commande",   //Order Received Date
-                    "11": "Commande reçue par",                //Order Received By
+                    "11": "commande reçue par",                //Order Received By
                     "12": "date de retour de la commande",       //Order Return Date
                     "13": "quantité de retour de commande",      //Order Return Quantity
                     "14": "PO",                                  //PO - this is the print document PO number
@@ -209,6 +209,17 @@ var table = new Tabulator("#example-table",
                 "of": "de",
                 "rows": "lignes",
             },
+            "headerFilters":{
+                "default":"filter column...", //default header filter placeholder text
+                "columns":{
+                    "2":"Trouver un acheteur ...", //replace default header filter text for column name
+                    "3":"Trouver un département ...",
+                    "4":"Trouver un numéro de bon de commande ...",
+                    "5":"Trouver un fournisseur ...",
+                    "6":"Trouver un numéro de pièce ...",
+                    "7":"Trouver une pièce ...",
+                }
+            }
 
             },
         },
@@ -221,7 +232,7 @@ var table = new Tabulator("#example-table",
         {title:"orderid", field:"1", hozAlign:"center", sorter:"number", visible:false},
         {title:"Purchaser", field:"2", hozAlign:"center", sorter:"string", headerFilter:"input", headerFilterPlaceholder:"Find a Purchaser ..."},
         {title:"Purchaser Department", field:"3", hozAlign:"center", sorter:"string", headerFilter:"input", headerFilterPlaceholder:"Find an Department ..."},
-        {title:"Purchase Order Number", field:"4", hozAlign:"center", sorter:"number", headerFilter:"input", headerFilterPlaceholder:"Find an Purchaser ..."},
+        {title:"Purchase Order Number", field:"4", hozAlign:"center", sorter:"number", headerFilter:"input", headerFilterPlaceholder:"Find an Purchase Order Number ..."},
         {title:"Supplier", field:"5", hozAlign:"center", sorter:"string", headerFilter:"input", headerFilterPlaceholder:"Find a Supplier ..."},
         {title:"Part Number", field:"6", hozAlign:"center", sorter:"string", headerFilter:"input", headerFilterPlaceholder:"Find a Part Number ..."},
         {title:"Part Description", field:"7", hozAlign:"center", headerFilter:"input", headerFilterPlaceholder:"Find a Part ..."},

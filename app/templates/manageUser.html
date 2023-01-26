@@ -104,7 +104,17 @@ var table = new Tabulator("#manageUser-table",
                 "of": "de",
                 "rows": "lignes",
             },
-
+            "headerFilters":{
+                            "default":"filter column...", //default header filter placeholder text
+                            "columns":{
+                                "1":"Trouver le nom d’utilisateur ...", //replace default header filter text for column name
+                                "2":"Trouver un mot de passe ...",
+                                "3":"Trouver la date de création de l’utilisateur ...",
+                                "4":"Trouver des utilisateurs actifs ...",
+                                "5":"Trouver Date utilisateur inactif ...",
+                                "6":"Trouver le niveau de sécurité ...",
+                            }
+                        }
             },
         },
     initialSort:[

@@ -1377,10 +1377,10 @@ def createSessionObjects(currentLang: str, session) -> str:
             session['selectSupplier'] = 'select a supplier'
             # ----- addPurchaser.html -----
             session['addPurchaser'] = 'Add Purchaser'
-            session['purchaserName'] = 'Purchaser Name:'
-            session['purchaserDept'] = 'Purchaser Department:'
+            session['purchaserName'] = 'Purchaser Name'
+            session['purchaserDept'] = 'Purchaser Department'
             session['selectPurchaser'] = 'Please select a purchaser department'
-            session['purchaserActive'] = 'Purchaser active:'
+            session['purchaserActive'] = 'Purchaser active'
             # ----- viewDoc.html -----
             session['viewPrint'] = 'View/Print Purchase Order'
 

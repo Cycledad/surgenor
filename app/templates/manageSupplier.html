@@ -80,6 +80,38 @@ var table = new Tabulator("#manageSupplier-table",
     paginationSizeSelector:[3, 6, 8, 10],
     movableColumns:true,
     paginationCounter:"rows",
+    locale: true,
+    langs:{
+        "fr":{ //French language definition - keep these in sync with utilities.py
+               //no need to define english, en, as it is default and title values will be used
+               //translations done here: https://imtranslator.net/translation/english/to-french/translation/
+                "columns":{
+                    "1" : "nom du fournisseur",                  //supplierName
+                    "2" : "adresse du fournisseur",             //supplierAddr
+                    "3" : "fournisseur téléphone",              //supplierTel
+                    "4" : "adresse courriel",                   //supplierEmail
+                    "5" : "nom de la personne - ressource",     //supplierContact
+                    "6" : "actif",                              //supplierActive
+                    "7" : "fournisseur date d’inactivité",      //supplierDateInActive
+                    "8" : "fournisseur date de création",       //supplierDateCreated
+                },
+                 "pagination":{
+                "first":"Premier",
+                "first_title":"Première Page",
+                "last":"Dernier",
+                "last_title":"Dernière Page",
+                "prev":"Précédent",
+                "prev_title":"Page Précédente",
+                "next":"Suivant",
+                "next_title":"Page Suivante",
+                "page_size": "Taille de page",
+                "Showing": "montrant",
+                "of": "de",
+                "rows": "lignes",
+            },
+
+            },
+        },
     initialSort:[
         {column: "1", dir:"asc"}, //sort by Supplier Name, ascending
 
@@ -109,7 +141,24 @@ function printit(cell)
     alert("print it");
 }
 
+table.on('tableBuilt', function(){
 
+    URL = "/getLanguage"
+    xhttp = new XMLHttpRequest();
+    xhttp.open("GET", URL);
+    xhttp.send();
+    //debugger;
+    xhttp.onreadystatechange = function ()
+    {
+        if (this.readyState == 4 && this.status == 200)
+        {
+            //alert(this.responseText);
+            lang = this.responseText;
+            //debugger;
+            table.setLocale(lang);
+        }
+    }
+});
 
 </script>
 {% endblock %}

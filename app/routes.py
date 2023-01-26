@@ -777,3 +777,14 @@ def getPurchaserName():
 
     except Exception as e:
         print(f'problem in getPurchasename: {e}')
+
+@app.route('/getLanguage', methods=['GET'])
+def getLanguage():
+    try:
+        lang = session['lang']
+        l = json.dumps(lang)
+
+        return(lang)
+
+    except Exception as e:
+        print(f'problem in getLanguage: {e}')

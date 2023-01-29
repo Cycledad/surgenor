@@ -1318,6 +1318,7 @@ def createSessionObjects(currentLang: str, session) -> str:
             session['partDescription'] = 'Description de la pièce'
             session['unitPrice'] = 'Prix unitaire'
             session['selectSupplier'] = 'Sélectionner un fournisseur'
+            session['addRow'] = 'Ajouter une ligne'
             # ----- addPurchaser.html -----
             session['addPurchaser'] = 'Ajouter un acheteur'
             session['purchaserName'] = 'Nom de l’acheteur'
@@ -1375,6 +1376,7 @@ def createSessionObjects(currentLang: str, session) -> str:
             session['partDescription'] = 'Part Description'
             session['unitPrice'] = 'Unit Price'
             session['selectSupplier'] = 'select a supplier'
+            session['addRow'] = 'Add Row'
             # ----- addPurchaser.html -----
             session['addPurchaser'] = 'Add Purchaser'
             session['purchaserName'] = 'Purchaser Name'

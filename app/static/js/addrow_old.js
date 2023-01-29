@@ -1,38 +1,28 @@
 $(document).ready(function ()
 {
-
-//re-worked with Natahns help. Increased the length of part desc input as per kevin.
-
     var counter = 0;
 
     $("#addrow").on("click", function ()
     {
-       // debugger;
+        //debugger;
         var newRow = $("<tr>");
-        var cols = '<div class="container p-0 m-0"><div class="row">';
+        var cols = "";
 
         var selectSupplier = '';
-        selectSupplier = '<div class="col-2"><div class="input-group mb-3"><select name="selectSupplier' + counter + '" class=\'form-control\' id="selectSupplier' + counter + '" required >';
-        debugger;
-        if (document.getElementById("lang").innerHTML == 'en'){
-            selectSupplier += '<option value="">-- Supplier --</option>';
-        }
-        else {
-            selectSupplier += '<option value="">-- fournisseur --</option>';
-        }
-        selectSupplier += '<option value="">-- Supplier --</option>';
+        selectSupplier = '<td><select name="selectSupplier' + counter + '" class=\'form-control\' id="selectSupplier' + counter + '" required >';
+        selectSupplier += '<option value="">--Please select supplier</option>';
              for (var i = 1; i < document.getElementById('selectSupplier').length; i++)
              {
                  selectSupplier += '<option value="' + document.getElementById("selectSupplier").options[i].text + '">' + document.getElementById("selectSupplier").options[i].text + '</option>';
              }
-        selectSupplier += '</select></div></div>';
+        selectSupplier += '</select></td>';
         cols += selectSupplier;
 
-        cols += '<div class="col-1"><div class="input-group mb-3"><input type="number" step="0" class="form-control" name="quantity' + counter + '" id="quantity' + counter + '"/></div></div>';
+        cols += '<td><input type="number" step="0" class="form-control" name="quantity' + counter + '" id="quantity' + counter + '"/></td>';
 
 
         var partNbr = '';
-        partNbr = '<div class="col-2"> <div class="input-group mb-3"><input type="text" name="partNbr' + counter + '" id="partNbr' + counter + '" class="form-control" required /></div></div>';
+        partNbr = '<td><input type="text" name="partNbr' + counter + '" id="partNbr' + counter + '" class="form-control" required /></td>';
         //PartNbr = '<td><select name="PartNbr' + counter + '" class=\'form-control\'  id="PartNbr' + counter + '" required >';
         //PartNbr += '<option value="">--Please select a part nbr</option>';
         //for (var i = 1; i < document.getElementById('PartNbr').length; i++)
@@ -45,7 +35,7 @@ $(document).ready(function ()
 
         /*cols += '<td><input type="text" class="form-control" name="description' + counter + '"/></td>';*/
         var partDesc = '';
-        partDesc = '<div class="col-3"> <div class="input-group mb-3"><input type="text" name="partDesc' + counter + '" id="partDesc' + counter + '" class="form-control" required /></div></div>';
+        partDesc = '<td><input type="text" name="partDesc' + counter + '" id="partDesc' + counter + '" class="form-control" required /></td>';
         //PartDesc = '<td><select name="PartDesc' + counter + '" class=\'form-control\' id="PartDesc' + counter + '" required >';
         //PartDesc += '<option value="">--Please select part description</option>';
         //for (var i = 1; i < document.getElementById('PartDesc').length; i++)
@@ -72,28 +62,16 @@ $(document).ready(function ()
         cols += selectUnit;
 
     */
-        cols += '<div class="col-2"><div class="input-group mb-3"><input type="number" step="0.00" class="form-control" name="unitprice' + counter + '" id="unitprice' + counter + '"/></div></div>';
+        cols += '<td><input type="number" step="0.00" class="form-control" name="unitprice' + counter + '" id="unitprice' + counter + '"/></td>';
 
 
         /* cols += '<td><input type="text" class="form-control" name="cost' + counter + '" onclick="calculateRow(' + name + ')"/></td>'; */
         //cols += '<td><input type="text" class="form-control" id="cost' + counter + '" name="cost' + counter + '" /></td>';
 
 
-
-        if (document.getElementById("lang").innerHTML == 'en'){
-            msg = 'Delete';
-        }
-        else {
-            msg = 'Supprimer';
-        }
-
-        cols += '<div class="col-1"><input type="button" class="ibtnDel btn btn-md btn-danger "  value="' + msg + '"></div></div>';
-
-
-
+        cols += '<td><input type="button" class="ibtnDel btn btn-md btn-danger "  value="Delete"></td>';
         console.log(cols);
         newRow.append(cols);
-        console.log(newRow);
         $("table.order-list").append(newRow);
         counter++;
     });

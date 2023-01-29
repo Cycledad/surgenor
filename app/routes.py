@@ -183,7 +183,7 @@ def addOrder():
     listUnits = utilities.getALLITEMS('UNIT', 'UnitDesc')
     return render_template('addOrder.html', listPartDesc=listPartDesc, listPartNbr=listPartNbr,
                            listPurchaserName=listPurchaserName, listSupplierNames=listSupplierNames,
-                           listUnits=listUnits, orderNbr=orderNbr, username=session['username'])
+                           listUnits=listUnits, orderNbr=orderNbr, username=session['username'], lang=session['lang'])
 
 
 @app.route('/addPart', methods=['GET', 'POST'])

@@ -1408,7 +1408,7 @@ def createSessionObjects(currentLang: str, session) -> str:
             session['addPurchaser'] = 'Ajouter un acheteur'
             session['purchaserName'] = 'Nom de l’acheteur'
             session['purchaserDept'] = 'Service des acheteurs'
-            session['selectPurchaser'] = 'Veuillez sélectionner un service acheteur'
+            session['selectPurchaser'] = 'Veuillez sélectionner un acheteur'
             session['purchaserActive'] = 'Acheteur actif'
             # ----- viewDoc.html -----
             session['viewPrint'] = 'Afficher/Imprimer le bon de commande'
@@ -1467,7 +1467,7 @@ def createSessionObjects(currentLang: str, session) -> str:
             session['addPurchaser'] = 'Add Purchaser'
             session['purchaserName'] = 'Purchaser Name'
             session['purchaserDept'] = 'Purchaser Department'
-            session['selectPurchaser'] = 'Please select a purchaser department'
+            session['selectPurchaser'] = 'Please select a purchaser'
             session['purchaserActive'] = 'Purchaser active'
             # ----- viewDoc.html -----
             session['viewPrint'] = 'View/Print Purchase Order'

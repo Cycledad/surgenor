@@ -1397,7 +1397,7 @@ def createSessionObjects(currentLang: str, session) -> str:
             # ----- addOrder.html -----
             session['placeOrder'] = 'Passez votre commande!'
             session['purchaseOrderNumber'] = 'Numéro de bon de commande:'
-            session['selectPurchaser'] = 'Veuillez sélectionner un acheteur'
+            session['orderPurchaser'] = 'Veuillez sélectionner un acheteur'
             session['quantity'] = 'quantité'
             session['partNumber'] = 'Numéro de pièce'
             session['partDescription'] = 'Description de la pièce'
@@ -1408,7 +1408,7 @@ def createSessionObjects(currentLang: str, session) -> str:
             session['addPurchaser'] = 'Ajouter un acheteur'
             session['purchaserName'] = 'Nom de l’acheteur'
             session['purchaserDept'] = 'Service des acheteurs'
-            session['selectPurchaser'] = 'Veuillez sélectionner un acheteur'
+            session['selectPurchaser'] = 'Veuillez sélectionner un service d''acheteur'
             session['purchaserActive'] = 'Acheteur actif'
             # ----- viewDoc.html -----
             session['viewPrint'] = 'Afficher/Imprimer le bon de commande'
@@ -1456,7 +1456,7 @@ def createSessionObjects(currentLang: str, session) -> str:
             #----- addOrder.html -----
             session['placeOrder'] = 'Place your Order!'
             session['purchaseOrderNumber'] = 'Purchase Order Number:'
-            session['selectPurchaser'] = 'Please select a purchaser'
+            session['orderPurchaser'] = 'Please select a purchaser'
             session['quantity'] = 'Quantity'
             session['partNumber'] = 'Part Number'
             session['partDescription'] = 'Part Description'
@@ -1467,7 +1467,7 @@ def createSessionObjects(currentLang: str, session) -> str:
             session['addPurchaser'] = 'Add Purchaser'
             session['purchaserName'] = 'Purchaser Name'
             session['purchaserDept'] = 'Purchaser Department'
-            session['selectPurchaser'] = 'Please select a purchaser'
+            session['selectPurchaser'] = 'Please select a purchaser department'
             session['purchaserActive'] = 'Purchaser active'
             # ----- viewDoc.html -----
             session['viewPrint'] = 'View/Print Purchase Order'

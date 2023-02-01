@@ -87,12 +87,13 @@ def addSupplier():
             req = request.form
             supplierName = req['supplierName']
             supplierAddr = req['supplierAddr']
+            supplierProv = req['supplierProv']
             supplierContactName = req['supplierContactName']
             supplierTel = req['supplierTel']
             supplierEmail = req['supplierEmail']
             supplierActive = True
             supplierDateCreated = dt.date.today()
-            parms = (supplierName, supplierAddr, supplierContactName, supplierEmail, supplierTel, supplierActive,
+            parms = (supplierName, supplierAddr, supplierProv, supplierContactName, supplierEmail, supplierTel, supplierActive,
                      supplierDateCreated)
             utilities.insertSupplier(parms)
 
@@ -539,20 +540,21 @@ def apimanageSupplier():
         id = myList[0]
         supplierName = myList[1]
         supplierAddr = myList[2]
-        supplierTel = myList[3]
-        supplierEmail = myList[4]
-        supplierContact = myList[5]
-        supplierActive = myList[6]
-        supplierDateInActive = myList[7]
-        supplierDateCreated = myList[8]
+        supplierProv = myList[3]
+        supplierTel = myList[4]
+        supplierEmail = myList[5]
+        supplierContact = myList[6]
+        supplierActive = myList[7]
+        supplierDateInActive = myList[8]
+        supplierDateCreated = myList[9]
 
-        utilities.updateSupplier(id, supplierName, supplierAddr, supplierTel, supplierEmail, supplierContact,
+        utilities.updateSupplier(id, supplierName, supplierAddr, supplierProv, supplierTel, supplierEmail, supplierContact,
                                  supplierActive, supplierDateInActive, supplierDateCreated)
 
     # reload tabulator.js table
     resultList = utilities.getTable('Supplier')
     for row in resultList:
-        aList = (row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8])
+        aList = (row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9])
         d1 = dict(enumerate(aList))
         myList.append(d1)
     x = json.dumps(myList)

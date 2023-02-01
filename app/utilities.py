@@ -361,7 +361,7 @@ def insertSupplier(parms):
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        stmt = 'INSERT INTO supplier (supplierName, supplierAddr, supplierContact, supplierEmail, supplierTel, supplierActive, supplierDateCreated) values (?, ?, ?, ?, ?, ?, ?)'
+        stmt = 'INSERT INTO supplier (supplierName, supplierAddr, supplierProv, supplierContact, supplierEmail, supplierTel, supplierActive, supplierDateCreated) values (?, ?, ?, ?, ?, ?, ?, ?)'
         cur.execute(stmt, parms)
         cur.close()
         conn.commit()
@@ -991,40 +991,45 @@ def createPrintDoc(orderList: list) -> None:
         myList: list = []
         previousSupplierId = orderList[0][2]
         docName = orderList[0][12]
+        orderTotalCost: float = 0.0
 
         for order in orderList:
 
             supplierId = order[2]
 
             if previousSupplierId != supplierId:
-                createOrderDoc('purchaseOrderTemplate.docx', docName, myList, order, previousSupplierId)
+                createOrderDoc('purchaseOrderTemplate.docx', docName, myList, order, previousSupplierId, orderTotalCost)
                 myList = []
-                myList = buildDoc(order, myList)
+                orderTotalCost = 0.0
+                myList, orderTotalCost = buildDoc(order, myList, orderTotalCost)
                 previousSupplierId = supplierId
                 docName = order[12]
             else:
-                myList = buildDoc(order, myList)
+                myList, orderTotalCost = buildDoc(order, myList, orderTotalCost)
 
 
-        createOrderDoc('purchaseOrderTemplate.docx', docName, myList, order, previousSupplierId)
+        createOrderDoc('purchaseOrderTemplate.docx', docName, myList, order, previousSupplierId, orderTotalCost)
         return()
 
     except Exception as e:
         print(f'problem in createPrintDoc: {e}')
 
 
-def buildDoc(order, myList: list) -> list:
+def buildDoc(order, myList: list, orderTotalCost: float) -> list:
     try:
         #partDesc = getTableItemById(order[4], 'Part', 'partDesc')
+        partNbr = order[4]
         partDesc = order[5]
         orderQuantity = order[6]
         orderPartPrice = order[7]
-        myList.append({'orderQuantity': orderQuantity, 'orderPartPrice': orderPartPrice, 'partDesc': partDesc})
-        return (myList)
+        orderCost = orderQuantity * orderPartPrice
+        orderTotalCost += orderCost
+        myList.append({'orderQuantity': orderQuantity, 'orderPartPrice': orderPartPrice, 'partDesc': partDesc, 'partNbr': partNbr, 'orderCost': orderCost})
+        return (myList, orderTotalCost)
     except Exception as e:
         print(f'problem in buildDoc: {e}')
 
-def createOrderDoc(templateName: str, docName: str, myList: list, order, supplierId: int) -> None:
+def createOrderDoc(templateName: str, docName: str, myList: list, order, supplierId: int, orderTotalCost: float) -> None:
     try:
         #docPath = Path(__file__).parent / templateName
         docPathTemplate = constants.TEMPLATE_DIRECTORY + templateName
@@ -1036,16 +1041,29 @@ def createOrderDoc(templateName: str, docName: str, myList: list, order, supplie
         PONbr = purchaseOrderId
         supplierName = getSupplierName(supplierId)
         supplierAddr = getTableItemById(supplierId, 'Supplier', 'supplierAddr')
+        supplierProv = getTableItemById(supplierId, 'Supplier', 'supplierProv')
+        supplierTel = getTableItemById(supplierId, 'Supplier', 'supplierTel')
+        supplierEmail = getTableItemById(supplierId, 'Supplier', 'supplierEmail')
         receivedBy = order[9]
+
+        label1, amt1, amt2, amt3 = calcSalesTax(supplierProv, orderTotalCost)
+
 
         # https://nagasudhir.blogspot.com/2021/10/docxtpl-python-library-for-creating.html
 
         context = {'supplierName': supplierName,
                    'supplierAddr': supplierAddr,
+                   'supplierTel': supplierTel,
+                   'supplierEmail': supplierEmail,
                    'receivedBy': receivedBy,
                    'purchaseOrderDate': purchaseOrderDate,
                    'PONbr': PONbr,
-                   'items': myList
+                   'items': myList,
+                   'orderTotalCost': orderTotalCost,
+                   'label1': label1,
+                   'amt1': amt1,
+                   'amt2': amt2,
+                   'amt3': amt3
                    }
 
         doc.render(context)
@@ -1065,7 +1083,73 @@ def createOrderDoc(templateName: str, docName: str, myList: list, order, supplie
     except Exception as e:
         print(f'problem in createOrderDoc: {e}')
 
+def calcSalesTax(supplierProv, orderTotalCost):
+    try:
+        match supplierProv:
+            case 'QC':
+                label1 = 'Sales tax rate (PST+QST) %'
+                amt1 = 14.975
+                amt2 = .14975 * orderTotalCost  # sales tax
+            case 'ON':
+                label1 = 'Sales tax rate (HST) %'
+                amt1 = 13
+                amt2 = .13 * orderTotalCost  # sales tax
+            case 'AB':
+                label1 = 'Sales tax rate (GST) %'
+                amt1 = 5
+                amt2 = .05 * orderTotalCost  # sales tax
+            case 'BC':
+                label1 = 'Sales tax rate (PST+GST) %'
+                amt1 = 12
+                amt2 = .12 * orderTotalCost  # sales tax
+            case 'MB':
+                label1 = 'Sales tax rate (PST+GST) %'
+                amt1 = 12
+                amt2 = .12 * orderTotalCost  # sales tax
+            case 'NB':
+                label1 = 'Sales tax rate (HST) %'
+                amt1 = 15
+                amt2 = .15 * orderTotalCost  # sales tax
+            case 'NL':
+                label1 = 'Sales tax rate (HST) %'
+                amt1 = 15
+                amt2 = .16 * orderTotalCost  # sales tax
+            case 'NT':
+                label1 = 'Sales tax rate (GST) %'
+                amt1 = 5
+                amt2 = .05 * orderTotalCost  # sales tax
+            case 'NS':
+                label1 = 'Sales tax rate (HST) %'
+                amt1 = 15
+                amt2 = .15 * orderTotalCost  # sales tax
+            case 'NU':
+                label1 = 'Sales tax rate (GST) %'
+                amt1 = 5
+                amt2 = .05 * orderTotalCost  # sales tax
+            case 'PE':
+                label1 = 'Sales tax rate (HST) %'
+                amt1 = 15
+                amt2 = .15 * orderTotalCost  # sales tax
+            case 'SK':
+                label1 = 'Sales tax rate (PST+GST) %'
+                amt1 = 11
+                amt2 = .11 * orderTotalCost  # sales tax
+            case 'YK':
+                label1 = 'Sales tax rate (GST) %'
+                amt1 = 5
+                amt2 = .05 * orderTotalCost  # sales tax
+            case 'OTHER':
+                label1 = 'Sales tax rate UNKNOWN'
+                amt1 = 0
+                amt2 = 0
 
+        amt2 = round(amt2, 2) #round to 2 decimals
+        amt3 = amt2 + orderTotalCost
+
+    except Exception as e:
+        print(f'problem in createSalesTax: {e}')
+
+    return(label1, amt1, amt2, amt3)
 
 def downloadDocToLocalHost(docName: str) -> None:
     try:
@@ -1300,6 +1384,7 @@ def createSessionObjects(currentLang: str, session) -> str:
             session['addSupplier'] = 'Ajouter un fournisseur'
             session['supplierName'] = 'Nom du fournisseur:'
             session['supplierAddress'] = 'Adresse du fournisseur:'
+            session['supplierProv'] = 'Province des fournisseur:'
             session['contactName'] = 'Nom de la personne - ressource:'
             session['telephoneNumber'] = 'Numéro de téléphone:'
             session['email'] = 'Adresse courriel:'
@@ -1358,6 +1443,7 @@ def createSessionObjects(currentLang: str, session) -> str:
             session['addSupplier'] = 'Add Supplier'
             session['supplierName'] = 'Supplier Name:'
             session['supplierAddress'] = 'Supplier Address:'
+            session['supplierProv'] = 'Supplier Province:'
             session['contactName'] = 'Contact Name:'
             session['telephoneNumber'] = 'Telephone Number:'
             session['email'] = 'Email address:'

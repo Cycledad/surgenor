@@ -10,30 +10,29 @@
 
         <div class="container">
             <div class="row">
+                {% set pname = namespace(name='') %}
+
                 {% for f in docList: %}
-                <p>
-                <div class="col-sm">
-                    <label for="selFile1">{{ f }}</label>
-                    <input type="radio" class='form-check-input' id='selFile1' name='selFile' value='{{ f }}' > Print/View Purchase Order
-                </div>
-                </p>
+
+                    {% set fname = f.split('_') %}
+
+                    {% if pname.name != fname[0] %}
+                        <br><br><hr>
+                        {% set pname.name = fname[0] %}
+                    {% endif %}
+
+                    <div>
+                        <input type="radio" class='form-check-input' id='selFile1' name='selFile' value='{{ f }}' >
+                        <label for="selFile1">{{ f }}</label>
+
+                    </div>
 
                 {% endfor %}
             </div>
-        </div>
 
-        <!---
-        <div class="form-group mt-3">
-            {% for f in docList: %}
+            <button type="submit" class="btn btn-primary mt-4 bg-steel">Submit</button>
 
-            <label for="selFile">{{ f }}:</label>
-            <p>
-               <input type="radio" class='form-check-input' id='selFile' name='selFile' value='{{ f }}' > Print/View Purchase Order
-            </p>
-            {% endfor %}
         </div>
-        -->
-        <button type="submit" class="btn btn-primary mt-4 bg-steel">Submit</button>
     </div>
 </form>
 

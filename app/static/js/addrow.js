@@ -72,7 +72,7 @@ $(document).ready(function ()
         cols += selectUnit;
 
     */
-        cols += '<div class="col-2"><div class="input-group mb-3"><input type="number" step="0.00" class="form-control" name="unitprice' + counter + '" id="unitprice' + counter + '"/></div></div>';
+        cols += '<div class="col-2"><div class="input-group mb-3"><input type="number" step="any" class="form-control" name="unitprice' + counter + '" id="unitprice' + counter + '"/></div></div>';
 
 
         /* cols += '<td><input type="text" class="form-control" name="cost' + counter + '" onclick="calculateRow(' + name + ')"/></td>'; */

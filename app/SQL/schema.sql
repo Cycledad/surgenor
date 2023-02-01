@@ -132,6 +132,7 @@ CREATE TABLE Supplier (
 	id INTEGER NOT NULL,
 	supplierName TEXT NOT NULL,
 	supplierAddr TEXT NOT NULL,
+	supplierProv TEXT NOT NULL,
 	supplierTel TEXT NOT NULL,
 	supplierEmail TEXT NOT NULL,
 	supplierContact TEXT NOT NULL,
@@ -202,7 +203,8 @@ CREATE TABLE User (
 
 
 insert into user (username, password, createDate, active, securityLevel) values('admin', '$2b$12$QFMmOK4vmBjhXUcPYjUATe7bxuiFCmBUG2xvc8mpLqM8T8wr9piFm', DATE('now'), True, 5);
-insert into user (username, password, createDate, active, securityLevel) values('test', '12345678', DATE('now'), True, 5);
+insert into user (username, password, createDate, active, securityLevel) values('kevin', '$2b$12$QFMmOK4vmBjhXUcPYjUATe7bxuiFCmBUG2xvc8mpLqM8T8wr9piFm', DATE('now'), True, 5);
+
 
 
 

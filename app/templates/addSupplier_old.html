@@ -12,36 +12,11 @@
             <input type="text" class='form-control' id="supplierName" name="supplierName" required>
         </div>
 
-        <div class="row">
-            <div class="col-10">
-                <label for="supplierAddr">{% if 'supplierAddress' in session %} {{ session['supplierAddress'] }} {% else %} Supplier Address:{% endif %}</label>
-                <input type="text" class='form-control' id="supplierAddr" name="supplierAddr" required>
-            </div>
-             <div class="col-2">
-
-                    <label for="supplierProv">{% if 'supplierProv' in session %} {{ session['supplierProv'] }} {% else %} Supplier Province:{% endif %}</label>
-
-                    <select name="supplierProv" id="supplierProv" class='form-control' required>
-                        <option value='QC'>QC</option>
-                        <option value='ON'>ON</option>
-                        <option value='AB'>AB</option>
-                        <option value='BC'>BC</option>
-                        <option value='MB'>MB</option>
-                        <option value='NB'>NB</option>
-                        <option value='NL'>NL</option>
-                        <option value='NT'>NT</option>
-                        <option value='NS'>NS</option>
-                        <option value='NU'>NU</option>
-                        <option value='PE'>PE</option>
-                        <option value='SK'>SK</option>
-                        <option value='YT'>YT</option>
-                        <option value='OTHER'>OTHER</option>
-                    </select>
-
-
-
-            </div>
+        <div class="form-group mt-3">
+            <label for="supplierAddr">{% if 'supplierAddress' in session %} {{ session['supplierAddress'] }} {% else %} Supplier Address:{% endif %}</label>
+            <input type="text" class='form-control' id="supplierAddr" name="supplierAddr" required>
         </div>
+
 
         <div class="form-group mt-3">
             <label for="supplierContactName">{% if 'contactName' in session %} {{ session['contactName'] }} {% else %} Contact Name:{% endif %}</label>

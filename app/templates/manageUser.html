@@ -128,7 +128,7 @@ var table = new Tabulator("#manageUser-table",
         {title:"createDate", field:"3", hozAlign:"center", sorter:"date", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find User Creation Date ..."},
         {title:"active", field:"4", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Active Users ..."},
         {title:"dateInActive", field:"5", hozAlign:"center", sorter:"date", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Date User Inactive ..."},
-        {title:"securityLevel", field:"6", hozAlign:"center", sorter:"number", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Security Level ..."},
+        {title:"securityLevel", field:"6", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Security Level ..."},
     ],
 });
 

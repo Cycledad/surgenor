@@ -45,7 +45,7 @@ $(document).ready(function ()
 
         /*cols += '<td><input type="text" class="form-control" name="description' + counter + '"/></td>';*/
         var partDesc = '';
-        partDesc = '<div class="col-3"> <div class="input-group mb-3"><input type="text" name="partDesc' + counter + '" id="partDesc' + counter + '" class="form-control" required /></div></div>';
+        partDesc = '<div class="col-4"> <div class="input-group mb-3"><input type="text" name="partDesc' + counter + '" id="partDesc' + counter + '" class="form-control" required /></div></div>';
         //PartDesc = '<td><select name="PartDesc' + counter + '" class=\'form-control\' id="PartDesc' + counter + '" required >';
         //PartDesc += '<option value="">--Please select part description</option>';
         //for (var i = 1; i < document.getElementById('PartDesc').length; i++)

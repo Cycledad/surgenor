@@ -118,15 +118,22 @@ CREATE TABLE Purchaser (
 	PRIMARY KEY("id" AUTOINCREMENT),
 	UNIQUE (purchaserName)
 );
-/*
-INSERT INTO Purchaser(purchaserName, PurchaserDeptId, purchaserActive, purchaserDateCreated)
-VALUES('Kevin', 1, true, '25122022');
-INSERT INTO Purchaser(purchaserName, PurchaserDeptId, purchaserActive, purchaserDateCreated)
-VALUES('Jessie', 2, false, '25122022');
-INSERT INTO Purchaser(purchaserName, PurchaserDeptId, purchaserActive, purchaserDateCreated)
-VALUES('Wayne', 1, true, '25122022');
 
-*/
+INSERT INTO Purchaser(purchaserName, PurchaserDeptId, purchaserActive, purchaserDateCreated)
+VALUES('Daniel Savoie', 3, true, DATE('now'));
+
+INSERT INTO Purchaser(purchaserName, PurchaserDeptId, purchaserActive, purchaserDateCreated)
+VALUES('Jessy G-B', 1, true, DATE('now'));
+
+INSERT INTO Purchaser(purchaserName, PurchaserDeptId, purchaserActive, purchaserDateCreated)
+VALUES('Kevin Davis', 1, true, DATE('now'));
+
+INSERT INTO Purchaser(purchaserName, PurchaserDeptId, purchaserActive, purchaserDateCreated)
+VALUES('Ron Bergeron', 5, true, DATE('now'));
+
+INSERT INTO Purchaser(purchaserName, PurchaserDeptId, purchaserActive, purchaserDateCreated)
+VALUES('Simon Landreville', 2, true, DATE('now'));
+
 DROP TABLE IF EXISTS Supplier;
 CREATE TABLE Supplier (
 	id INTEGER NOT NULL,
@@ -145,9 +152,10 @@ CREATE TABLE Supplier (
 	--UNIQUE (supplierEmail),
 	--UNIQUE (supplierContact)
 );
+
+INSERT INTO Supplier(supplierName, supplierAddr, supplierProv, supplierTel, supplierEmail, supplierContact, supplierActive, supplierDateCreated)
+values('Benson', '95 Boul Greber', 'QC', '8196696555', 'N@A', 'NA', true, DATE('now'));
 /*
-INSERT INTO Supplier(supplierName, supplierAddr, supplierTel, supplierEmail, supplierContact, supplierActive, supplierDateCreated)
-values('Surgenor Trucks', '100 St. Laurent', '613-123-4567', 'supplier@email.com', 'Mr. Right', true, '25021979');
 INSERT INTO Supplier(supplierName, supplierAddr, supplierTel, supplierEmail, supplierContact, supplierActive, supplierDateCreated)
 values('Canadian Tire', '2 Dump Road', '613-123-4568', 'supplierx@email.com', 'Mr. Wrong', true, '28012022');
 INSERT INTO Supplier(supplierName, supplierAddr, supplierTel, supplierEmail, supplierContact, supplierActive, supplierDateCreated)
@@ -183,12 +191,13 @@ CREATE TABLE Department (
 	dateInActive TEXT,
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
-/*
-INSERT INTO Department(deptName, dateCreated, active) values('Finance', '28012022', true);
-INSERT INTO Department(deptName, dateCreated, active) values('Admin', '28012022', true);
-INSERT INTO Department(deptName, dateCreated, active) values('Parts', '28012022', true);
-INSERT INTO Department(deptName, dateCreated, active) values('Sales', '28012022', true);
-*/
+
+INSERT INTO Department(deptName, dateCreated, active) values('Finance', DATE('now'), true);
+INSERT INTO Department(deptName, dateCreated, active) values('Parts', DATE('now'), true);
+INSERT INTO Department(deptName, dateCreated, active) values('Sales', DATE('now'), true);
+INSERT INTO Department(deptName, dateCreated, active) values('Service', DATE('now'), true);
+INSERT INTO Department(deptName, dateCreated, active) values('BodyShop', DATE('now'), true);
+
 
 drop table if exists User;
 CREATE TABLE User (
@@ -205,8 +214,29 @@ CREATE TABLE User (
 insert into user (username, password, createDate, active, securityLevel) values('admin', '$2b$12$QFMmOK4vmBjhXUcPYjUATe7bxuiFCmBUG2xvc8mpLqM8T8wr9piFm', DATE('now'), True, 5);
 insert into user (username, password, createDate, active, securityLevel) values('kevin', '$2b$12$QvBCaPauAgQsJEEhBv8lSusozWKYlDRr.SBjHLLqaWNUMZ7sH2c.W', DATE('now'), True, 5);
 
+drop table if exists ProvincialTaxRates;
+CREATE TABLE ProvincialTaxRates (
+	id	INTEGER,
+	provincialCode TEXT NOT NULL UNIQUE,
+	taxRate	float NOT NULL,
+	label TEXT NOT NULL,
+	active BOOLEAN NOT NULL,    /* boolean */
+	PRIMARY KEY("id" AUTOINCREMENT)
+);
 
-
+insert into ProvincialTaxRates(provincialCode, taxRate, label, active) values('QC', 14.975, 'Sales tax rate (PST+QST) %', 1);
+insert into ProvincialTaxRates(provincialCode, taxRate, label, active) values('ON', 13, 'Sales tax rate (HST) %', 1);
+insert into ProvincialTaxRates(provincialCode, taxRate, label, active) values('AB', 5, 'Sales tax rate (GST) %', 1);
+insert into ProvincialTaxRates(provincialCode, taxRate, label, active) values('BC', 12, 'Sales tax rate (PST+GST) %', 1);
+insert into ProvincialTaxRates(provincialCode, taxRate, label, active) values('MB', 12, 'Sales tax rate (PST+GST) %', 1);
+insert into ProvincialTaxRates(provincialCode, taxRate, label, active) values('NB', 15, 'Sales tax rate (HST) %', 1);
+insert into ProvincialTaxRates(provincialCode, taxRate, label, active) values('NL', 15, 'Sales tax rate (HST) %', 1);
+insert into ProvincialTaxRates(provincialCode, taxRate, label, active) values('NT', 5, 'Sales tax rate (GST) %', 1);
+insert into ProvincialTaxRates(provincialCode, taxRate, label, active) values('NS', 15, 'Sales tax rate (HST) %', 1);
+insert into ProvincialTaxRates(provincialCode, taxRate, label, active) values('NU', 5, 'Sales tax rate (GST) %', 1);
+insert into ProvincialTaxRates(provincialCode, taxRate, label, active) values('PE', 15, 'Sales tax rate (HST) %', 1);
+insert into ProvincialTaxRates(provincialCode, taxRate, label, active) values('SK', 11, 'Sales tax rate (PST+GST) %', 1);
+insert into ProvincialTaxRates(provincialCode, taxRate, label, active) values('YK', 5, 'Sales tax rate (GST) %', 1);
 
 PRAGMA foreign_keys = ON;
 PRAGMA foreign_keys;

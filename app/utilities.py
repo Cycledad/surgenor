@@ -55,7 +55,27 @@ def reloadDatabase():
     except Exception as e:
         print(f'problem in reloadDatabase: {e}')
 
+def getProvincialTaxRate(provincialCode: str) -> list:
+    try:
+        row: list = []
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        parm = (provincialCode ,)
+        stmt = 'select * from provincialTaxRates where provincialCode = ?'
+        cur.execute(stmt, parm)
+        row = cur.fetchone()
+        # for row in cur:
+        #    print(f'row:{row}')
 
+        cur.close()
+        conn.close()
+
+        return (row)
+
+
+    except Exception as e:
+        print(f'problem in getProvincialTaxRate: {e}')
 def getUnitDesc(id: int) -> str:
     try:
         row: str = None
@@ -180,6 +200,24 @@ def updateParts(id: int, partNbr: int, partDesc: str, partSupplierId: int, partQ
 
     except Exception as e:
         print(f'problem in updateParts: {e}')
+
+def updateProvincialTaxRates(parms):
+
+    try:
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        stmt = 'update ProvincialTaxRates set provincialCode = ?, taxRate = ?, label = ?, active = ? where id = ?'
+        cur.execute(stmt, parms)
+        cur.close()
+        conn.commit()
+        conn.close()
+
+        return()
+
+    except Exception as e:
+        print(f'problem in updateProvincialTaxRates: {e}')
+
 
 
 def updateSupplier(id: int, supplierName: str, supplierAddr: str, supplierTel: str, supplierEmail: str,
@@ -1085,6 +1123,12 @@ def createOrderDoc(templateName: str, docName: str, myList: list, order, supplie
 
 def calcSalesTax(supplierProv, orderTotalCost):
     try:
+        row: list = []
+        row = getProvincialTaxRate(supplierProv)
+        amt1 = row[2]
+        amt2 = (amt1 * .01) * orderTotalCost  # sales tax
+        label1 = row[3]
+        '''
         match supplierProv:
             case 'QC':
                 label1 = 'Sales tax rate (PST+QST) %'
@@ -1113,7 +1157,7 @@ def calcSalesTax(supplierProv, orderTotalCost):
             case 'NL':
                 label1 = 'Sales tax rate (HST) %'
                 amt1 = 15
-                amt2 = .16 * orderTotalCost  # sales tax
+                amt2 = .15 * orderTotalCost  # sales tax
             case 'NT':
                 label1 = 'Sales tax rate (GST) %'
                 amt1 = 5
@@ -1142,6 +1186,7 @@ def calcSalesTax(supplierProv, orderTotalCost):
                 label1 = 'Sales tax rate UNKNOWN'
                 amt1 = 0
                 amt2 = 0
+        '''
 
         amt2 = round(amt2, 2) #round to 2 decimals
         amt3 = amt2 + orderTotalCost
@@ -1472,12 +1517,32 @@ def createSessionObjects(currentLang: str, session) -> str:
             # ----- viewDoc.html -----
             session['viewPrint'] = 'View/Print Purchase Order'
 
-
-
-
         return(currentLang)
-
-
 
     except Exception as e:
         print(f'problem in createSessionObjects: {e}')
+
+
+def getActive(tableName: str, colName: str, btrue: bool) -> list:
+    try:
+        resultset: list = []
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        parms = (btrue, )
+        stmt = f"select * from {tableName} where {colName} is ?"
+        cur.execute(stmt, parms)
+        resultset = cur.fetchall()
+        conn.commit()
+        cur.close()
+        return(resultset)
+
+    except Exception as e:
+        print(f'problem in getActive: {e}')
+def getinActive(tableName: str) -> list:
+    try:
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+    except Exception as e:
+        print(f'problem in getinActive: {e}')

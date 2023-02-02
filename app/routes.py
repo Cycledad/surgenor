@@ -633,6 +633,41 @@ def managePurchaser():
 
     return render_template('managePurchaser.html')
 
+@app.route('/api/data/manageProvincialTaxRates', methods=['GET'])
+def apimanageProvincialTaxRates():
+
+    try:
+        # set arg to '' not present
+        action = request.args.get('action', '')
+
+        # if args ARE passed
+        if action == 'update':
+            # set arg to '' if not present
+            value = request.args.get('value', '')
+            myList = value.split(',')
+
+            id = myList[0]
+            provincialCode = myList[1]
+            taxRate = myList[2]
+            label = myList[3]
+            active = myList[4]
+            parms = (provincialCode, taxRate, label, active, id,)
+            #save update
+            utilities.updateProvincialTaxRates(parms) #save update
+
+        #reload tabulator
+        myList = []
+        resultList = utilities.getTable('ProvincialTaxRates')
+        for row in resultList:
+            aList = (row[0], row[1], row[2], row[3], row[4])
+            d1 = dict(enumerate(aList))
+            myList.append(d1)
+
+        x = json.dumps(myList)
+        return(x)
+
+    except Exception as e:
+        print(f'problem in manageProvincialTaxRates: {e}')
 
 @app.route('/api/data/manageUser/<action>/<value>', methods=['GET'])
 @app.route('/api/data/manageUser', methods=['GET'])
@@ -666,7 +701,25 @@ def apimanageUser():
         d1 = dict(enumerate(aList))
         myList.append(d1)
     x = json.dumps(myList)
+
     return (x)
+
+@app.route('/manageProvincialTaxRates')
+def manageProvincialTaxRates():
+    try:
+
+        if session.get('loggedOn', None) == None:
+            flash(session['pleaseLogin'] , 'danger')
+            return redirect(url_for('login'))
+
+        if session['securityLevel'] < constants.GOD_LEVEL:
+            flash(session['securityLevel5'], 'warning')
+            return redirect(url_for('adminHome'))
+
+    except Exception as e:
+        print(f'problem in manageProvincialTaxRates: {e}')
+
+    return render_template('manageProvincialTaxRates.html')
 
 
 @app.route('/manageUser')
@@ -741,18 +794,63 @@ def viewDoc():
 @app.route('/stats', methods=['GET'])
 def stats():
     try:
+        activeDepts: list = []
+        inActiveDepts: list = []
+        activePurchasers: list = []
+        inActivePurchasers: list = []
+        activeSuppliers: list = []
+        inActiveSuppliers: list = []
+        activeUsers: list = []
+        inActiveUsers: list = []
         purchaseOrders = utilities.getCount('purchaseOrder')
         orders = utilities.getCount('orderTbl')
         users = utilities.getCount('user')
         suppliers = utilities.getCount('supplier')
         purchaser = utilities.getCount('purchaser')
         department = utilities.getCount('department')
+
+        activeDepartments = utilities.getActive('department', 'active', True)
+        for each in activeDepartments:
+            activeDepts.append(each[1])
+
+        inActiveDepartments = utilities.getActive('department', 'active', False)
+        for each in inActiveDepartments:
+            inActiveDepts.append(each[1])
+
+        activePurchasersInTable = utilities.getActive('purchaser', 'purchaseractive', True)
+        for each in activePurchasersInTable:
+            activePurchasers.append(each[1])
+
+        inActivePurchasersInTable = utilities.getActive('purchaser', 'purchaseractive', False)
+        for each in inActivePurchasersInTable:
+            inActivePurchasers.append(each[1])
+
+        activeSuppliersInTable = utilities.getActive('supplier', 'supplieractive', True)
+        for each in activeSuppliersInTable:
+            activeSuppliers.append(each[1])
+
+        inActiveSuppliersInTable = utilities.getActive('supplier', 'supplieractive', False)
+        for each in inActiveSuppliersInTable:
+            inActiveSuppliers.append(each[1])
+
+        activeUsersInTable = utilities.getActive('user', 'active', True)
+        for each in activeUsersInTable:
+            activeUsers.append(each[1])
+
+        inActiveUsersInTable = utilities.getActive('user', 'active', False)
+        for each in inActiveUsersInTable:
+            inActiveUsers.append(each[1])
+
+        #countActiveDepartments = utilities.getCountActive(tableName)
+        #countinActiveDepartments = utilities.getCountinActive(tableName)
         orderByCount = utilities.getOrderByCount()
         orderbyMonth = utilities.getOrderByMonth()
 
         return render_template('stats.html', purchaseOrders=purchaseOrders, orders=orders, users=users, suppliers=suppliers,
                                purchaser=purchaser, department=department, orderByCount=orderByCount,
-                               orderByMonth=orderbyMonth)
+                               orderByMonth=orderbyMonth, activeDepts=activeDepts, inActiveDept=inActiveDepts, activePurchasers=activePurchasers,
+                               inActivePurchasers=inActivePurchasers, activeSuppliers=activeSuppliers, inActiveSuppliers=inActiveSuppliers,
+                               activeUsers=activeUsers, inActiveUsers=inActiveUsers)
     except Exception as e:
         print(f'problem in stats: {e}')
 

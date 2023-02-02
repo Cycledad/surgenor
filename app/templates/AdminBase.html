@@ -93,6 +93,14 @@
                             </ul>
                     </li>
                     <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                              Provincial Tax Rates
+                            </a>
+                            <ul class="dropdown-menu">
+                              <li><a class="dropdown-item" href="{{url_for('manageProvincialTaxRates')}}">{% if 'manage' in session %} {{ session['manage'] }} {% else %} Manage {% endif %}</a></li>
+                            </ul>
+                    </li>
+                    <li class="nav-item dropdown">
                           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Statistics
                           </a>

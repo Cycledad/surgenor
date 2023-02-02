@@ -45,7 +45,7 @@
 
         <div class="form-group mt-3">
             <label for="supplierContactName">{% if 'contactName' in session %} {{ session['contactName'] }} {% else %} Contact Name:{% endif %}</label>
-            <input type="text" class='form-control' id="supplierContactName" name="supplierContactName"required>
+            <input type="text" class='form-control' id="supplierContactName" name="supplierContactName">
         </div>
 
         <div class="form-group mt-3">
@@ -55,7 +55,7 @@
 
         <div class="form-group mt-3">
             <label for="supplierEmail">{% if 'email' in session %} {{ session['email'] }} {% else %} Email address:{% endif %}</label>
-            <input type="email" class='form-control' id='supplierEmail' name="supplierEmail" required>
+            <input type="email" class='form-control' id='supplierEmail' name="supplierEmail" >
         </div>
 
         <button type="submit" class="btn btn-primary mt-4 bg-steel">Submit</button>

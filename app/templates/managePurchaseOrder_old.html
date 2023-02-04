@@ -102,23 +102,6 @@ var updateCol = (cell) =>
 
 };
 
-var updateActive = (cell) =>
-{
-    debugger;
-    var row = cell.getRow();
-    var rowData = row.getData();
-    id = rowData["0"];
-    activeFlg = rowData[16];   //active indicator flag
-    value = id + "," + activeFlg;
-    //'/api/data/manageDepartment?action=update&value=1,Executive,2023-01-04,5'
-    URL = "/api/data/managePurchaseOrder?action=activeFlg&value=" + value;
-    //debugger;
-    table.setData(URL);
-    //debugger;
-    //rowData[11].setFocus
-
-};
-
 var parmLookup = (cell) =>
 {
     //debugger;
@@ -220,8 +203,7 @@ var table = new Tabulator("#example-table",
                     "13": "quantité de retour de commande",      //Order Return Quantity
                     "14": "PO",                                  //PO - this is the print document PO number
                     "15": "utilisateur",                         //User
-                    "16": "ordre actif",                         //active indicator
-                    "17": "imprimer",                            //Print
+                    "16": "imprimer",                            //Print
                 },
                  "pagination":{
                 "first":"Premier",
@@ -275,8 +257,7 @@ var table = new Tabulator("#example-table",
         {title:"Order Return Quantity", field:"13", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateQuantity},
         {title:"PO", field:"14", hozAlign:"center", sorter:"string", editor:false},
         {title:"User", field:"15", hozAlign:"center", sorter:"string", editor:false},
-        {title:"Order Active", field:"16", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateActive},
-        {title:"Print", field:"17", formatter:"image", formatterParams:{urlPrefix:"./static/img/printer-16", urlSuffix:".png"}, align:"center", cellClick:function(e, row){printit(e,row);},},
+        {title:"Print", field:"16", formatter:"image", formatterParams:{urlPrefix:"./static/img/printer-16", urlSuffix:".png"}, align:"center", cellClick:function(e, row){printit(e,row);},},
         //column definition in the columns array
         //{formatter:"buttonCross", width:40, align:"center", cellClick:function(e, cell){
         //    cell.getRow().delete()}},
@@ -288,7 +269,7 @@ var table = new Tabulator("#example-table",
         ],
         });
 
-columns: ['', '', '', '', '', '', '', '', '', '','','','','', '', '', '']
+columns: ['', '', '', '', '', '', '', '', '', '','','','','', '']
 
 
 table.on('tableBuilt', function(){

@@ -1,7 +1,7 @@
 import datetime as dt
 import json
 
-from flask import render_template, request, redirect, url_for, flash, session, make_response
+from flask import render_template, request, redirect, url_for, flash, session
 
 from app import app, bcrypt, constants
 from app import utilities
@@ -93,8 +93,9 @@ def addSupplier():
             supplierEmail = req['supplierEmail']
             supplierActive = True
             supplierDateCreated = dt.date.today()
-            parms = (supplierName, supplierAddr, supplierProv, supplierContactName, supplierEmail, supplierTel, supplierActive,
-                     supplierDateCreated)
+            parms = (
+            supplierName, supplierAddr, supplierProv, supplierContactName, supplierEmail, supplierTel, supplierActive,
+            supplierDateCreated)
             utilities.insertSupplier(parms)
 
     except Exception as e:
@@ -132,7 +133,7 @@ def addOrder():
             utilities.insertPurchaseOrder(purchaseOrderNbr, purchaserId, purchaserDeptId)
 
             # resultList minus 3 gives total nbr of order items, less PONbr and purchaser
-            # take total nbr of order items and divide by seven gives nbr of recs to insert
+            # take total nbr of order items and divide by 5 gives nbr of recs to insert
 
             resultList.insert(2, session['username'])
 
@@ -270,9 +271,9 @@ def login():
                 else:
                     session['loggedOn'] = True
                     session['securityLevel'] = utilities.getUserSecurityLevel(username)
-                    session['lang'] = 'en' #english is default language
+                    session['lang'] = 'en'  # english is default language
                     session['username'] = username
-                    #utilities.createSessionObjects('fr', session) #send 'fr' so that 'en' lang is loaded ... yeah I know .... wtf ...
+                    # utilities.createSessionObjects('fr', session) #send 'fr' so that 'en' lang is loaded ... yeah I know .... wtf ...
 
                     return redirect(url_for('home'))
 
@@ -483,13 +484,22 @@ def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=
         parms = (receivedBy, id,)
         utilities.updateOrderReceivedBy(parms)
 
-    resultList = utilities.getALLPurchaseOrders()  # returns a list of a list, so indice 1 = row, indice 2 = col within row, i.e. mylist[0][1]
+    if action == 'activeFlg':
+        value = request.args.get('value', '')
+        myList = value.split(',')
+        id = myList[0]
+        active = myList[1]
+        parms = (active, id,)
+        utilities.updateActiveFlg(parms)
+
+    securityLevel = session['securityLevel']
+    resultList = utilities.getALLPurchaseOrders(securityLevel)  # returns a list of a list, so indice 1 = row, indice 2 = col within row, i.e. mylist[0][1]
     mylist: list = []
     alist: list = []
     for row in resultList:
         alist = (
             row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12],
-            row[13], row[14], row[15])
+            row[13], row[14], row[15], row[16])
         d1 = dict(enumerate(alist))
         mylist.append(d1)
 
@@ -548,7 +558,8 @@ def apimanageSupplier():
         supplierDateInActive = myList[8]
         supplierDateCreated = myList[9]
 
-        utilities.updateSupplier(id, supplierName, supplierAddr, supplierProv, supplierTel, supplierEmail, supplierContact,
+        utilities.updateSupplier(id, supplierName, supplierAddr, supplierProv, supplierTel, supplierEmail,
+                                 supplierContact,
                                  supplierActive, supplierDateInActive, supplierDateCreated)
 
     # reload tabulator.js table
@@ -633,9 +644,9 @@ def managePurchaser():
 
     return render_template('managePurchaser.html')
 
+
 @app.route('/api/data/manageProvincialTaxRates', methods=['GET'])
 def apimanageProvincialTaxRates():
-
     try:
         # set arg to '' not present
         action = request.args.get('action', '')
@@ -652,10 +663,10 @@ def apimanageProvincialTaxRates():
             label = myList[3]
             active = myList[4]
             parms = (provincialCode, taxRate, label, active, id,)
-            #save update
-            utilities.updateProvincialTaxRates(parms) #save update
+            # save update
+            utilities.updateProvincialTaxRates(parms)  # save update
 
-        #reload tabulator
+        # reload tabulator
         myList = []
         resultList = utilities.getTable('ProvincialTaxRates')
         for row in resultList:
@@ -664,10 +675,11 @@ def apimanageProvincialTaxRates():
             myList.append(d1)
 
         x = json.dumps(myList)
-        return(x)
+        return (x)
 
     except Exception as e:
         print(f'problem in manageProvincialTaxRates: {e}')
+
 
 @app.route('/api/data/manageUser/<action>/<value>', methods=['GET'])
 @app.route('/api/data/manageUser', methods=['GET'])
@@ -704,12 +716,13 @@ def apimanageUser():
 
     return (x)
 
+
 @app.route('/manageProvincialTaxRates')
 def manageProvincialTaxRates():
     try:
 
         if session.get('loggedOn', None) == None:
-            flash(session['pleaseLogin'] , 'danger')
+            flash(session['pleaseLogin'], 'danger')
             return redirect(url_for('login'))
 
         if session['securityLevel'] < constants.GOD_LEVEL:
@@ -727,7 +740,7 @@ def manageUser():
     try:
 
         if session.get('loggedOn', None) == None:
-            flash(session['pleaseLogin'] , 'danger')
+            flash(session['pleaseLogin'], 'danger')
             return redirect(url_for('login'))
 
         if session['securityLevel'] < constants.GOD_LEVEL:
@@ -747,7 +760,7 @@ def viewDoc():
         import glob
 
         if session.get('loggedOn', None) == None:
-            flash(session['pleaseLogin'] , 'danger')
+            flash(session['pleaseLogin'], 'danger')
             return redirect(url_for('login'))
 
         if request.method == 'POST':
@@ -841,18 +854,22 @@ def stats():
         for each in inActiveUsersInTable:
             inActiveUsers.append(each[1])
 
-        #countActiveDepartments = utilities.getCountActive(tableName)
-        #countinActiveDepartments = utilities.getCountinActive(tableName)
+        # countActiveDepartments = utilities.getCountActive(tableName)
+        # countinActiveDepartments = utilities.getCountinActive(tableName)
         orderByCount = utilities.getOrderByCount()
         orderbyMonth = utilities.getOrderByMonth()
 
-        return render_template('stats.html', purchaseOrders=purchaseOrders, orders=orders, users=users, suppliers=suppliers,
+        return render_template('stats.html', purchaseOrders=purchaseOrders, orders=orders, users=users,
+                               suppliers=suppliers,
                                purchaser=purchaser, department=department, orderByCount=orderByCount,
-                               orderByMonth=orderbyMonth, activeDepts=activeDepts, inActiveDept=inActiveDepts, activePurchasers=activePurchasers,
-                               inActivePurchasers=inActivePurchasers, activeSuppliers=activeSuppliers, inActiveSuppliers=inActiveSuppliers,
+                               orderByMonth=orderbyMonth, activeDepts=activeDepts, inActiveDept=inActiveDepts,
+                               activePurchasers=activePurchasers,
+                               inActivePurchasers=inActivePurchasers, activeSuppliers=activeSuppliers,
+                               inActiveSuppliers=inActiveSuppliers,
                                activeUsers=activeUsers, inActiveUsers=inActiveUsers)
     except Exception as e:
         print(f'problem in stats: {e}')
+
 
 @app.route('/language', methods=['GET'])
 def language():
@@ -862,21 +879,23 @@ def language():
 
         constants.currentLang = utilities.createSessionObjects(constants.currentLang, session)
 
-        #return render_template('home.html')
+        # return render_template('home.html')
         return redirect(request.referrer)
 
     except Exception as e:
         print(f'problem in language: {e}')
+
 
 @app.route('/getPurchaserName', methods=['GET'])
 def getPurchaserName():
     try:
         names = utilities.getALLPurchasers()
 
-        return(json.dumps(names))
+        return (json.dumps(names))
 
     except Exception as e:
         print(f'problem in getPurchasename: {e}')
+
 
 @app.route('/getLanguage', methods=['GET'])
 def getLanguage():
@@ -884,7 +903,7 @@ def getLanguage():
         lang = session['lang']
         l = json.dumps(lang)
 
-        return(lang)
+        return (lang)
 
     except Exception as e:
         print(f'problem in getLanguage: {e}')

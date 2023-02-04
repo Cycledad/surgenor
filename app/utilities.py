@@ -765,7 +765,7 @@ def insertPurchaseOrder(purchaseOrderNbr: int, purchaserId: int, purchaserDept: 
         cur = conn.cursor()
         orderDt = datetime.date.today()
         receivedDt = ''
-        Active = False
+        Active = True
         parms = (orderDt, receivedDt, Active, purchaseOrderNbr, purchaserId, purchaserDept)
         stmt = 'INSERT INTO PurchaseOrder(purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderActive, purchaseOrderNbr, purchaseOrderpurchaserId, purchaseOrderPurchaserDeptId) values (?, ?, ?, ?, ?, ?)'
         cur.execute(stmt, parms)
@@ -780,7 +780,7 @@ def insertPurchaseOrder(purchaseOrderNbr: int, purchaserId: int, purchaserDept: 
         print(f'problem in insertPurchaseOrder: {e}')
 
 
-def getALLPurchaseOrders() -> list:
+def getALLPurchaseOrders(securityLevel: int) -> list:
     try:
         row: list = []
 
@@ -788,8 +788,12 @@ def getALLPurchaseOrders() -> list:
         conn = getConnection(db)
         # conn.row_factory = sqlite3.Row
         cur = conn.cursor()
-        stmt = 'select p.id, o.id, purchaser.purchaserName, o.deptName, orderNbr, s.supplierName, o.orderPartNbr, o.orderPartDesc, o.OrderQuantity,o.OrderPartPrice, o.orderReceivedDate, o.OrderReceivedBy, o.orderReturnDate, o.orderReturnQuantity, o.PO, o.orderUsername from purchaseOrder p, OrderTbl o, supplier s, Purchaser, Department where p.purchaseOrderNbr = o.orderNbr AND o.OrderSupplierId = s.id and Purchaser.id = p.purchaseOrderPurchaserId and purchaserDeptid = department.id'
-        #stmt = 'select p.id, o.id, purchaser.purchaserName, o.deptName, orderNbr,s.supplierName, part.partNbr,part.partDesc,o.OrderQuantity,o.OrderPartPrice,o.OrderTotalCost, o.orderReceivedDate, o.OrderReceivedBy, o.orderReturnDate, o.orderReturnQuantity, o.PO from purchaseOrder p, OrderTbl o, supplier s, Part, Purchaser, Department where p.purchaseOrderNbr = o.orderNbr AND o.OrderSupplierId = s.id and o.OrderPartId = part.id and Purchaser.id = p.purchaseOrderPurchaserId and purchaserDeptid = department.id'
+        #if GOD_LEVEL then showw ALL purchase orders, active and non-active
+        if securityLevel == constants.GOD_LEVEL:
+            stmt = 'select p.id, o.id, purchaser.purchaserName, o.deptName, orderNbr, s.supplierName, o.orderPartNbr, o.orderPartDesc, o.OrderQuantity,o.OrderPartPrice, o.orderReceivedDate, o.OrderReceivedBy, o.orderReturnDate, o.orderReturnQuantity, o.PO, o.orderUsername, p.purchaseOrderActive from purchaseOrder p, OrderTbl o, supplier s, Purchaser, Department where p.purchaseOrderNbr = o.orderNbr AND o.OrderSupplierId = s.id and Purchaser.id = p.purchaseOrderPurchaserId and purchaserDeptid = department.id and p.purchaseOrderActive'
+        else:
+            stmt = 'select p.id, o.id, purchaser.purchaserName, o.deptName, orderNbr, s.supplierName, o.orderPartNbr, o.orderPartDesc, o.OrderQuantity,o.OrderPartPrice, o.orderReceivedDate, o.OrderReceivedBy, o.orderReturnDate, o.orderReturnQuantity, o.PO, o.orderUsername, p.purchaseOrderActive from purchaseOrder p, OrderTbl o, supplier s, Purchaser, Department where p.purchaseOrderNbr = o.orderNbr AND o.OrderSupplierId = s.id and Purchaser.id = p.purchaseOrderPurchaserId and purchaserDeptid = department.id'
+
         cur.execute(stmt)
         row = cur.fetchall()
         cur.close()
@@ -922,6 +926,23 @@ def updateOrderReceivedBy(parms) -> None:
     except Exception as e:
         print(f'problem in updateOrderReceivedBy: {e}')
 
+def updateActiveFlg(parms) -> None:
+    # set active flag in purchaseOrder table - used to track orders.
+    # there can be MANY orders per purchaseOrder
+    try:
+
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        stmt = "update purchaseOrder set purchaseOrderactive = ? where id = ?"
+        cur.execute(stmt, parms)
+        conn.commit()
+        cur.close()
+
+        return ()
+
+    except Exception as e:
+        print(f'problem in updateActiveFlg: {e}')
 
 def registerUser(username: str, hashed_pw: int) -> None:
     try:

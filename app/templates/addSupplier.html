@@ -13,11 +13,11 @@
         </div>
 
         <div class="row">
-            <div class="col-10">
+            <div class="col-10 mt-3">
                 <label for="supplierAddr">{% if 'supplierAddress' in session %} {{ session['supplierAddress'] }} {% else %} Supplier Address:{% endif %}</label>
                 <input type="text" class='form-control' id="supplierAddr" name="supplierAddr" required>
             </div>
-             <div class="col-2">
+             <div class="col-2 mt-3">
 
                     <label for="supplierProv">{% if 'supplierProv' in session %} {{ session['supplierProv'] }} {% else %} Supplier Province:{% endif %}</label>
 

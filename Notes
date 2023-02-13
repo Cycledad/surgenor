@@ -9,6 +9,8 @@ git status --short
 git log --neline
 git help --all
 
+github: 2muchLovefor5wives
+
 To revert to a previous version:
 - git log --oneline    <= find hashtag
 - git restore <hashtag>
@@ -21,3 +23,4 @@ PIP INSTALL -R REQUIREMENTS.TXT
 
 Pythonanywhere:
 bulk upload: git clone https://..........
+username: wayneraid/Ilike2code

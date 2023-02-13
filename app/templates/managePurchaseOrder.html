@@ -70,6 +70,7 @@ var updateQuantity = (cell) =>
             value = id + "," + returnQuantity
             URL = "/api/data/managePurchaseOrder?action=updateQuantity&value=" + value
             table.setData(URL);
+          
 
             /*
             URL = "/api/data/managePurchaseOrder?orderId=" + id + "&quantity=" + returnQuantity;

@@ -796,7 +796,7 @@ def viewDoc():
             theList.append(x[len(x) - 1])
 
         print(f'theList: {theList}')
-        theList = theList.sort()
+        theList.sort()
         return render_template('viewDoc.html', docList=theList)
 
 

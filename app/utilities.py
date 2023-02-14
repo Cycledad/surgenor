@@ -7,6 +7,7 @@ import stat
 import docx
 import webbrowser
 import requests
+
 from urllib.parse import urljoin
 #from docx2html import convert
 
@@ -916,7 +917,7 @@ def updateOrderReceivedBy(parms) -> None:
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        stmt = "update orderTbl set orderReceivedBy = ? where id = ?"
+        stmt = "update orderTbl set orderReceivedBy = ? where orderNbr = ?"
         cur.execute(stmt, parms)
         conn.commit()
         cur.close()
@@ -959,7 +960,7 @@ def registerUser(username: str, hashed_pw: int) -> None:
         conn.commit()
         cur.close()
 
-        return ()
+        return
 
     except Exception as e:
         print(f'problem in updateOrderQuantity: {e}')
@@ -1074,7 +1075,7 @@ def createPrintDoc(orderList: list) -> None:
         print(f'problem in createPrintDoc: {e}')
 
 
-def buildDoc(order, myList: list, orderTotalCost: float) -> list:
+def buildDoc(order, myList: list, orderTotalCost: float):
     try:
         #partDesc = getTableItemById(order[4], 'Part', 'partDesc')
         partNbr = order[4]
@@ -1274,16 +1275,6 @@ def getPurchaseOrderById(orderId: int) -> list:
         print(f'problem in getPurchaseOrderById: {e}')
 
 
-'''
-purchaseOrderDate  
-purchaseOrderReceivedDate  
-purchaseOrderActive  
-purchaseOrderDateDeleted  
-purchaseOrderNbr  
-purchaseOrderPurchaserId  
-purchaseOrderPurchaserDeptId
-'''
-
 
 def getOrderByOrderNbr(orderNbr: int) -> list:
     try:
@@ -1444,7 +1435,7 @@ def createSessionObjects(currentLang: str, session) -> str:
             session['alreadyRegistered'] = 'Le nom d’utilisateur est déjà enregistré'
             session['registered'] = 'Vous avez été inscrit, veuillez vous connecter'
             session['pleaseLogin'] = 'Veuillez vous connecter!'
-            session['securityLevel5'] = 'Niveau de sécurité de 5 requis pour gérer le tableau du ministère'
+            session['securityLevel5'] = 'Niveau de sécurité de 6 requis'
             currentLang = 'fr'
             #----- addSupplier.html -----
             session['addSupplier'] = 'Ajouter un fournisseur'
@@ -1503,7 +1494,7 @@ def createSessionObjects(currentLang: str, session) -> str:
             session['alreadyRegistered'] = 'Username is already registered'
             session['registered'] = 'You have been registered, please login'
             session['pleaseLogin'] = 'Please Login!'
-            session['securityLevel5'] = 'Security Level of 5 required to manage Department table'
+            session['securityLevel5'] = 'Security Level of 6 required'
             currentLang = 'en'
             #----- addSupplier.html -----
             session['addSupplier'] = 'Add Supplier'
@@ -1560,10 +1551,5 @@ def getActive(tableName: str, colName: str, btrue: bool) -> list:
 
     except Exception as e:
         print(f'problem in getActive: {e}')
-def getinActive(tableName: str) -> list:
-    try:
-        db = getDatabase(constants.DATABASE_NAME)
-        conn = getConnection(db)
-        cur = conn.cursor()
-    except Exception as e:
-        print(f'problem in getinActive: {e}')
+
+

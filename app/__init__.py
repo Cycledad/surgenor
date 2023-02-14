@@ -1,5 +1,5 @@
 try:
-    from flask import Flask, session
+    from flask import Flask
     import requests
 
 
@@ -9,6 +9,7 @@ try:
 
     app = Flask(__name__)
     session = requests.Session()
+
 
     bcrypt = Bcrypt(app)
     app.config['SECRET_KEY'] = '5791628bb0b13ce0c676dfde280ba245'

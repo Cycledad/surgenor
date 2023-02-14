@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<br><br><br><br><br>
+
 <div id="example-table"></div>
 
 {% endblock %}
@@ -91,7 +91,7 @@ var updateCol = (cell) =>
     debugger;
     var row = cell.getRow();
     var rowData = row.getData();
-    id = rowData["0"];
+    id = rowData["4"];
     receivedBy = rowData[11];   //receivedBy
     value = id + "," + receivedBy;
     //'/api/data/manageDepartment?action=update&value=1,Executive,2023-01-04,5'
@@ -191,12 +191,12 @@ var table = new Tabulator("#example-table",
 
     //ajaxURL: "/api/data",
     ajaxURL: "/api/data/managePurchaseOrder",
-    height:"311px",
+    height:"500px",
     layout:"fitData",
     selectable:true,
     placeholder:"No Data Set",
     pagination:"local",
-    paginationSize:6,
+    paginationSize:10,
     paginationSizeSelector:[3, 6, 8, 10],
     movableColumns:true,
     pagination: "local",

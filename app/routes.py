@@ -32,7 +32,7 @@ def home():
 @app.route('/addPurchaser', methods=['GET', 'POST'])
 def addPurchaser():
     try:
-        if session.get('loggedOn', None) == None:
+        if session.get('loggedOn', None) is None:
             flash(session['pleaseLogin'], 'danger')
             return redirect(url_for('login'))
 
@@ -57,7 +57,7 @@ def addPurchaser():
 @app.route('/addDepartment', methods=['GET', 'POST'])
 def addDepartment():
     try:
-        if session.get('loggedOn', None) == None:
+        if session.get('loggedOn', None) is None:
             flash(session['pleaseLogin'], 'danger')
             return redirect(url_for('login'))
 
@@ -79,7 +79,7 @@ def addDepartment():
 @app.route('/addSupplier', methods=['GET', 'POST'])
 def addSupplier():
     try:
-        if session.get('loggedOn', None) == None:
+        if session.get('loggedOn', None) is None:
             flash(session['pleaseLogin'], 'danger')
             return redirect(url_for('login'))
 
@@ -116,7 +116,7 @@ def listPurchaseOrder():
 @app.route('/addOrder', methods=['GET', 'POST'])
 def addOrder():
     try:
-        if session.get('loggedOn', None) == None:
+        if session.get('loggedOn', None) is None:
             flash(session['pleaseLogin'], 'danger')
             return redirect(url_for('login'))
 
@@ -191,7 +191,7 @@ def addOrder():
 @app.route('/addPart', methods=['GET', 'POST'])
 def addPart():
     try:
-        if session.get('loggedOn', None) == None:
+        if session.get('loggedOn', None) is None:
             flash(session['pleaseLogin'], 'danger')
             return redirect(url_for('login'))
 
@@ -235,9 +235,13 @@ def testme():
 @app.route('/adminHome')
 def adminHome():
     try:
-        if session.get('loggedOn', None) == None:
+        if session.get('loggedOn', None) is None:
             flash(session['pleaseLogin'], 'danger')
             return redirect(url_for('login'))
+
+        if session['securityLevel'] < constants.GOD_LEVEL:
+            flash(session['securityLevel5'], 'warning')
+            return redirect(url_for('home'))
 
     except Exception as e:
         print(f'problem in adminHome: {e}')
@@ -248,7 +252,8 @@ def adminHome():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     try:
-        if not session.get('loggedOn', None) == None:
+        #if already logged in
+        if not session.get('loggedOn', None) is None:
             flash(session['alreadyLoggedIn'], 'info')
             return redirect(url_for('home'))
 
@@ -287,7 +292,7 @@ def login():
 def register():
     try:
 
-        if not session.get('loggedOn', None) == None:
+        if not session.get('loggedOn', None) is None:
             flash(session['alreadyLoggedIn'], 'info')
             return redirect(url_for('home'))
 
@@ -512,13 +517,14 @@ def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=
 def managePurchaseOrder():
     try:
 
-        if session.get('loggedOn', None) == None:
+        if session.get('loggedOn', None) is None:
             flash(session['pleaseLogin'], 'danger')
             return redirect(url_for('login'))
 
-        if session['securityLevel'] < constants.GOD_LEVEL:
-            flash(session['securityLevel5'], 'warning')
-            return redirect(url_for('adminHome'))
+        #all users need to managePurchaseOrders not just admin
+        #if session['securityLevel'] < constants.GOD_LEVEL:
+        #    flash(session['securityLevel5'], 'warning')
+        #    return redirect(url_for('adminHome'))
 
     except Exception as e:
         print(f'problem in managePurchaseOrder: {e}')
@@ -528,8 +534,9 @@ def managePurchaseOrder():
 
 @app.route('/logout')
 def logout():
-    session.pop('loggedOn')
-    session.pop('securityLevel')
+    #session.pop('loggedOn')
+    #session.pop('securityLevel')
+    session.clear()
     return redirect(url_for('home'))
 
 
@@ -577,7 +584,7 @@ def apimanageSupplier():
 def manageSupplier():
     try:
 
-        if session.get('loggedOn', None) == None:
+        if session.get('loggedOn', None) is None:
             flash(session['pleaseLogin'], 'danger')
             return redirect(url_for('login'))
 
@@ -631,7 +638,7 @@ def apimanagePurchaser():
 def managePurchaser():
     try:
 
-        if session.get('loggedOn', None) == None:
+        if session.get('loggedOn', None) is None:
             flash(session['pleaseLogin'], 'danger')
             return redirect(url_for('login'))
 
@@ -739,7 +746,7 @@ def manageProvincialTaxRates():
 def manageUser():
     try:
 
-        if session.get('loggedOn', None) == None:
+        if session.get('loggedOn', None) is None:
             flash(session['pleaseLogin'], 'danger')
             return redirect(url_for('login'))
 
@@ -759,7 +766,7 @@ def viewDoc():
         from flask import send_from_directory
         import glob
 
-        if session.get('loggedOn', None) == None:
+        if session.get('loggedOn', None) is None:
             flash(session['pleaseLogin'], 'danger')
             return redirect(url_for('login'))
 

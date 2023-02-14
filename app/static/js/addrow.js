@@ -20,11 +20,11 @@ $(document).ready(function ()
         else {
             selectSupplier += '<option value="">-- fournisseur --</option>';
         }
-        selectSupplier += '<option value="">-- Supplier --</option>';
-             for (var i = 1; i < document.getElementById('selectSupplier').length; i++)
-             {
-                 selectSupplier += '<option value="' + document.getElementById("selectSupplier").options[i].text + '">' + document.getElementById("selectSupplier").options[i].text + '</option>';
-             }
+        //selectSupplier += '<option value="">-- Supplier --</option>';
+        for (var i = 1; i < document.getElementById('selectSupplier').length; i++)
+            {
+                selectSupplier += '<option value="' + document.getElementById("selectSupplier").options[i].text + '">' + document.getElementById("selectSupplier").options[i].text + '</option>';
+            }
         selectSupplier += '</select></div></div>';
         cols += selectSupplier;
 
@@ -91,9 +91,9 @@ $(document).ready(function ()
 
 
 
-        console.log(cols);
+        //console.log(cols);
         newRow.append(cols);
-        console.log(newRow);
+        //console.log(newRow);
         $("table.order-list").append(newRow);
         counter++;
     });

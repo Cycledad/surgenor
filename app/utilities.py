@@ -789,11 +789,11 @@ def getALLPurchaseOrders(securityLevel: int) -> list:
         conn = getConnection(db)
         # conn.row_factory = sqlite3.Row
         cur = conn.cursor()
-        #if GOD_LEVEL then showw ALL purchase orders, active and non-active
+        #if GOD_LEVEL then show ALL purchase orders, active and non-active
         if securityLevel == constants.GOD_LEVEL:
-            stmt = 'select p.id, o.id, purchaser.purchaserName, o.deptName, orderNbr, s.supplierName, o.orderPartNbr, o.orderPartDesc, o.OrderQuantity,o.OrderPartPrice, o.orderReceivedDate, o.OrderReceivedBy, o.orderReturnDate, o.orderReturnQuantity, o.PO, o.orderUsername, p.purchaseOrderActive from purchaseOrder p, OrderTbl o, supplier s, Purchaser, Department where p.purchaseOrderNbr = o.orderNbr AND o.OrderSupplierId = s.id and Purchaser.id = p.purchaseOrderPurchaserId and purchaserDeptid = department.id and p.purchaseOrderActive'
+            stmt = f'select p.id, o.id, purchaser.purchaserName, o.deptName, orderNbr, p.purchaseOrderDate, s.supplierName, o.orderPartNbr, o.orderPartDesc, o.OrderQuantity,o.OrderPartPrice, o.orderReceivedDate, o.OrderReceivedBy, o.orderReturnDate, o.orderReturnQuantity, o.PO, o.orderUsername, o.OrderActive, {securityLevel} from purchaseOrder p, OrderTbl o, supplier s, Purchaser, Department where p.purchaseOrderNbr = o.orderNbr AND o.OrderSupplierId = s.id and Purchaser.id = p.purchaseOrderPurchaserId and purchaserDeptid = department.id'
         else:
-            stmt = 'select p.id, o.id, purchaser.purchaserName, o.deptName, orderNbr, s.supplierName, o.orderPartNbr, o.orderPartDesc, o.OrderQuantity,o.OrderPartPrice, o.orderReceivedDate, o.OrderReceivedBy, o.orderReturnDate, o.orderReturnQuantity, o.PO, o.orderUsername, p.purchaseOrderActive from purchaseOrder p, OrderTbl o, supplier s, Purchaser, Department where p.purchaseOrderNbr = o.orderNbr AND o.OrderSupplierId = s.id and Purchaser.id = p.purchaseOrderPurchaserId and purchaserDeptid = department.id'
+            stmt = f'select p.id, o.id, purchaser.purchaserName, o.deptName, orderNbr, p.purchaseOrderDate, s.supplierName, o.orderPartNbr, o.orderPartDesc, o.OrderQuantity,o.OrderPartPrice, o.orderReceivedDate, o.OrderReceivedBy, o.orderReturnDate, o.orderReturnQuantity, o.PO, o.orderUsername, o.OrderActive, {securityLevel} from purchaseOrder p, OrderTbl o, supplier s, Purchaser, Department where p.purchaseOrderNbr = o.orderNbr AND o.OrderSupplierId = s.id and Purchaser.id = p.purchaseOrderPurchaserId and purchaserDeptid = department.id  and o.OrderActive'
 
         cur.execute(stmt)
         row = cur.fetchall()
@@ -805,7 +805,7 @@ def getALLPurchaseOrders(securityLevel: int) -> list:
         print(f'problem in getALLPurchaseOrders: {e}')
 
 
-def deletePurchaseOrder(orderId: int) -> list:
+def deletePurchaseOrder(orderId: int):
     # There is ONE purchaseOrder id used to track orders.
     # there can be MANY orders per purchaseOrder
     try:
@@ -837,11 +837,11 @@ def deletePurchaseOrder(orderId: int) -> list:
             cur.execute(stmt3, parm2)
             cur.fetchone()
 
-        cur.close()
         conn.commit()
+        cur.close()
         conn.close()
 
-        return ()
+        return
 
     except Exception as e:
         print(f'problem in deletePurchaseOrder: {e}')
@@ -855,35 +855,48 @@ def updateOrderReceivedDate(id: int, dt_order_received: str, dt_order_returned: 
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
+        # if NbrOfOrders = 1 then soft delete from order table and purchaseOrder table
+        # if NbrOfOrders > 1 then soft delete only specific purchase form purchaseorder, other purchases remain in order
         parm1 = (id,)
-        stmt1 = 'select o.OrderNbr from orderTbl o where o.id = ?'
+        if not dt_order_received == '':    #received date is not empty
+            stmt1 = f"update orderTbl set orderreceivedDate = '{dt_order_received}', orderReturndate = '{dt_order_returned}', orderActive = False where id = ?"
+
+        else:
+            # currentDate = datetime.date.today()
+            stmt1 = f"update orderTbl set orderReturndate = '{dt_order_returned}' where id = ?"
+
         cur.execute(stmt1, parm1)
+        conn.commit()
+
+
+        stmt2 = 'select o.OrderNbr from orderTbl o where o.id = ?'
+        cur.execute(stmt2, parm1)
         orderNbr = cur.fetchone()
         orderNbr = orderNbr[0]
 
-        parm2 = (orderNbr,)
-        stmt2 = 'select count(*) from orderTbl o where o.orderNbr = ?'
-        cur.execute(stmt2, parm2)
+        parm3 = (orderNbr,)
+        stmt3 = 'select count(*) from orderTbl o where o.orderNbr = ? and orderActive'
+        cur.execute(stmt3, parm3)
         nbrOfOrders = cur.fetchone()
         nbrOfOrders = nbrOfOrders[0]
 
-        # if NbrOfOrders = 1 then delete from order table and purchaseOrder table
-        # if NbrOfOrders > 1 then delete only specific purchase form purchaseorder, other purchases remain in order
+        stmt4 = 'select count(*) from purchaseOrder where purchaseOrderNbr = ? and purchaseOrderActive'
+        cur.execute(stmt4, parm3)
+        nbrOfPurchaseOrders = cur.fetchone()
+        nbrOfPurchaseOrders = nbrOfPurchaseOrders[0]
 
-        # currentDate = datetime.date.today()
-        stmt1 = f"update orderTbl set orderreceivedDate = '{dt_order_received}', orderReturndate = '{dt_order_returned}' where id = ?"
-        cur.execute(stmt1, parm1)
+        # we could be in this function for 2 reasons, either for the received date or returned date.
+        # when ALL orders are received set the purchase order active to false and the purchase order date is set to the received date.
+
+        if nbrOfOrders == 0 and nbrOfPurchaseOrders > 0:
+            stmt5 = f"update purchaseOrder set purchaseOrderReceivedDate = '{dt_order_received}', purchaseOrderActive = False, purchaseOrderDateDeleted = '{datetime.date.today()}' where purchaseOrderNbr = ?"
+            cur.execute(stmt5, parm3)
+
         conn.commit()
-
-        if nbrOfOrders == 1:
-            stmt3 = f"update purchaseOrder set purchaseOrderReceivedDate = '{dt_order_received}' where purchaseOrderNbr = ?"
-            cur.execute(stmt3, parm2)
-
         cur.close()
-        conn.commit()
         conn.close()
 
-        return ()
+        return
 
     except Exception as e:
         print(f'problem in updateOrderReceivedDate: {e}')
@@ -902,8 +915,9 @@ def updateOrderReturnQuantity(id: int, quantity: int) -> None:
         cur.execute(stmt, parm)
         conn.commit()
         cur.close()
+        conn.close()
 
-        return ()
+        return
 
     except Exception as e:
         print(f'problem in updateOrderQuantity: {e}')
@@ -917,12 +931,13 @@ def updateOrderReceivedBy(parms) -> None:
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        stmt = "update orderTbl set orderReceivedBy = ? where orderNbr = ?"
+        stmt = "update orderTbl set orderReceivedBy = ? where id = ?"
         cur.execute(stmt, parms)
         conn.commit()
         cur.close()
+        conn.close()
 
-        return ()
+        return
 
     except Exception as e:
         print(f'problem in updateOrderReceivedBy: {e}')
@@ -935,12 +950,12 @@ def updateActiveFlg(parms) -> None:
         db = getDatabase(constants.DATABASE_NAME)
         conn = getConnection(db)
         cur = conn.cursor()
-        stmt = "update purchaseOrder set purchaseOrderactive = ? where id = ?"
+        stmt = "update orderTbl set orderActive = ? where id = ?"
         cur.execute(stmt, parms)
         conn.commit()
         cur.close()
 
-        return ()
+        return
 
     except Exception as e:
         print(f'problem in updateActiveFlg: {e}')
@@ -1469,6 +1484,8 @@ def createSessionObjects(currentLang: str, session) -> str:
             session['purchaserActive'] = 'Acheteur actif'
             # ----- viewDoc.html -----
             session['viewPrint'] = 'Afficher/Imprimer le bon de commande'
+            # ----- purchase order table -----
+            session['purchaseOrderDate'] = "Date de commande d'achat"
         else:
             #----- base.html, adminBase.html, login.html, register.html translations -----
             session['home'] = 'Home'
@@ -1528,6 +1545,8 @@ def createSessionObjects(currentLang: str, session) -> str:
             session['purchaserActive'] = 'Purchaser active'
             # ----- viewDoc.html -----
             session['viewPrint'] = 'View/Print Purchase Order'
+            # ----- purchase order table -----
+            session['purchaseOrderDate'] = 'Purchase Order Date'
 
         return(currentLang)
 

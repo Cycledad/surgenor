@@ -46,12 +46,12 @@ var updateQuantity = (cell) =>
     var rowData = row.getData();
     //alert("OrderId is: " + rowData["1"]) //id in purchaserOrder table
     id = rowData["1"];
-    returnQuantity = rowData[13];
+    returnQuantity = rowData[14];
     if (isNaN(returnQuantity)){
         alert("Not a number!!");
     }
     else {
-        quantityOrdered = rowData[8];
+        quantityOrdered = rowData[9];
         if (returnQuantity > quantityOrdered) {
             if (lang == 'en')
             {
@@ -64,7 +64,7 @@ var updateQuantity = (cell) =>
 
             alert(msg);
             //cell.setValue('');
-            //rowData[13] = ''
+            //rowData[14] = ''
         }
         else {
             value = id + "," + returnQuantity
@@ -91,8 +91,8 @@ var updateCol = (cell) =>
     debugger;
     var row = cell.getRow();
     var rowData = row.getData();
-    id = rowData["4"];
-    receivedBy = rowData[11];   //receivedBy
+    id = rowData["1"];
+    receivedBy = rowData[12];   //receivedBy
     value = id + "," + receivedBy;
     //'/api/data/manageDepartment?action=update&value=1,Executive,2023-01-04,5'
     URL = "/api/data/managePurchaseOrder?action=receivedBy&value=" + value;
@@ -108,15 +108,32 @@ var updateActive = (cell) =>
     debugger;
     var row = cell.getRow();
     var rowData = row.getData();
-    id = rowData["0"];
-    activeFlg = rowData[16];   //active indicator flag
+    id = rowData["1"];
+    activeFlg = rowData[17];   //active indicator flag
     value = id + "," + activeFlg;
-    //'/api/data/manageDepartment?action=update&value=1,Executive,2023-01-04,5'
-    URL = "/api/data/managePurchaseOrder?action=activeFlg&value=" + value;
-    //debugger;
-    table.setData(URL);
-    //debugger;
-    //rowData[11].setFocus
+    securityLevel = rowData[18]
+    if (securityLevel < 5) {
+        if (lang == 'en')
+        {
+            msg = "You must have security level 5 to modify Order Active indicator";
+        }
+        else
+        {
+            msg = "Vous devez avoir le niveau de sécurité 5 pour modifier l'indicateur actif de l'ordre";
+        }
+        alert(msg);
+         // i need to do this to pull/reset original column data from db
+        URL = "/api/data/managePurchaseOrder";
+        table.setData(URL);
+    } else {
+        //'/api/data/manageDepartment?action=update&value=1,Executive,2023-01-04,5'
+        URL = "/api/data/managePurchaseOrder?action=activeFlg&value=" + value;
+        //debugger;
+        table.setData(URL);  //update
+        //debugger;
+        //rowData[12].setFocus
+    }
+
 
 };
 
@@ -170,7 +187,7 @@ var updateReceivedBy = (cell) =>
     //var rowData = row.getData();
     //alert("OrderId is: " + rowData["1"]) //id in purchaserOrder table
     //id = rowData["1"];
-    //receivedBy = rowData[13];
+    //receivedBy = rowData[14];
 
 
 };
@@ -210,19 +227,20 @@ var table = new Tabulator("#example-table",
                     "2" :"acheteur",                            //Purchaser
                     "3" : "service des acheteurs",              //Purchaser Department
                     "4" : "numéro de bon de commande",          //Purchase Order Number
-                    "5" : "fournisseur",                        //Supplier
-                    "6" : "numéro de pièce",                    //Part Number
-                    "7" : "description de la pièce",            //Part Description
-                    "8" : "quantité",                           //Quantity,
-                    "9" : "prix unitaire",                      //Part Price
-                    "10": "date de réception de la commande",   //Order Received Date
-                    "11": "commande reçue par",                //Order Received By
-                    "12": "date de retour de la commande",       //Order Return Date
-                    "13": "quantité de retour de commande",      //Order Return Quantity
-                    "14": "PO",                                  //PO - this is the print document PO number
-                    "15": "utilisateur",                         //User
-                    "16": "ordre actif",                         //active indicator
-                    "17": "imprimer",                            //Print
+                    "5" : "date de commande d'achat",           //Purchase Order Date
+                    "6" : "fournisseur",                        //Supplier
+                    "7" : "numéro de pièce",                    //Part Number
+                    "8" : "description de la pièce",            //Part Description
+                    "9" : "quantité",                           //Quantity,
+                    "10" : "prix unitaire",                      //Part Price
+                    "11": "date de réception de la commande",   //Order Received Date
+                    "12": "commande reçue par",                //Order Received By
+                    "13": "date de retour de la commande",       //Order Return Date
+                    "14": "quantité de retour de commande",      //Order Return Quantity
+                    "15": "PO",                                  //PO - this is the print document PO number
+                    "16": "utilisateur",                         //User
+                    "17": "ordre actif",                         //active indicator
+                    "18": "imprimer",                            //Print
                 },
                  "pagination":{
                 "first":"Premier",
@@ -244,16 +262,17 @@ var table = new Tabulator("#example-table",
                     "2":"Trouver un acheteur ...", //replace default header filter text for column name
                     "3":"Trouver un département ...",
                     "4":"Trouver un numéro de bon de commande ...",
-                    "5":"Trouver un fournisseur ...",
-                    "6":"Trouver un numéro de pièce ...",
-                    "7":"Trouver une pièce ...",
+                    "5":"Trouver la date du bon de commande ...",
+                    "6":"Trouver un fournisseur ...",
+                    "7":"Trouver un numéro de pièce ...",
+                    "8":"Trouver une pièce ...",
                 }
             }
 
             },
         },
     initialSort:[
-        {column: "4", dir:"desc"}, //sort by Purchase Order Number desc, most recent orders first
+        {column: "5", dir:"desc"}, //sort by Purchase Order Number desc, most recent orders first
 
     ],
     columns:[
@@ -262,22 +281,21 @@ var table = new Tabulator("#example-table",
         {title:"Purchaser", field:"2", hozAlign:"center", sorter:"string", headerFilter:"input", headerFilterPlaceholder:"Find a Purchaser ..."},
         {title:"Purchaser Department", field:"3", hozAlign:"center", sorter:"string", headerFilter:"input", headerFilterPlaceholder:"Find an Department ..."},
         {title:"Purchase Order Number", field:"4", hozAlign:"center", sorter:"number", headerFilter:"input", headerFilterPlaceholder:"Find an Purchase Order Number ..."},
-        {title:"Supplier", field:"5", hozAlign:"center", sorter:"string", headerFilter:"input", headerFilterPlaceholder:"Find a Supplier ..."},
-        {title:"Part Number", field:"6", hozAlign:"center", sorter:"string", headerFilter:"input", headerFilterPlaceholder:"Find a Part Number ..."},
-        {title:"Part Description", field:"7", hozAlign:"center", headerFilter:"input", headerFilterPlaceholder:"Find a Part ..."},
-        {title:"Quantity", field:"8", hozAlign:"center", sorter:"number"},
-        {title:"Part Price", field:"9", hozAlign:"center", sorter:"number"},
-        //{title:"Total Cost", field:"10", hozAlign:"center", sorter:"number"},
-        {title:"Order Received Date", field:"10", editor:dateEditor},
-        //I wasn't able to figure out how to load select values from the database ????????????????????????????????????????????????????????????????????????????????????????????????????
-        {title:"Order Received By", field:"11", editor:"list", editorParams:parmLookup, cellEdited:updateCol},
-        //{title:"Order Received By", field:"11", editor:"select", editorParams:{values:["Kevin", "Jessie"]}, cellEdited:updateCol},
-        {title:"Order Return Date", field:"12", editor:dateEditor},
-        {title:"Order Return Quantity", field:"13", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateQuantity},
-        {title:"PO", field:"14", hozAlign:"center", sorter:"string", editor:false},
-        {title:"User", field:"15", hozAlign:"center", sorter:"string", editor:false},
-        {title:"Order Active", field:"16", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateActive},
-        {title:"Print", field:"17", formatter:"image", formatterParams:{urlPrefix:"./static/img/printer-16", urlSuffix:".png"}, align:"center", cellClick:function(e, row){printit(e,row);},},
+        {title:"Purchase Order Date", field:"5", hozAlign:"center", sorter:"string", headerFilter:"input", headerFilterPlaceholder:"Find a Purchase Order Date ..."},
+        {title:"Supplier", field:"6", hozAlign:"center", sorter:"string", headerFilter:"input", headerFilterPlaceholder:"Find a Supplier ..."},
+        {title:"Part Number", field:"7", hozAlign:"center", sorter:"string", headerFilter:"input", headerFilterPlaceholder:"Find a Part Number ..."},
+        {title:"Part Description", field:"8", hozAlign:"center", headerFilter:"input", headerFilterPlaceholder:"Find a Part ..."},
+        {title:"Quantity", field:"9", hozAlign:"center", sorter:"number"},
+        {title:"Part Price", field:"10", hozAlign:"center", sorter:"number"},
+        {title:"Order Received Date", field:"11", editor:dateEditor},
+        {title:"Order Received By", field:"12", editor:"list", editorParams:parmLookup, cellEdited:updateCol},
+        {title:"Order Return Date", field:"13", editor:dateEditor},
+        {title:"Order Return Quantity", field:"14", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateQuantity},
+        {title:"PO", field:"15", hozAlign:"center", sorter:"string", editor:false},
+        {title:"User", field:"16", hozAlign:"center", sorter:"string", editor:false},
+        {title:"Order Active", field:"17", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateActive},
+        {title:"Print", field:"18", formatter:"image", formatterParams:{urlPrefix:"./static/img/printer-16", urlSuffix:".png"}, align:"center", cellClick:function(e, row){printit(e,row);},},
+        {title:"securityLevel", field:"19", hozAlign:"center", sorter:"number", visible:false},
         //column definition in the columns array
         //{formatter:"buttonCross", width:40, align:"center", cellClick:function(e, cell){
         //    cell.getRow().delete()}},
@@ -285,11 +303,12 @@ var table = new Tabulator("#example-table",
         //{title:"Order Received Date", field:"10", align:"center", sorter:"date", editor:true},
         //{title:"Delete Row", editor:dateEditor, width:40, align:"center", cellClick:function(e, cell){doit(e,cell);},},
         //{title:"Order Return Quantity", field:"13", hozAlign:"center", sorter:"number", editor:true},
+        //{title:"Order Received By", field:"11", editor:"select", editorParams:{values:["Kevin", "Jessie"]}, cellEdited:updateCol},
         ////{title:"Print", formatter:printIcon, align:"center", cellClick:function(e, cell){printit(e,cell);},},
         ],
         });
 
-columns: ['', '', '', '', '', '', '', '', '', '','','','','', '', '', '']
+columns: ['', '', '', '', '', '', '', '', '', '','','','','', '', '', '', '', '']
 
 
 table.on('tableBuilt', function(){
@@ -338,12 +357,32 @@ function updateDate(cell) {
     var row = cell.getRow();
     var rowData = row.getData();
     //alert("OrderId is: " + rowData["1"]) //id in purchaserOrder table
-    id = rowData["1"]
-    dt_order_received = rowData[10] //date order received col
-    dt_order_returned = rowData[12] //date order returned col
-    value= id + "," + dt_order_received + "," + dt_order_returned
-    URL = "/api/data/managePurchaseOrder?action=updateOrderDate&value=" + value;
-    table.setData(URL);
+    let id = rowData["1"]
+    let dt_order_received = rowData[11] //date order received col
+    let dt_order_returned = rowData[13] //date order returned col
+    let value= id + "," + dt_order_received + "," + dt_order_returned
+    let activeFlg = rowData[17];   //active indicator flag
+    let URL = "/api/data/managePurchaseOrder?action=updateOrderDate&value=" + value;  //update
+    let reply = false;
+
+    if (dt_order_received != '' && activeFlg == 1) {
+         if (lang == 'en') {
+            reply = confirm("Updating Order Received Date will close this order!");
+         } else {
+             reply = confirm("La date de mise à jour de la date reçue fermera cette commande!");
+         }
+         if (reply) {
+             table.setData(URL); //update
+         } else {
+            // i need to do this to pull/reset original column data from db
+            URL = "/api/data/managePurchaseOrder";
+            table.setData(URL);
+         }
+    } else {
+         table.setData(URL);  //update
+    }
+
+
 
     //URL = "/api/data?orderId=" + id + "&dt_order_received=" + dt_order_received + "&dt_order_returned=" + dt_order_returned
     //table.setData(URL);

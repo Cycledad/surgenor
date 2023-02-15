@@ -104,15 +104,6 @@ def addSupplier():
     return render_template('addSupplier.html')
 
 
-@app.route('/listPurchaseOrder')
-def listPurchaseOrder():
-    resultList: list
-    resultList = utilities.getALLPurchaseOrders()  # returns a list of a list, so indice 1 = row, indice 2 = col within row, i.e. mylist[0][1]
-    # print(f'len of mylist indicates number of row: {len(resultList)}')
-    # print(f'each row contains cols {list(resultList[0])}')
-    return render_template('listPurchaseOrder.html', rowColData=resultList)
-
-
 @app.route('/addOrder', methods=['GET', 'POST'])
 def addOrder():
     try:
@@ -226,10 +217,6 @@ def addPart():
     return render_template('addPart.html', listSupplierNames=listSupplierNames, listUnits=listUnits,
                            listPurchaserName=listPurchaserName)
 
-
-@app.route('/testme', methods=['GET', 'POST'])
-def testme():
-    return render_template('xxx.html')
 
 
 @app.route('/adminHome')
@@ -447,7 +434,7 @@ def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=
     if action == 'updateOrderDate':
         value = request.args.get('value', '')
         myList = value.split(',')
-        orderId = myList[0]
+        orderId = int(myList[0])
         dt_order_received = myList[1]
         dt_order_returned = myList[2]
         if dt_order_received == 'null':
@@ -460,14 +447,14 @@ def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=
     if action == 'updateQuantity':
         value = request.args.get('value', '')
         myList = value.split(',')
-        orderId = myList[0]
-        quantity = myList[1]
+        orderId = int(myList[0])
+        quantity = int(myList[1])
         utilities.updateOrderReturnQuantity(orderId, quantity)
 
     if action == 'printOrder':
         value = request.args.get('value', '')
         myList = value.split(',')
-        orderNbr = myList[0]
+        orderNbr = int(myList[0])
         orderList = utilities.getOrderByOrderNbr(orderNbr)
         utilities.createPrintDoc(orderList)
 
@@ -484,16 +471,17 @@ def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=
     if action == 'receivedBy':
         value = request.args.get('value', '')
         myList = value.split(',')
-        id = myList[0]
+        id = int(myList[0])
         receivedBy = myList[1]
         parms = (receivedBy, id,)
         utilities.updateOrderReceivedBy(parms)
 
     if action == 'activeFlg':
+
         value = request.args.get('value', '')
         myList = value.split(',')
-        id = myList[0]
-        active = myList[1]
+        id = int(myList[0])
+        active = int(myList[1])
         parms = (active, id,)
         utilities.updateActiveFlg(parms)
 
@@ -504,7 +492,7 @@ def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=
     for row in resultList:
         alist = (
             row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12],
-            row[13], row[14], row[15], row[16])
+            row[13], row[14], row[15], row[16], row[17], row[18])
         d1 = dict(enumerate(alist))
         mylist.append(d1)
 
@@ -554,7 +542,7 @@ def apimanageSupplier():
     if action == 'update':
         value = request.args.get('value', '')
         myList = value.split(',')
-        id = myList[0]
+        id = int(myList[0])
         supplierName = myList[1]
         supplierAddr = myList[2]
         supplierProv = myList[3]
@@ -613,7 +601,7 @@ def apimanagePurchaser():
         value = request.args.get('value', '')
         myList = value.split(',')
 
-        id = myList[0]
+        id = int(myList[0])
         purchaserName = myList[1]
         purchaserDeptId = myList[2]
         purchaserActive = myList[3]
@@ -664,7 +652,7 @@ def apimanageProvincialTaxRates():
             value = request.args.get('value', '')
             myList = value.split(',')
 
-            id = myList[0]
+            id = int(myList[0])
             provincialCode = myList[1]
             taxRate = myList[2]
             label = myList[3]
@@ -703,7 +691,7 @@ def apimanageUser():
         value = request.args.get('value', '')
         myList = value.split(',')
 
-        id = myList[0]
+        id = int(myList[0])
         username = myList[1]
         password = myList[2]
         createDate = myList[3]

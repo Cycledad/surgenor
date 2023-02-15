@@ -365,7 +365,7 @@ function updateDate(cell) {
     let URL = "/api/data/managePurchaseOrder?action=updateOrderDate&value=" + value;  //update
     let reply = false;
 
-    if (dt_order_received != '' && activeFlg == 1) {
+    if (dt_order_received !== null && activeFlg == 1) {
          if (lang == 'en') {
             reply = confirm("Updating Order Received Date will close this order!");
          } else {

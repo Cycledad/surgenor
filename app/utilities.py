@@ -744,9 +744,9 @@ def insertOrder(parms) -> None:
         orderUsername = parms[6]
 
         #rebuild parms adding deptname, po and username
-        params = (orderNbr, orderSupplierId, deptName, orderPartNbr, orderDesc, orderQuantity, orderPartPrice, PO, orderUsername, )
+        params = (orderNbr, orderSupplierId, deptName, orderPartNbr, orderDesc, orderQuantity, orderPartPrice, PO, orderUsername, 1, )
 
-        stmt = 'INSERT INTO OrderTbl(orderNbr, orderSupplierId, deptName, orderPartNbr, orderPartDesc, orderQuantity, orderPartPrice, PO, orderUsername) values (?,?,?,?,?,?,?,?,?)'
+        stmt = 'INSERT INTO OrderTbl(orderNbr, orderSupplierId, deptName, orderPartNbr, orderPartDesc, orderQuantity, orderPartPrice, PO, orderUsername, orderActive ) values (?,?,?,?,?,?,?,?,?,?)'
         cur.execute(stmt, params)
         cur.close()
         conn.commit()

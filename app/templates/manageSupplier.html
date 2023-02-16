@@ -70,13 +70,13 @@ var table = new Tabulator("#manageSupplier-table",
 {
 
     ajaxURL: "/api/data/manageSupplier",
-    height:"311px",
+    height:"511px",
     //layout:"fitData",
     layout:"fitColumns",
     selectable:true,
     placeholder:"No Data Set",
     pagination:"local",
-    paginationSize:6,
+    paginationSize:10,
     paginationSizeSelector:[3, 6, 8, 10],
     movableColumns:true,
     paginationCounter:"rows",
@@ -116,12 +116,12 @@ var table = new Tabulator("#manageSupplier-table",
                                 "1":"Trouver le nom du fournisseur ...", //replace default header filter text for column name
                                 "2":"Trouver l’adresse du fournisseur ...",
                                 "3": "Trouver le province des fournisseur ...",
-                                "3":"Trouver le téléphone du fournisseur ...",
-                                "4":"Trouver l’adresse e-mail du fournisseur ...",
-                                "5":"Trouver le nom du contact du fournisseur ...",
-                                "6":"Find Active Suppliers ...",
-                                "7":"Trouver la date du fournisseur inactif ...",
-                                "8":"Trouver la date de création du fournisseur ...",
+                                "4":"Trouver le téléphone du fournisseur ...",
+                                "5":"Trouver l’adresse e-mail du fournisseur ...",
+                                "6":"Trouver le nom du contact du fournisseur ...",
+                                "7":"Find Active Suppliers ...",
+                                "8":"Trouver la date du fournisseur inactif ...",
+                                "9":"Trouver la date de création du fournisseur ...",
                             }
                         }
 
@@ -140,12 +140,12 @@ var table = new Tabulator("#manageSupplier-table",
         {title:"supplierEmail", field:"5", hozAlign:"center", sorter:"string", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Supplier Email ..."},
         {title:"supplierContact", field:"6", hozAlign:"center", sorter:"string", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Supplier Contact Name ..."},
         {title:"supplierActive", field:"7", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Active Suppliers ..."},
-        {title:"supplierDateInActive", field:"8", hozAlign:"center", sorter:"date", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Date Supplier Inactive ..."},
-        {title:"supplierDateCreated", field:"9", hozAlign:"center", sorter:"date", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Date Supplier Created ..."},
+        {title:"supplierDateInActive", field:"8", hozAlign:"center", sorter:"string", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Date Supplier Inactive ..."},
+        {title:"supplierDateCreated", field:"9", hozAlign:"center", sorter:"string", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Date Supplier Created ..."},
     ],
 });
 
-columns: ['', '', '', '', '', '', '', '']
+columns: ['', '', '', '', '', '', '', '', '']
 
 
 //cellEdited:updateCol,

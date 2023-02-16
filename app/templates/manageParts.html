@@ -90,7 +90,7 @@ var table = new Tabulator("#manageParts-table",
         {title:"partQuantity", field:"4", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Part Quantity ..."},
         {title:"partInStock", field:"5", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Part In Stock ..."},
         {title:"partDateOutOfStock", field:"6", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Date Part Out of Stock ..."},
-        {title:"partDateCreated", field:"7", hozAlign:"center", sorter:"date", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Date Part Created ..."},
+        {title:"partDateCreated", field:"7", hozAlign:"center", sorter:"string", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Date Part Created ..."},
     ],
 });
 

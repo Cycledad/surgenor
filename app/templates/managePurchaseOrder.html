@@ -38,55 +38,91 @@ var dateEditor = (cell, onClick, success, cancel, editorParams) => {
    return editor;
  };
 
-var updateQuantity = (cell) =>
+var updateReturnQuantity = (cell) =>
 {
     //alert("say it");
     debugger;
     var row = cell.getRow();
     var rowData = row.getData();
-    //alert("OrderId is: " + rowData["1"]) //id in purchaserOrder table
-    id = rowData["1"];
-    returnQuantity = rowData[14];
-    if (isNaN(returnQuantity)){
-        alert("Not a number!!");
-    }
-    else {
-        quantityOrdered = rowData[9];
-        if (returnQuantity > quantityOrdered) {
-            if (lang == 'en')
-            {
-                msg = "Quantity returned can not exceed quantity ordered!";
-            }
-            else
-            {
-                msg = "La quantité retournée ne peut excéder la quantité commandée !";
-            }
+    let URL = "/api/data/managePurchaseOrder"; //this call will reset the returned quantity
 
+    let id = rowData["1"];
+    let returnQuantity = rowData[14];
+
+    if (returnQuantity < 0) {
+        if (lang == 'en') {
+            msg = "Quantity can not be less than 0!";
+        } else {
+            msg = "La quantité ne peut pas être inférieure à 0!";
+        }
+        alert(msg);
+    } else {
+        if (isNaN(returnQuantity)) {
+            if (lang == 'en') {
+                msg = "Not a number!!";
+            } else {
+                msg = "Pas un numéro !!";
+            }
             alert(msg);
-            //cell.setValue('');
-            //rowData[14] = ''
         }
         else {
-            value = id + "," + returnQuantity
-            URL = "/api/data/managePurchaseOrder?action=updateQuantity&value=" + value
-            table.setData(URL);
-          
+            let quantityOrdered = rowData[9];
+            if (returnQuantity > quantityOrdered) {
+                if (lang == 'en')
+                {
+                    msg = "Quantity returned can not exceed quantity ordered!";
+                }
+                else {
+                    msg = "La quantité retournée ne peut excéder la quantité commandée !";
+                }
 
-            /*
-            URL = "/api/data/managePurchaseOrder?orderId=" + id + "&quantity=" + returnQuantity;
-            table.setData(URL);
-
-            value = id + "," + partNbr + "," + partDesc + "," +  partSupplierId + "," + partQuantity + "," + partInStock + "," +  partDateOutOfStock + "," + partDateCreated
-            URL = "/api/data/manageParts?action=update&value=" + value;
-            table.setData(URL);
-            */
+                alert(msg);
+            }
+            else {
+                let value = id + "," + returnQuantity
+                URL = "/api/data/managePurchaseOrder?action=updateReturnQuantity&value=" + value
+            };
         };
-
     };
+    table.setData(URL);  // retrieve original data or update data
 };
 
+var updateOrderQuantity = (cell) =>
+{
+    //alert("say it");
+    debugger;
+    var row = cell.getRow();
+    var rowData = row.getData();
+    let URL = "/api/data/managePurchaseOrder"; //this call will reset the returned quantity
+    let id = rowData["1"];
+    let orderQuantity = rowData[9];
+    if (isNaN(orderQuantity)) {
+        if (lang == 'en') {
+            msg = "Not a number!!";
+        } else {
+            msg = "Pas un numéro !!";
+        }
+        alert(msg);
+    }
+    else {
+        if (orderQuantity < 1) {
+            if (lang == 'en') {
+                msg = "Order quantity can not be less than 1!";
+            }
+            else {
+                msg = "La quantité de commande ne peut pas être inférieure à 1!";
+            }
+            alert(msg);
+        }
+        else {
+            value = id + "," + orderQuantity
+            URL = "/api/data/managePurchaseOrder?action=updateOrderQuantity&value=" + value
+        };
+    };
+     table.setData(URL);
+};
 
-var updateCol = (cell) =>
+var updateReceivedBy = (cell) =>
 {
     debugger;
     var row = cell.getRow();
@@ -285,12 +321,12 @@ var table = new Tabulator("#example-table",
         {title:"Supplier", field:"6", hozAlign:"center", sorter:"string", headerFilter:"input", headerFilterPlaceholder:"Find a Supplier ..."},
         {title:"Part Number", field:"7", hozAlign:"center", sorter:"string", headerFilter:"input", headerFilterPlaceholder:"Find a Part Number ..."},
         {title:"Part Description", field:"8", hozAlign:"center", headerFilter:"input", headerFilterPlaceholder:"Find a Part ..."},
-        {title:"Quantity", field:"9", hozAlign:"center", sorter:"number"},
+        {title:"Quantity", field:"9", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateOrderQuantity},
         {title:"Part Price", field:"10", hozAlign:"center", sorter:"number"},
         {title:"Order Received Date", field:"11", editor:dateEditor},
-        {title:"Order Received By", field:"12", editor:"list", editorParams:parmLookup, cellEdited:updateCol},
+        {title:"Order Received By", field:"12", sorter: "string", editor:"list", editorParams:parmLookup, cellEdited:updateReceivedBy},
         {title:"Order Return Date", field:"13", editor:dateEditor},
-        {title:"Order Return Quantity", field:"14", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateQuantity},
+        {title:"Order Return Quantity", field:"14", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateReturnQuantity},
         {title:"PO", field:"15", hozAlign:"center", sorter:"string", editor:false},
         {title:"User", field:"16", hozAlign:"center", sorter:"string", editor:false},
         {title:"Order Active", field:"17", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateActive},

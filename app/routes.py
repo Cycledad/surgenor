@@ -444,12 +444,19 @@ def data(orderId=None, dt_order_received=None, dt_order_returned=None, quantity=
 
         utilities.updateOrderReceivedDate(orderId, dt_order_received, dt_order_returned)
 
-    if action == 'updateQuantity':
+    if action == 'updateReturnQuantity':
         value = request.args.get('value', '')
         myList = value.split(',')
         orderId = int(myList[0])
         quantity = int(myList[1])
-        utilities.updateOrderReturnQuantity(orderId, quantity)
+        utilities.updateOrderQuantity(orderId, quantity, 'orderReturnQuantity')
+
+    if action == 'updateOrderQuantity':
+        value = request.args.get('value', '')
+        myList = value.split(',')
+        orderId = int(myList[0])
+        orderQuantity = int(myList[1])
+        utilities.updateOrderQuantity(orderId, orderQuantity, 'OrderQuantity')
 
     if action == 'printOrder':
         value = request.args.get('value', '')
@@ -554,8 +561,7 @@ def apimanageSupplier():
         supplierDateCreated = myList[9]
 
         utilities.updateSupplier(id, supplierName, supplierAddr, supplierProv, supplierTel, supplierEmail,
-                                 supplierContact,
-                                 supplierActive, supplierDateInActive, supplierDateCreated)
+                                 supplierContact, supplierActive, supplierDateInActive, supplierDateCreated)
 
     # reload tabulator.js table
     resultList = utilities.getTable('Supplier')
@@ -566,6 +572,46 @@ def apimanageSupplier():
     x = json.dumps(myList)
     return (x)
     # return (myList)
+
+@app.route('/api/data/managePurchaseOrderTable/<action>/<value>', methods=['GET'])
+@app.route('/api/data/managePurchaseOrderTable', methods=['GET'])
+def apimanagePurchaseOrderTable():
+    myList: list = []
+    aList: list = []
+
+    # set arg to '' not present
+    action = request.args.get('action', '')
+
+    # if args ARE passed
+    if action == 'update':
+        value = request.args.get('value', '')
+        myList = value.split(',')
+        id = int(myList[0])
+        purchaseOrderDate = myList[1]
+        purchaseOrderReceivedDate = myList[2]
+        purchaseOrderActive = myList[3]
+        purchaseOrderDateDeleted = myList[4]
+        purchaseOrderNbr = myList[5]
+        purchaseOrderPurchaserId = myList[6]
+        purchaseOrderPurchaserDeptId = myList[7]
+
+
+        utilities.updatePurchaseOrderTable(id, purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderActive, purchaseOrderDateDeleted, purchaseOrderNbr,
+                                 purchaseOrderPurchaserId, purchaseOrderPurchaserDeptId)
+
+    # reload tabulator.js table
+    resultList = utilities.getTable('PurchaseOrder')
+    for row in resultList:
+        aList = (row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7])
+        d1 = dict(enumerate(aList))
+        myList.append(d1)
+    x = json.dumps(myList)
+
+    return (x)
+
+
+
+
 
 
 @app.route('/manageSupplier')
@@ -586,7 +632,24 @@ def manageSupplier():
     return render_template('manageSupplier.html')
 
 
-@app.route('/api/data/managePurchasr/<action>/<value>', methods=['GET'])
+@app.route('/managePurchaseOrderTable')
+def managePurchaseOrderTable():
+    try:
+
+        if session.get('loggedOn', None) is None:
+            flash(session['pleaseLogin'], 'danger')
+            return redirect(url_for('login'))
+
+        if session['securityLevel'] < constants.GOD_LEVEL:
+            flash(session['securityLevel5'], 'warning')
+            return redirect(url_for('adminHome'))
+
+    except Exception as e:
+        print(f'problem in managePurchaseOrderTable: {e}')
+
+    return render_template('managePurchaseOrderTable.html')
+
+@app.route('/api/data/managePurchaser/<action>/<value>', methods=['GET'])
 @app.route('/api/data/managePurchaser', methods=['GET'])
 # api/data/managePurchaser?action=update&value=1,Executive,2023-01-04,5'
 def apimanagePurchaser():

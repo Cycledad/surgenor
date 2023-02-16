@@ -157,9 +157,9 @@ var table = new Tabulator("#manageDepartment-table",
     columns:[
         {title:"id", field:"0", hozAlign:"center", sorter:"string", visible:false},
         {title:"deptName", field:"1", hozAlign:"center", sorter:"string", visible:true, editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find a Department ..."},
-        {title:"dateCreated", field:"2", hozAlign:"center", sorter:"date", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Date Created ..."},
+        {title:"dateCreated", field:"2", hozAlign:"center", sorter:"string", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Date Created ..."},
         {title:"active", field:"3", hozAlign:"center", sorter:"string", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Active Departments ..."},
-        {title:"dateInActive", field:"4", hozAlign:"center", sorter:"date", editor:true, editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Date Inactive ..."},
+        {title:"dateInActive", field:"4", hozAlign:"center", sorter:"string", editor:true, editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Date Inactive ..."},
         //{formatter:"buttonCross", align:"center", title:"del", headerSort:false, cellClick:function(e, cell){
 	    //    if(confirm('Are you sure you want to delete this entry?'))
 	    //        debugger;

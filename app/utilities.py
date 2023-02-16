@@ -238,12 +238,31 @@ def updateSupplier(id: int, supplierName: str, supplierAddr: str, supplierTel: s
         conn.commit()
         conn.close()
 
-        return ()
+        return
 
 
     except Exception as e:
         print(f'problem in updateSupplier: {e}')
 
+def updatePurchaseOrderTable(id: int, purchaseOrderDate: str, purchaseOrderReceivedDate: str, purchaseOrderActive: bool, purchaseOrderDateDeleted: str,
+                             purchaseOrderNbr: int, purchaseOrderPurchaserId: int, purchaseOrderPurchaserDeptId: int) -> None:
+    try:
+        # soft delete
+        db = getDatabase(constants.DATABASE_NAME)
+        conn = getConnection(db)
+        cur = conn.cursor()
+        parms = (purchaseOrderDate, purchaseOrderReceivedDate, purchaseOrderActive, purchaseOrderDateDeleted, purchaseOrderNbr, purchaseOrderPurchaserId, purchaseOrderPurchaserDeptId, id,)
+        stmt = 'update PurchaseOrder set purchaseOrderDate = ?, purchaseOrderReceivedDate = ?, purchaseOrderActive = ?, purchaseOrderDateDeleted = ?, purchaseOrderNbr = ?, purchaseOrderPurchaserId = ?, purchaseOrderPurchaserDeptId = ? where id = ?'
+        cur.execute(stmt, parms)
+        cur.close()
+        conn.commit()
+        conn.close()
+
+        return
+
+
+    except Exception as e:
+        print(f'problem in updatePurchaseOrderTable: {e}')
 
 def updateUser(id: int, username: str, password: str, createDate: str, active: bool, dateInactive: str,
                securityLevel: int) -> None:
@@ -902,7 +921,7 @@ def updateOrderReceivedDate(id: int, dt_order_received: str, dt_order_returned: 
         print(f'problem in updateOrderReceivedDate: {e}')
 
 
-def updateOrderReturnQuantity(id: int, quantity: int) -> None:
+def updateOrderQuantity(id: int, quantity: int, colName:str) -> None:
     # There is ONE purchaseOrder id used to track orders.
     # there can be MANY orders per purchaseOrder
     try:
@@ -911,7 +930,7 @@ def updateOrderReturnQuantity(id: int, quantity: int) -> None:
         conn = getConnection(db)
         cur = conn.cursor()
         parm = (quantity, id,)
-        stmt = "update orderTbl set orderReturnQuantity = ? where id = ?"
+        stmt = f"update orderTbl set {colName} = ? where id = ?"
         cur.execute(stmt, parm)
         conn.commit()
         cur.close()
@@ -1487,6 +1506,7 @@ def createSessionObjects(currentLang: str, session) -> str:
             session['viewPrint'] = 'Afficher/Imprimer le bon de commande'
             # ----- purchase order table -----
             session['purchaseOrderDate'] = "Date de commande d'achat"
+            session['purchaseOrderTable'] = "Tableau de commande d'achat"
         else:
             #----- base.html, adminBase.html, login.html, register.html translations -----
             session['home'] = 'Home'
@@ -1549,6 +1569,7 @@ def createSessionObjects(currentLang: str, session) -> str:
             session['viewPrint'] = 'View/Print Purchase Order'
             # ----- purchase order table -----
             session['purchaseOrderDate'] = 'Purchase Order Date'
+            session['purchaseOrderTable'] = 'Purchase Order Table'
 
         return(currentLang)
 

@@ -125,12 +125,12 @@ var table = new Tabulator("#managePurchaser-table",
         {title:"purchaserName", field:"1", hozAlign:"center", sorter:"string", visible:true, editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Purchaser Name ..."},
         {title:"purchaserDeptId", field:"2", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Purchaser Department Id ..."},
         {title:"purchaserActive", field:"3", hozAlign:"center", sorter:"number", editor:true, cellEdited:updateCol, headerFilter:"input", headerFilterPlaceholder:"Find Active Purchaser ..."},
-        {title:"purchaserDateInActive", field:"4", hozAlign:"center", sorter:"date", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Date Inactive ..."},
-        {title:"purchaserDateCreated", field:"5", hozAlign:"center", sorter:"date", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Date Created ..."},
+        {title:"purchaserDateInActive", field:"4", hozAlign:"center", sorter:"string", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Date Inactive ..."},
+        {title:"purchaserDateCreated", field:"5", hozAlign:"center", sorter:"string", editor:dateEditor, headerFilter:"input", headerFilterPlaceholder:"Find Date Created ..."},
     ],
 });
 
-columns: ['', '', '', '', '', '', '', '']
+columns: ['', '', '', '', '', '']
 
 
 //cellEdited:updateCol,

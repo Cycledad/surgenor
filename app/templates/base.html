@@ -54,13 +54,18 @@
 
             </div>
             <!-- Navbar Right Side -->
-            <div class="navbar-nav ml-auto">
+            <div class="navbar-nav mr-auto">
                 {% if not session.get('loggedOn', None) == None: %} <!-- user is logged in -->
-                <a class="nav-item nav-link" href="{{ url_for('logout') }}">{% if 'logout' in session %} {{ session['logout'] }} {% else %} Logout {% endif %}</a>
+                    <!--- <p class="nav-item nav-link">{{ session['loggedInAs'] }}  {{ session['username'] }}  </p> -->
+                    <!-- <p class="nav-item nav-link">{{ session['username'] }}  </p> -->
+                    <!-- using href here to maintain spacing borders -->
+                    <a class="nav-item nav-link" href=#>{{ session['username'] }}</a>
+                    <a class="nav-item nav-link" href="{{ url_for('logout') }}">{% if 'logout' in session %} {{ session['logout'] }} {% else %} Logout {% endif %}</a>
                 {% else %}
-                <a class="nav-item nav-link" href="{{ url_for('login') }}">{% if 'login' in session %} {{ session['login'] }} {% else %} Login {% endif %}</a>
-                <a class="nav-item nav-link" href="{{ url_for('register') }}">{% if 'register' in session %} {{ session['register'] }} {% else %} Register {% endif %}</a>
+                    <a class="nav-item nav-link" href="{{ url_for('login') }}">{% if 'login' in session %} {{ session['login'] }} {% else %} Login {% endif %}</a>
+                    <a class="nav-item nav-link" href="{{ url_for('register') }}">{% if 'register' in session %} {{ session['register'] }} {% else %} Register {% endif %}</a>
                 {% endif %}
+
                 {% if 'lang' not in session: %}
                     <a class ="navbar-brand mr-4" href="{{ url_for('language') }}" ><img src="{{ url_for('static', filename='/img/fr.png') }}" height=30 alt='' > </a >
                 {% elif session['lang'] == 'en': %}

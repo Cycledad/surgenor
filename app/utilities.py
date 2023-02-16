@@ -1428,6 +1428,7 @@ def createSessionObjects(currentLang: str, session) -> str:
         if currentLang == 'en':
             #----- base.html, adminBase.html, login.html, register.html translations -----
             session['home'] = 'Accueil'
+            session['loggedInAs'] = 'Actuellement connecté comme:'
             session['purchaseOrder'] = 'Commande d''achat'
             session['admin'] = 'admin'
             session['create'] = 'créer'
@@ -1450,7 +1451,7 @@ def createSessionObjects(currentLang: str, session) -> str:
             session['alreadyRegistered'] = 'Le nom d’utilisateur est déjà enregistré'
             session['registered'] = 'Vous avez été inscrit, veuillez vous connecter'
             session['pleaseLogin'] = 'Veuillez vous connecter!'
-            session['securityLevel5'] = 'Niveau de sécurité de 6 requis'
+            session['securityLevel5'] = 'Niveau de sécurité de 5 requis'
             currentLang = 'fr'
             #----- addSupplier.html -----
             session['addSupplier'] = 'Ajouter un fournisseur'
@@ -1489,6 +1490,7 @@ def createSessionObjects(currentLang: str, session) -> str:
         else:
             #----- base.html, adminBase.html, login.html, register.html translations -----
             session['home'] = 'Home'
+            session['loggedInAs'] = 'Currently logged in as:'
             session['purchaseOrder'] = 'Purchase Order'
             session['admin'] = 'Admin'
             session['create'] = 'Create'
@@ -1511,7 +1513,7 @@ def createSessionObjects(currentLang: str, session) -> str:
             session['alreadyRegistered'] = 'Username is already registered'
             session['registered'] = 'You have been registered, please login'
             session['pleaseLogin'] = 'Please Login!'
-            session['securityLevel5'] = 'Security Level of 6 required'
+            session['securityLevel5'] = 'Security Level 5 required'
             currentLang = 'en'
             #----- addSupplier.html -----
             session['addSupplier'] = 'Add Supplier'
